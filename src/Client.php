@@ -12,6 +12,12 @@ use CleverCloud\Sdk\Resource\V2\EnvironmentResource;
 use CleverCloud\Sdk\Resource\V2\OrganisationsResource;
 use CleverCloud\Sdk\Resource\V2\SelfResource;
 use CleverCloud\Sdk\Resource\V2\UsersResource;
+use CleverCloud\Sdk\Resource\V4\BillingResource;
+use CleverCloud\Sdk\Resource\V4\InstancesResource;
+use CleverCloud\Sdk\Resource\V4\LoadBalancersResource;
+use CleverCloud\Sdk\Resource\V4\ProductsResource;
+use CleverCloud\Sdk\Resource\V4\PulsarPoliciesResource;
+use CleverCloud\Sdk\Resource\V4\ZonesResource;
 
 /**
  * Top-level Clever Cloud SDK facade. Build with {@see ClientBuilder}.
@@ -29,6 +35,12 @@ final class Client
     private ?DeploymentsResource $deploymentsResource = null;
     private ?EnvironmentResource $environmentResource = null;
     private ?DomainsResource $domainsResource = null;
+    private ?BillingResource $billingResource = null;
+    private ?InstancesResource $instancesResource = null;
+    private ?LoadBalancersResource $loadBalancersResource = null;
+    private ?ProductsResource $productsResource = null;
+    private ?ZonesResource $zonesResource = null;
+    private ?PulsarPoliciesResource $pulsarPoliciesResource = null;
 
     public function __construct(
         public readonly HttpClient $http,
@@ -66,5 +78,29 @@ final class Client
 
     public DomainsResource $domains {
         get => $this->domainsResource ??= new DomainsResource($this->http, $this->mapper);
+    }
+
+    public BillingResource $billing {
+        get => $this->billingResource ??= new BillingResource($this->http, $this->mapper);
+    }
+
+    public InstancesResource $instances {
+        get => $this->instancesResource ??= new InstancesResource($this->http, $this->mapper);
+    }
+
+    public LoadBalancersResource $loadBalancers {
+        get => $this->loadBalancersResource ??= new LoadBalancersResource($this->http, $this->mapper);
+    }
+
+    public ProductsResource $products {
+        get => $this->productsResource ??= new ProductsResource($this->http, $this->mapper);
+    }
+
+    public ZonesResource $zones {
+        get => $this->zonesResource ??= new ZonesResource($this->http, $this->mapper);
+    }
+
+    public PulsarPoliciesResource $pulsarPolicies {
+        get => $this->pulsarPoliciesResource ??= new PulsarPoliciesResource($this->http, $this->mapper);
     }
 }
