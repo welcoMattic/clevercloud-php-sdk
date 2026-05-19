@@ -49,3 +49,46 @@ jobs:
 
       - name: Tests
         run: vendor/bin/phpunit --colors=always
+
+  smoke:
+    name: Smoke (live API)
+    runs-on: ubuntu-latest
+    needs: qa
+    # Only runs when the four CC_* secrets are configured on the repo.
+    # Forks / branches without secrets skip cleanly.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check secrets are wired
+        id: gate
+        env:
+          CC_CONSUMER_KEY: ${{ secrets.CC_CONSUMER_KEY }}
+        run: |
+          if [ -z "${CC_CONSUMER_KEY}" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "CC_* secrets not configured; skipping smoke job."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up PHP
+        if: steps.gate.outputs.configured == 'true'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          tools: composer:v2
+
+      - name: Install dependencies
+        if: steps.gate.outputs.configured == 'true'
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Run smoke-self
+        if: steps.gate.outputs.configured == 'true'
+        env:
+          CC_CONSUMER_KEY: ${{ secrets.CC_CONSUMER_KEY }}
+          CC_CONSUMER_SECRET: ${{ secrets.CC_CONSUMER_SECRET }}
+          CC_TOKEN: ${{ secrets.CC_TOKEN }}
+          CC_TOKEN_SECRET: ${{ secrets.CC_TOKEN_SECRET }}
+        run: php examples/smoke-self.php
