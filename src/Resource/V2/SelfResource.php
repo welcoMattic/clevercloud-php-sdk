@@ -2,17 +2,16 @@
 
 namespace CleverCloud\Sdk\Resource\V2;
 
+use CleverCloud\Sdk\Model\User;
 use CleverCloud\Sdk\Resource\AbstractV2Resource;
 
 final readonly class SelfResource extends AbstractV2Resource
 {
-    /**
-     * Returns the raw `/self` payload. Phase 2 replaces this with a typed `User` DTO.
-     *
-     * @return array<int|string, mixed>
-     */
-    public function get(): array
+    public function get(): User
     {
-        return $this->httpGet('/self');
+        /** @var array<string, mixed> $payload */
+        $payload = $this->httpGet('/self');
+
+        return $this->mapTo(User::class, $payload);
     }
 }

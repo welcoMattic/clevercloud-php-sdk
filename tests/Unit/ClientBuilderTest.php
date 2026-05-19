@@ -60,8 +60,8 @@ final class ClientBuilderTest extends TestCase
 
         $self = $client->self->get();
 
-        self::assertSame('me_1', $self['id']);
-        self::assertSame('me@example.com', $self['email']);
+        self::assertSame('me_1', $self->id);
+        self::assertSame('me@example.com', $self->email);
     }
 
     public function testBuilderIsImmutable(): void

@@ -2,6 +2,8 @@
 
 namespace CleverCloud\Sdk;
 
+use AutoMapper\AutoMapper;
+use AutoMapper\AutoMapperInterface;
 use CleverCloud\Sdk\Auth\Credentials;
 use CleverCloud\Sdk\Auth\NonceGenerator;
 use CleverCloud\Sdk\Auth\OAuth1Signer;
@@ -33,6 +35,7 @@ final class ClientBuilder
     private ?NonceGenerator $nonceGenerator = null;
     private ?RetryPolicy $retryPolicy = null;
     private ?LoggerInterface $logger = null;
+    private ?AutoMapperInterface $mapper = null;
 
     public function withCredentials(Credentials $credentials): self
     {
@@ -114,6 +117,14 @@ final class ClientBuilder
         return $clone;
     }
 
+    public function withMapper(AutoMapperInterface $mapper): self
+    {
+        $clone = clone $this;
+        $clone->mapper = $mapper;
+
+        return $clone;
+    }
+
     public function build(): Client
     {
         if (null === $this->credentials) {
@@ -144,6 +155,8 @@ final class ClientBuilder
             logger: $this->logger,
         );
 
-        return new Client($http);
+        $mapper = $this->mapper ?? AutoMapper::create();
+
+        return new Client($http, $mapper);
     }
 }
