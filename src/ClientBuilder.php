@@ -6,7 +6,6 @@ use CleverCloud\Sdk\Auth\Credentials;
 use CleverCloud\Sdk\Auth\NonceGenerator;
 use CleverCloud\Sdk\Auth\OAuth1Signer;
 use CleverCloud\Sdk\Auth\RandomNonceGenerator;
-use CleverCloud\Sdk\Auth\SystemClock;
 use CleverCloud\Sdk\Exception\ConfigurationException;
 use CleverCloud\Sdk\Http\HttpClient;
 use CleverCloud\Sdk\Http\JsonCodec;
@@ -20,6 +19,7 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Clock\NativeClock;
 
 final class ClientBuilder
 {
@@ -127,7 +127,7 @@ final class ClientBuilder
         $uriFactory = $this->uriFactory ?? Psr17FactoryDiscovery::findUriFactory();
 
         $signer = new OAuth1Signer(
-            $this->clock ?? new SystemClock(),
+            $this->clock ?? new NativeClock(),
             $this->nonceGenerator ?? new RandomNonceGenerator(),
         );
 

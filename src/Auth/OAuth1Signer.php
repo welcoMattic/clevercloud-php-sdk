@@ -4,6 +4,7 @@ namespace CleverCloud\Sdk\Auth;
 
 use Psr\Clock\ClockInterface;
 use Psr\Http\Message\RequestInterface;
+use Symfony\Component\Clock\NativeClock;
 
 /**
  * Signs a PSR-7 request with OAuth 1.0a using HMAC-SHA512 per RFC 5849.
@@ -16,7 +17,7 @@ final readonly class OAuth1Signer
     public const string SIGNATURE_METHOD = 'HMAC-SHA512';
 
     public function __construct(
-        private ClockInterface $clock = new SystemClock(),
+        private ClockInterface $clock = new NativeClock(),
         private NonceGenerator $nonceGenerator = new RandomNonceGenerator(),
     ) {
     }

@@ -5,16 +5,14 @@ namespace CleverCloud\Sdk\Tests\Unit\Auth;
 use CleverCloud\Sdk\Auth\Credentials;
 use CleverCloud\Sdk\Auth\NonceGenerator;
 use CleverCloud\Sdk\Auth\OAuth1Signer;
-use DateTimeImmutable;
-use DateTimeZone;
 
 use const JSON_THROW_ON_ERROR;
 
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Psr\Clock\ClockInterface;
 use Psr\Http\Message\RequestInterface;
+use Symfony\Component\Clock\MockClock;
 
 #[CoversClass(OAuth1Signer::class)]
 final class OAuth1SignerTest extends TestCase
@@ -34,7 +32,7 @@ final class OAuth1SignerTest extends TestCase
     {
         $this->factory = new Psr17Factory();
         $this->signer = new OAuth1Signer(
-            new FrozenClock(self::FIXED_TIMESTAMP),
+            new MockClock('@'.self::FIXED_TIMESTAMP),
             new StaticNonceGenerator(self::FIXED_NONCE),
         );
         $this->threeLegged = new Credentials(
@@ -359,18 +357,6 @@ final class OAuth1SignerTest extends TestCase
         $signingKey = rawurlencode($consumerSecret).'&'.rawurlencode($tokenSecret);
 
         return base64_encode(hash_hmac('sha512', $baseString, $signingKey, true));
-    }
-}
-
-final class FrozenClock implements ClockInterface
-{
-    public function __construct(private readonly int $timestamp)
-    {
-    }
-
-    public function now(): DateTimeImmutable
-    {
-        return new DateTimeImmutable('@'.$this->timestamp)->setTimezone(new DateTimeZone('UTC'));
     }
 }
 

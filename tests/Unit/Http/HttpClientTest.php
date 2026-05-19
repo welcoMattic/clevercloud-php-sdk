@@ -16,7 +16,6 @@ use CleverCloud\Sdk\Http\HttpClient;
 use CleverCloud\Sdk\Http\JsonCodec;
 use CleverCloud\Sdk\Http\RetryPolicy;
 use CleverCloud\Sdk\Http\UriBuilder;
-use CleverCloud\Sdk\Tests\Unit\Auth\FrozenClock;
 use CleverCloud\Sdk\Tests\Unit\Auth\StaticNonceGenerator;
 
 use const JSON_THROW_ON_ERROR;
@@ -29,6 +28,7 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
+use Symfony\Component\Clock\MockClock;
 use Throwable;
 
 #[CoversClass(HttpClient::class)]
@@ -289,7 +289,7 @@ final class HttpClientTest extends TestCase
     {
         $configuration = new Configuration();
         $signer = new OAuth1Signer(
-            new FrozenClock(1_700_000_000),
+            new MockClock('@1700000000'),
             new StaticNonceGenerator('test-nonce'),
         );
 
