@@ -15,6 +15,8 @@ use CleverCloud\Sdk\Resource\V2\UsersResource;
 use CleverCloud\Sdk\Resource\V4\BillingResource;
 use CleverCloud\Sdk\Resource\V4\InstancesResource;
 use CleverCloud\Sdk\Resource\V4\LoadBalancersResource;
+use CleverCloud\Sdk\Resource\V4\LogsResource;
+use CleverCloud\Sdk\Resource\V4\OperatorsResource;
 use CleverCloud\Sdk\Resource\V4\ProductsResource;
 use CleverCloud\Sdk\Resource\V4\PulsarPoliciesResource;
 use CleverCloud\Sdk\Resource\V4\ZonesResource;
@@ -41,6 +43,8 @@ final class Client
     private ?ProductsResource $productsResource = null;
     private ?ZonesResource $zonesResource = null;
     private ?PulsarPoliciesResource $pulsarPoliciesResource = null;
+    private ?LogsResource $logsResource = null;
+    private ?OperatorsResource $operatorsResource = null;
 
     public function __construct(
         public readonly HttpClient $http,
@@ -102,5 +106,13 @@ final class Client
 
     public PulsarPoliciesResource $pulsarPolicies {
         get => $this->pulsarPoliciesResource ??= new PulsarPoliciesResource($this->http, $this->mapper);
+    }
+
+    public LogsResource $logs {
+        get => $this->logsResource ??= new LogsResource($this->http, $this->mapper);
+    }
+
+    public OperatorsResource $operators {
+        get => $this->operatorsResource ??= new OperatorsResource($this->http, $this->mapper);
     }
 }
