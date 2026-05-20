@@ -1,31 +1,45 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Connexion par token — Clever Cloud Dashboard</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>☁️</text></svg>">
+        {{ importmap('app') }}
+    </head>
+    <body>
+        <div class="login-wrap">
+            <div class="login-panel">
+                <div class="login-panel__header">
+                    <div class="login-panel__brand">
+                        <span class="login-panel__brand-icon">☁️</span>
+                        Clever Cloud
+                    </div>
+                    <h1 class="login-panel__title">API token</h1>
+                    <p class="login-panel__subtitle">Colle un token Personal API généré depuis la Console.</p>
+                </div>
+                <div class="login-panel__body">
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}<div class="flash {{ label }}">{{ message }}</div>{% endfor %}
+                    {% endfor %}
 
-{% block title %}Connexion par token — Clever Cloud Dashboard{% endblock %}
-
-{% block body %}
-    <div class="card" style="max-width: 560px;">
-        <h2>Coller un token API Clever Cloud</h2>
-        <p>
-            Mint un token depuis la
-            <a href="https://console.clever-cloud.com/" target="_blank" rel="noopener">Console</a>
-            (section <em>Personal API tokens</em>). Le token est envoyé en <code>Authorization: Bearer</code>
-            sur chaque requête vers <code>api.clever-cloud.com</code> et <code>api-bridge.clever-cloud.com</code>.
-        </p>
-
-        <form method="post" action="{{ path('login_token') }}">
-            <label for="api_token" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
-                Token
-            </label>
-            <input type="password" id="api_token" name="api_token" required autofocus
-                   placeholder="cc_..."
-                   style="width: 100%; padding: 0.6rem; border: 1px solid #d1d5db; border-radius: 4px; font-family: monospace;">
-            <p style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
-                Le token ne quitte pas ta session PHP — il est uniquement stocké dans la session du serveur.
-            </p>
-            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-                <button type="submit" class="btn primary">Se connecter</button>
-                <a class="btn" href="{{ path('login') }}">Retour</a>
+                    <form method="post" action="{{ path('login_token') }}" style="display: grid; gap: 0.85rem;">
+                        <div class="form-field">
+                            <label class="form-field__label" for="api_token">Token</label>
+                            <input type="password" id="api_token" name="api_token" required autofocus
+                                   placeholder="cc_..."
+                                   class="form-field__input form-field__input--mono">
+                        </div>
+                        <p class="form-help">
+                            Le token ne quitte pas ta session PHP — il est uniquement stocké dans la session du serveur.
+                        </p>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn--primary">Se connecter</button>
+                            <a class="btn" href="{{ path('login') }}">Retour</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </form>
-    </div>
-{% endblock %}
+        </div>
+    </body>
+</html>

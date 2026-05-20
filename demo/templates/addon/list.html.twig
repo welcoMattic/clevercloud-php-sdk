@@ -1,14 +1,17 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Add-ons — Clever Cloud Dashboard{% endblock %}
+{% block page_title %}Add-ons{% endblock %}
+{% block page_subtitle %}
+    <p class="topbar__subtitle">{{ addons|length }} add-on{{ addons|length > 1 ? 's' }} dans le contexte sélectionné</p>
+{% endblock %}
 
 {% block body %}
     <div class="card">
-        <h2>Add-ons ({{ addons|length }})</h2>
-        <form method="get" action="{{ path('addon_list') }}">
-            <label>
-                Propriétaire :
-                <select name="owner" onchange="this.form.submit()">
+        <div class="card__body">
+            <form method="get" action="{{ path('addon_list') }}" class="owner-filter">
+                <label class="form-field__label" for="owner-select">Propriétaire</label>
+                <select id="owner-select" name="owner" class="form-field__select" onchange="this.form.submit()">
                     <option value="self" {% if selectedOwner is null %}selected{% endif %}>Moi (self)</option>
                     {% for orga in organisations %}
                         <option value="{{ orga.id }}" {% if selectedOwner == orga.id %}selected{% endif %}>
@@ -16,15 +19,15 @@
                         </option>
                     {% endfor %}
                 </select>
-            </label>
-        </form>
+            </form>
+        </div>
     </div>
 
     <div class="card">
         {% if addons is empty %}
-            <p>Aucun add-on pour ce contexte.</p>
+            <p class="card__empty">Aucun add-on pour ce contexte.</p>
         {% else %}
-            <table>
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Nom</th>
@@ -39,21 +42,16 @@
                     {% for addon in addons %}
                         <tr>
                             <td>
-                                <a href="{{ path('addon_show', selectedOwner ? { id: addon.id, owner: selectedOwner } : { id: addon.id }) }}"
-                                   style="text-decoration: none; color: inherit;">
-                                    <strong>{{ addon.name }}</strong>
+                                <a class="table__name" href="{{ path('addon_show', selectedOwner ? { id: addon.id, owner: selectedOwner } : { id: addon.id }) }}">
+                                    {{ addon.name }}
                                 </a>
                             </td>
-                            <td><code>{{ addon.id }}</code></td>
+                            <td class="table__id-cell"><span class="table__id" title="{{ addon.id }}">{{ addon.id }}</span></td>
                             <td>
-                                {% if addon.provider %}
-                                    {{ addon.provider.name ?? addon.provider.id }}
-                                {% else %}—{% endif %}
+                                {% if addon.provider %}{{ addon.provider.name ?? addon.provider.id }}{% else %}—{% endif %}
                             </td>
                             <td>
-                                {% if addon.plan %}
-                                    <span class="badge">{{ addon.plan.name ?? addon.plan.slug }}</span>
-                                {% else %}—{% endif %}
+                                {% if addon.plan %}<span class="badge neutral">{{ addon.plan.name ?? addon.plan.slug }}</span>{% else %}—{% endif %}
                             </td>
                             <td>{{ addon.region ?? '—' }}</td>
                             <td>

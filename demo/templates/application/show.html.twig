@@ -1,61 +1,88 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ app.name }} — Clever Cloud Dashboard{% endblock %}
+{% block title %}{{ application.name }} — Clever Cloud Dashboard{% endblock %}
+{% block page_title %}{{ application.name }}{% endblock %}
+{% block page_subtitle %}
+    <p class="topbar__subtitle">
+        <span class="table__id">{{ application.id }}</span>
+        {% if application.zone %} · {{ application.zone }}{% endif %}
+        {% if application.branch %} · branche <code class="code">{{ application.branch }}</code>{% endif %}
+    </p>
+{% endblock %}
+
+{% block topbar_actions %}
+    {% if application.state %}
+        {% set startPolling = app.request.query.has('deploying') %}
+        <span class="state" data-controller="app-state"
+              data-app-state-url-value="{{ path('application_state', owner ? { id: application.id, owner: owner } : { id: application.id }) }}"
+              data-app-state-current-value="{{ application.state }}"
+              data-app-state-poll-on-load-value="{{ startPolling ? 'true' : 'false' }}">
+            <span class="state__spinner" aria-hidden="true"></span>
+            <span data-app-state-target="badge" class="badge {% if application.state == 'SHOULD_BE_UP' %}ok{% elseif application.state == 'WANTS_TO_BE_UP' %}warn{% else %}fail{% endif %}">{{ application.state }}</span>
+        </span>
+    {% endif %}
+{% endblock %}
 
 {% block body %}
-    <div style="margin-bottom: 1rem;">
-        <a href="{{ path('application_list', owner ? { owner: owner } : {}) }}" style="text-decoration: none;">&larr; Retour à la liste</a>
-    </div>
+    <a class="back-link" href="{{ path('application_list', owner ? { owner: owner } : {}) }}">← Retour aux applications</a>
 
     <div class="card">
-        <h2 style="margin-bottom: 0.25rem;">{{ app.name }}</h2>
-        <p style="color: #6b7280; margin: 0 0 1rem;">
-            <code>{{ app.id }}</code>
-            {% if app.zone %} · {{ app.zone }}{% endif %}
-            {% if app.branch %} · branche <code>{{ app.branch }}</code>{% endif %}
-            {% if app.state %}
-                · <span class="badge {% if app.state == 'SHOULD_BE_UP' %}ok{% elseif app.state == 'WANTS_TO_BE_UP' %}warn{% else %}fail{% endif %}">{{ app.state }}</span>
-            {% endif %}
-        </p>
-
-        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <form class="inline" method="post" action="{{ path('application_restart', { id: app.id }) }}">
-                {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
-                <button class="btn primary" type="submit">Redéployer (HEAD)</button>
-            </form>
-            <form class="inline" method="post" action="{{ path('application_stop', { id: app.id }) }}"
-                  onsubmit="return confirm('Arrêter {{ app.name }} ?')">
-                {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
-                <button class="btn danger" type="submit">Stop</button>
-            </form>
+        <div class="card__header">
+            <h3 class="card__title">Actions rapides</h3>
+        </div>
+        <div class="card__body">
+            <div class="btn-group">
+                <form class="inline" method="post" action="{{ path('application_restart', { id: application.id }) }}">
+                    {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
+                    <button class="btn btn--primary" type="submit">Redéployer HEAD</button>
+                </form>
+                <form class="inline" method="post" action="{{ path('application_restart', { id: application.id }) }}">
+                    {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
+                    <input type="hidden" name="withoutCache" value="1">
+                    <button class="btn" type="submit">Redéployer sans cache</button>
+                </form>
+                <form class="inline" method="post" action="{{ path('application_stop', { id: application.id }) }}"
+                      onsubmit="return confirm('Arrêter {{ application.name }} ?')">
+                    {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
+                    <button class="btn btn--danger" type="submit">Stop</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <div class="card">
-        <h3 style="margin-top: 0;">Déployer un commit spécifique</h3>
-        <form method="post" action="{{ path('application_deploy', { id: app.id }) }}" style="display: flex; gap: 0.5rem; align-items: end;">
-            {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
-            <div style="flex: 1;">
-                <label for="commit" style="display: block; font-size: 0.85rem; color: #6b7280;">SHA du commit (optionnel)</label>
-                <input type="text" id="commit" name="commit" placeholder="abc1234..." style="width: 100%; padding: 0.4rem; border: 1px solid #d1d5db; border-radius: 4px; font-family: monospace;">
-            </div>
-            <button type="submit" class="btn primary">Déployer</button>
-        </form>
-        <p style="color: #6b7280; font-size: 0.85rem; margin-top: 0.5rem;">
-            Sans SHA, déploie le <code>HEAD</code> de la branche configurée ({{ app.branch ?? '—' }}).
-        </p>
+        <div class="card__header">
+            <h3 class="card__title">Déployer un commit spécifique</h3>
+        </div>
+        <div class="card__body">
+            <form method="post" action="{{ path('application_deploy', { id: application.id }) }}" class="form-row">
+                {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
+                <div class="form-field" style="flex: 1;">
+                    <label class="form-field__label" for="commit">SHA du commit (optionnel)</label>
+                    <input type="text" id="commit" name="commit" class="form-field__input form-field__input--mono" placeholder="abc1234...">
+                </div>
+                <button type="submit" class="btn btn--primary">Déployer</button>
+            </form>
+            <p class="form-help" style="margin-top: 0.75rem;">
+                Sans SHA, déploie le <code class="code">HEAD</code> de la branche configurée ({{ application.branch ?? '—' }}).
+            </p>
+        </div>
     </div>
 
     <div class="card">
-        <h3 style="margin-top: 0;">Domaines ({{ vhosts|length }})</h3>
-        {% if vhosts is empty %}
-            <p>Aucun domaine attaché.</p>
+        <div class="card__header">
+            <h3 class="card__title">Domaines{% if vhosts %} <span class="badge neutral">{{ vhosts|length }}</span>{% endif %}</h3>
+        </div>
+        {% if vhostsError %}
+            <p class="card__error">{{ vhostsError }}</p>
+        {% elseif vhosts is empty %}
+            <p class="card__empty">Aucun domaine attaché.</p>
         {% else %}
-            <table>
+            <table class="table">
                 <thead><tr><th>FQDN</th></tr></thead>
                 <tbody>
                     {% for vhost in vhosts %}
-                        <tr><td><code>{{ vhost.fqdn }}</code></td></tr>
+                        <tr><td><code class="code">{{ vhost.fqdn }}</code></td></tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -63,37 +90,47 @@
     </div>
 
     <div class="card">
-        <h3 style="margin-top: 0;">Branches Git ({{ branches|length }})</h3>
-        {% if branches is empty %}
-            <p style="color: #6b7280;">Pas de branches détectées (déploiement non-Git, ou app non encore poussée).</p>
-        {% else %}
-            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                {% for name in branches %}
-                    <code style="padding: 0.25rem 0.6rem;">{{ name }}</code>
-                {% endfor %}
-            </div>
-        {% endif %}
+        <div class="card__header">
+            <h3 class="card__title">Branches Git{% if branches %} <span class="badge neutral">{{ branches|length }}</span>{% endif %}</h3>
+        </div>
+        <div class="card__body">
+            {% if branchesError %}
+                <p class="card__error">{{ branchesError }}</p>
+            {% elseif branches is empty %}
+                <p class="card__empty">Pas de branches détectées (déploiement non-Git, ou app jamais poussée).</p>
+            {% else %}
+                <div class="flex-wrap-gap">
+                    {% for name in branches %}
+                        <span class="chip">{{ name }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
     </div>
 
     <div class="card">
-        <h3 style="margin-top: 0;">Redirections TCP ({{ tcpRedirs|length }})</h3>
-        {% if tcpRedirs is empty %}
-            <p>Aucune redirection TCP ouverte.</p>
+        <div class="card__header">
+            <h3 class="card__title">Redirections TCP{% if tcpRedirs %} <span class="badge neutral">{{ tcpRedirs|length }}</span>{% endif %}</h3>
+        </div>
+        {% if tcpError %}
+            <p class="card__error">{{ tcpError }}</p>
+        {% elseif tcpRedirs is empty %}
+            <p class="card__empty">Aucune redirection TCP ouverte.</p>
         {% else %}
-            <table>
-                <thead><tr><th>Port</th><th>Namespace</th><th>Action</th></tr></thead>
+            <table class="table">
+                <thead><tr><th>Port</th><th>Namespace</th><th class="table__actions">Action</th></tr></thead>
                 <tbody>
                     {% for redir in tcpRedirs %}
                         <tr>
-                            <td><code>{{ redir.port }}</code></td>
+                            <td><code class="code">{{ redir.port }}</code></td>
                             <td>{{ redir.namespace }}</td>
-                            <td>
+                            <td class="table__actions">
                                 <form class="inline" method="post"
-                                      action="{{ path('application_tcp_remove', { id: app.id, port: redir.port }) }}"
+                                      action="{{ path('application_tcp_remove', { id: application.id, port: redir.port }) }}"
                                       onsubmit="return confirm('Fermer le port {{ redir.port }} ?')">
                                     {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
                                     <input type="hidden" name="namespace" value="{{ redir.namespace }}">
-                                    <button class="btn danger" type="submit">Fermer</button>
+                                    <button class="btn btn--danger btn--sm" type="submit">Fermer</button>
                                 </form>
                             </td>
                         </tr>
@@ -102,19 +139,21 @@
             </table>
         {% endif %}
 
-        {% if namespaces is not empty %}
-            <form method="post" action="{{ path('application_tcp_add', { id: app.id }) }}" style="margin-top: 1rem; display: flex; gap: 0.5rem; align-items: end;">
-                {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
-                <div>
-                    <label for="namespace" style="display: block; font-size: 0.85rem; color: #6b7280;">Namespace</label>
-                    <select id="namespace" name="namespace">
-                        {% for ns in namespaces %}
-                            <option value="{{ ns }}">{{ ns }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <button type="submit" class="btn primary">Ouvrir un port</button>
-            </form>
+        {% if namespaces is not empty and not tcpError %}
+            <div class="section-actions">
+                <form method="post" action="{{ path('application_tcp_add', { id: application.id }) }}" class="form-row" style="flex: 1; margin: 0;">
+                    {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
+                    <div class="form-field">
+                        <label class="form-field__label" for="namespace">Namespace</label>
+                        <select id="namespace" name="namespace" class="form-field__select">
+                            {% for ns in namespaces %}
+                                <option value="{{ ns }}">{{ ns }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn--primary">Ouvrir un port</button>
+                </form>
+            </div>
         {% endif %}
     </div>
 {% endblock %}
