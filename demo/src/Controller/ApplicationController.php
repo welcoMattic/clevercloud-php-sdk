@@ -36,6 +36,48 @@ final class ApplicationController extends AbstractController
         ]);
     }
 
+    #[Route('/applications/new', name: 'application_new', methods: ['GET', 'POST'])]
+    public function create(Request $request): Response
+    {
+        $owner = $this->normaliseOwner($request->query->get('owner') ?? $request->request->get('owner'));
+
+        if ($request->isMethod('POST')) {
+            $payload = $this->collectCreatePayload($request);
+            if (!\is_string($payload['name'] ?? null) || '' === $payload['name']) {
+                $this->addFlash('error', 'Nom requis.');
+
+                return $this->redirectToRoute('application_new', null === $owner ? [] : ['owner' => $owner]);
+            }
+
+            try {
+                $created = $this->cc->applications->create($payload, $owner);
+                $this->addFlash('success', \sprintf('Application %s créée.', $created->name));
+
+                return $this->redirectToRoute(
+                    'application_show',
+                    null === $owner ? ['id' => $created->id] : ['id' => $created->id, 'owner' => $owner],
+                );
+            } catch (CleverCloudException $e) {
+                $this->addFlash('error', \sprintf('Échec de la création : %s', $e->getMessage()));
+            }
+        }
+
+        try {
+            $organisations = $this->cc->organisations->list();
+            $instances = $this->cc->products->instances();
+            $zones = $this->cc->products->zones();
+        } catch (CleverCloudException $e) {
+            return $this->render('dashboard/error.html.twig', ['exception' => $e]);
+        }
+
+        return $this->render('application/new.html.twig', [
+            'organisations' => $organisations,
+            'instances' => $instances,
+            'zones' => $zones,
+            'owner' => $owner,
+        ]);
+    }
+
     #[Route('/applications/{id}', name: 'application_show', methods: ['GET'])]
     public function show(Request $request, string $id): Response
     {
@@ -84,6 +126,38 @@ final class ApplicationController extends AbstractController
             'tcpRedirs' => $tcpRedirs,
             'namespaces' => $namespaces,
             'tcpError' => $tcpError,
+            'owner' => $owner,
+        ]);
+    }
+
+    #[Route('/applications/{id}/edit', name: 'application_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, string $id): Response
+    {
+        $owner = $this->normaliseOwner($request->query->get('owner') ?? $request->request->get('owner'));
+
+        try {
+            $application = $this->cc->applications->get($id, $owner);
+        } catch (CleverCloudException $e) {
+            return $this->render('dashboard/error.html.twig', ['exception' => $e]);
+        }
+
+        if ($request->isMethod('POST')) {
+            $payload = $this->collectEditPayload($request);
+            try {
+                $this->cc->applications->update($id, $payload, $owner);
+                $this->addFlash('success', 'Application mise à jour.');
+            } catch (CleverCloudException $e) {
+                $this->addFlash('error', \sprintf('Échec de la mise à jour : %s', $e->getMessage()));
+            }
+
+            return $this->redirectToRoute(
+                'application_show',
+                null === $owner ? ['id' => $id] : ['id' => $id, 'owner' => $owner],
+            );
+        }
+
+        return $this->render('application/edit.html.twig', [
+            'application' => $application,
             'owner' => $owner,
         ]);
     }
@@ -207,6 +281,66 @@ final class ApplicationController extends AbstractController
     private function ownerQuery(string $id, ?string $owner): array
     {
         return null === $owner ? ['id' => $id] : ['id' => $id, 'owner' => $owner];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function collectCreatePayload(Request $request): array
+    {
+        $payload = [];
+        foreach (['name', 'description', 'deploy', 'instanceType', 'instanceVariant', 'zone', 'minFlavor', 'maxFlavor'] as $field) {
+            $value = $request->request->get($field);
+            if (\is_string($value) && '' !== trim($value)) {
+                $payload[$field] = trim($value);
+            }
+        }
+        foreach (['minInstances', 'maxInstances'] as $field) {
+            $value = $request->request->get($field);
+            if (\is_string($value) && ctype_digit($value)) {
+                $payload[$field] = (int) $value;
+            }
+        }
+
+        return $payload;
+    }
+
+    /**
+     * Collects fields from the edit form into a PUT payload, filtering empty
+     * values so we don't send `null`s the API would reject.
+     *
+     * @return array<string, mixed>
+     */
+    private function collectEditPayload(Request $request): array
+    {
+        $payload = [];
+
+        foreach (['name', 'description', 'branch'] as $field) {
+            $value = $request->request->get($field);
+            if (\is_string($value) && '' !== trim($value)) {
+                $payload[$field] = trim($value);
+            }
+        }
+
+        foreach (['minInstances', 'maxInstances'] as $field) {
+            $value = $request->request->get($field);
+            if (\is_string($value) && '' !== trim($value) && ctype_digit($value)) {
+                $payload[$field] = (int) $value;
+            }
+        }
+
+        foreach (['minFlavor', 'maxFlavor'] as $field) {
+            $value = $request->request->get($field);
+            if (\is_string($value) && '' !== trim($value)) {
+                $payload[$field] = trim($value);
+            }
+        }
+
+        foreach (['cancelOnPush', 'separateBuild', 'stickySessions', 'homogeneous', 'archived'] as $field) {
+            $payload[$field] = (bool) $request->request->get($field, false);
+        }
+
+        return $payload;
     }
 
     /**

@@ -5,6 +5,9 @@
 {% block page_subtitle %}
     <p class="topbar__subtitle">{{ addons|length }} add-on{{ addons|length > 1 ? 's' }} dans le contexte sélectionné</p>
 {% endblock %}
+{% block topbar_actions %}
+    <a class="btn btn--primary" href="{{ path('addon_new', selectedOwner ? { owner: selectedOwner } : {}) }}">+ Nouvel add-on</a>
+{% endblock %}
 
 {% block body %}
     <div class="card">

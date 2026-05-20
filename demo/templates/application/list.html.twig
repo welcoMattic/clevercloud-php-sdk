@@ -5,6 +5,9 @@
 {% block page_subtitle %}
     <p class="topbar__subtitle">{{ applications|length }} application{{ applications|length > 1 ? 's' }} dans le contexte sélectionné</p>
 {% endblock %}
+{% block topbar_actions %}
+    <a class="btn btn--primary" href="{{ path('application_new', selectedOwner ? { owner: selectedOwner } : {}) }}">+ Nouvelle application</a>
+{% endblock %}
 
 {% block body %}
     <div class="card">
@@ -53,8 +56,8 @@
                             <td>{{ application.branch ?? '—' }}</td>
                             <td>
                                 {% if application.state %}
-                                    <span class="badge {% if application.state == 'SHOULD_BE_UP' %}ok{% elseif application.state == 'WANTS_TO_BE_UP' %}warn{% else %}fail{% endif %}">
-                                        {{ application.state }}
+                                    <span class="badge {{ application.state|cc_state_variant }}">
+                                        {{ application.state|cc_state_label }}
                                     </span>
                                 {% else %}—{% endif %}
                             </td>

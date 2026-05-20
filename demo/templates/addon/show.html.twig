@@ -37,8 +37,8 @@
                         <tr>
                             <td><span class="table__id">{{ migration.id ?? migration.migrationId ?? '—' }}</span></td>
                             <td>
-                                <span class="badge {% if migration.status == 'success' %}ok{% elseif migration.status == 'in-progress' or migration.status == 'pending' %}warn{% else %}fail{% endif %}">
-                                    {{ migration.status ?? '—' }}
+                                <span class="badge {{ migration.status|cc_migration_status_variant }}">
+                                    {{ migration.status|cc_migration_status_label }}
                                 </span>
                             </td>
                             <td>{{ migration.plan ?? migration.targetPlan ?? '—' }}</td>

@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel add-on — Clever Cloud Dashboard{% endblock %}
+{% block page_title %}Nouvel add-on{% endblock %}
+{% block page_subtitle %}<p class="topbar__subtitle">Création via <code class="code">POST /v2/{owner}/addons</code></p>{% endblock %}
+
+{% block body %}
+    <a class="back-link" href="{{ path('addon_list', owner ? { owner: owner } : {}) }}">← Retour aux add-ons</a>
+
+    <form method="post" action="{{ path('addon_new') }}">
+        <div class="card">
+            <div class="card__header"><h3 class="card__title">Contexte</h3></div>
+            <div class="card__body">
+                <div class="form-field">
+                    <label class="form-field__label" for="owner-select">Propriétaire</label>
+                    <select id="owner-select" name="owner" class="form-field__select">
+                        <option value="self" {% if owner is null %}selected{% endif %}>Moi (self)</option>
+                        {% for orga in organisations %}
+                            <option value="{{ orga.id }}" {% if owner == orga.id %}selected{% endif %}>{{ orga.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header"><h3 class="card__title">Add-on</h3></div>
+            <div class="card__body" style="display: grid; gap: 0.85rem;">
+                <div class="form-field">
+                    <label class="form-field__label" for="name">Nom</label>
+                    <input id="name" name="name" type="text" required class="form-field__input" placeholder="my-pg">
+                </div>
+                <div class="form-field">
+                    <label class="form-field__label" for="providerId">Provider</label>
+                    <select id="providerId" name="providerId" required class="form-field__select">
+                        {% for provider in providers %}
+                            <option value="{{ provider.id }}">{{ provider.name ?? provider.id }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label class="form-field__label" for="plan">Plan (ID)</label>
+                    <input id="plan" name="plan" type="text" required class="form-field__input form-field__input--mono"
+                           placeholder="plan_xxxx ou dev / xs_sml / s_sml...">
+                    <p class="form-help">
+                        L'ID du plan est spécifique au provider — voir la console ou les exemples de la doc Clever Cloud.
+                    </p>
+                </div>
+                <div class="form-field">
+                    <label class="form-field__label" for="region">Région</label>
+                    <select id="region" name="region" class="form-field__select">
+                        {% for z in zones %}
+                            <option value="{{ z.name }}">{{ z.displayName ?? z.city ?? z.name }} ({{ z.name }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group" style="margin-top: 1rem;">
+            <button type="submit" class="btn btn--primary">Créer l'add-on</button>
+            <a class="btn" href="{{ path('addon_list') }}">Annuler</a>
+        </div>
+    </form>
+{% endblock %}

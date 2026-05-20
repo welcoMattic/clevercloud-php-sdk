@@ -18,7 +18,7 @@
               data-app-state-current-value="{{ application.state }}"
               data-app-state-poll-on-load-value="{{ startPolling ? 'true' : 'false' }}">
             <span class="state__spinner" aria-hidden="true"></span>
-            <span data-app-state-target="badge" class="badge {% if application.state == 'SHOULD_BE_UP' %}ok{% elseif application.state == 'WANTS_TO_BE_UP' %}warn{% else %}fail{% endif %}">{{ application.state }}</span>
+            <span data-app-state-target="badge" class="badge {{ application.state|cc_state_variant }}">{{ application.state|cc_state_label }}</span>
         </span>
     {% endif %}
 {% endblock %}
@@ -46,6 +46,9 @@
                     {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
                     <button class="btn btn--danger" type="submit">Stop</button>
                 </form>
+                <a class="btn" href="{{ path('application_edit', owner ? { id: application.id, owner: owner } : { id: application.id }) }}">Configuration</a>
+                <a class="btn" href="{{ path('application_env', owner ? { id: application.id, owner: owner } : { id: application.id }) }}">Variables d'env</a>
+                <a class="btn" href="{{ path('application_logs', owner ? { id: application.id, owner: owner } : { id: application.id }) }}">Logs en direct</a>
             </div>
         </div>
     </div>

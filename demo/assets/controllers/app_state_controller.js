@@ -29,6 +29,19 @@ export default class extends Controller {
     // redeploy explicitly opts back in via `start()`.
     static STABLE_STATES = ['SHOULD_BE_UP', 'SHOULD_BE_DOWN'];
 
+    // Mirrors App\Twig\CleverCloudExtension::stateLabel().
+    static LABELS = {
+        SHOULD_BE_UP: 'En ligne',
+        WANTS_TO_BE_UP: 'Démarrage',
+        SHOULD_BE_DOWN: 'Arrêtée',
+        WANTS_TO_BE_DOWN: 'Arrêt en cours',
+        RESTART: 'Redémarrage',
+        RESTART_REQUESTED: 'Redémarrage demandé',
+        RESTART_FAILED: 'Redémarrage échoué',
+        DEPLOYING: 'Déploiement',
+        DEPLOYMENT_PENDING: 'Déploiement en attente',
+    };
+
     connect() {
         this._timer = null;
         if (this.pollOnLoadValue && !this._isStable(this.currentValue)) {
@@ -80,7 +93,7 @@ export default class extends Controller {
 
     _updateBadge(state) {
         if (!this.hasBadgeTarget) return;
-        this.badgeTarget.textContent = state;
+        this.badgeTarget.textContent = this.constructor.LABELS[state] ?? state;
         this.badgeTarget.classList.remove('ok', 'warn', 'fail', 'neutral');
         this.badgeTarget.classList.add(this._badgeClass(state));
         this.currentValue = state;

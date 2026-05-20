@@ -592,6 +592,35 @@ form.inline { display: inline; }
 .section-actions--inline { padding: 0; border-top: 0; }
 
 /* =====================================================================
+ * Logs viewer
+ * ===================================================================== */
+
+.logs-viewer {
+    background: #0c0f24;
+    color: #d6d8ee;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 1.45;
+    padding: 0;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.logs-viewer__lines {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.logs-line { display: block; }
+.logs-line--info { color: #d6d8ee; }
+.logs-line--muted { color: #828cb0; }
+.logs-line--warn { color: #f5d188; }
+.logs-line--error { color: #ff8e8e; }
+
+/* =====================================================================
  * State watcher (live badge with spinner)
  * ===================================================================== */
 

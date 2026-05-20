@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Logs — {{ application.name }} — Clever Cloud Dashboard{% endblock %}
+{% block page_title %}Logs en direct{% endblock %}
+{% block page_subtitle %}
+    <p class="topbar__subtitle">{{ application.name }} · <span class="table__id">{{ application.id }}</span></p>
+{% endblock %}
+
+{% block body %}
+    <a class="back-link" href="{{ path('application_show', owner ? { id: application.id, owner: owner } : { id: application.id }) }}">← Retour à l'application</a>
+
+    <div class="card"
+         data-controller="logs"
+         data-logs-stream-url-value="{{ streamUrl }}">
+        <div class="card__header">
+            <h3 class="card__title">
+                Logs <span class="badge ok" data-logs-target="status">Connexion…</span>
+            </h3>
+            <div class="btn-group">
+                <button class="btn btn--sm" data-action="logs#clear" type="button">Vider</button>
+                <button class="btn btn--sm" data-logs-target="autoscroll" data-action="logs#toggleAutoscroll" type="button">⤓ Auto-scroll</button>
+                <button class="btn btn--danger btn--sm" data-action="logs#stop" type="button">Arrêter</button>
+            </div>
+        </div>
+        <div class="logs-viewer" data-logs-target="viewport">
+            <pre class="logs-viewer__lines" data-logs-target="lines"></pre>
+        </div>
+    </div>
+{% endblock %}
