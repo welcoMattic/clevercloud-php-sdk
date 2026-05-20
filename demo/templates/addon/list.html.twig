@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Add-ons — Clever Cloud Dashboard{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Add-ons ({{ addons|length }})</h2>
+        <form method="get" action="{{ path('addon_list') }}">
+            <label>
+                Propriétaire :
+                <select name="owner" onchange="this.form.submit()">
+                    <option value="self" {% if selectedOwner is null %}selected{% endif %}>Moi (self)</option>
+                    {% for orga in organisations %}
+                        <option value="{{ orga.id }}" {% if selectedOwner == orga.id %}selected{% endif %}>
+                            {{ orga.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+        </form>
+    </div>
+
+    <div class="card">
+        {% if addons is empty %}
+            <p>Aucun add-on pour ce contexte.</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>ID</th>
+                        <th>Provider</th>
+                        <th>Plan</th>
+                        <th>Région</th>
+                        <th>Création</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for addon in addons %}
+                        <tr>
+                            <td><strong>{{ addon.name }}</strong></td>
+                            <td><code>{{ addon.id }}</code></td>
+                            <td>
+                                {% if addon.provider %}
+                                    {{ addon.provider.name ?? addon.provider.id }}
+                                {% else %}—{% endif %}
+                            </td>
+                            <td>
+                                {% if addon.plan %}
+                                    <span class="badge">{{ addon.plan.name ?? addon.plan.slug }}</span>
+                                {% else %}—{% endif %}
+                            </td>
+                            <td>{{ addon.region ?? '—' }}</td>
+                            <td>
+                                {% if addon.creationDate %}
+                                    {{ (addon.creationDate / 1000)|round(0, 'floor')|date('Y-m-d') }}
+                                {% else %}—{% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

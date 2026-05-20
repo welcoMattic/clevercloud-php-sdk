@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil — Clever Cloud Dashboard{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Bienvenue {{ me.firstname ?? me.email }}</h2>
+        <p style="color: #6b7280; margin-bottom: 0;">
+            ID : <code>{{ me.id }}</code>
+            {% if me.email %}· Email : {{ me.email }}{% endif %}
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>Tes organisations ({{ organisations|length }})</h2>
+        {% if organisations is empty %}
+            <p>Aucune organisation rattachée à ce compte.</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr><th>Nom</th><th>ID</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for orga in organisations %}
+                        <tr>
+                            <td><strong>{{ orga.name }}</strong></td>
+                            <td><code>{{ orga.id }}</code></td>
+                            <td>
+                                <a class="btn primary" href="{{ path('application_list', { owner: orga.id }) }}">Apps</a>
+                                <a class="btn primary" href="{{ path('addon_list', { owner: orga.id }) }}">Add-ons</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Ton espace personnel</h2>
+        <a class="btn primary" href="{{ path('application_list') }}">Mes apps</a>
+        <a class="btn primary" href="{{ path('addon_list') }}">Mes add-ons</a>
+    </div>
+{% endblock %}
