@@ -83,19 +83,35 @@
                 <div class="form-row">
                     <div class="form-field">
                         <label class="form-field__label" for="minInstances">Instances min</label>
-                        <input id="minInstances" name="minInstances" type="number" min="1" class="form-field__input" value="1">
+                        <select id="minInstances" name="minInstances" class="form-field__select">
+                            {% for n in instanceCounts %}
+                                <option value="{{ n }}" {% if n == 1 %}selected{% endif %}>{{ n }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="form-field">
                         <label class="form-field__label" for="maxInstances">Instances max</label>
-                        <input id="maxInstances" name="maxInstances" type="number" min="1" class="form-field__input" value="1">
+                        <select id="maxInstances" name="maxInstances" class="form-field__select">
+                            {% for n in instanceCounts %}
+                                <option value="{{ n }}" {% if n == 1 %}selected{% endif %}>{{ n }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="form-field">
                         <label class="form-field__label" for="minFlavor">Flavor min</label>
-                        <input id="minFlavor" name="minFlavor" type="text" class="form-field__input form-field__input--mono" placeholder="nano">
+                        <select id="minFlavor" name="minFlavor" class="form-field__select">
+                            {% for f in flavors %}
+                                <option value="{{ f }}" {% if f == 'nano' %}selected{% endif %}>{{ f }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="form-field">
                         <label class="form-field__label" for="maxFlavor">Flavor max</label>
-                        <input id="maxFlavor" name="maxFlavor" type="text" class="form-field__input form-field__input--mono" placeholder="nano">
+                        <select id="maxFlavor" name="maxFlavor" class="form-field__select">
+                            {% for f in flavors %}
+                                <option value="{{ f }}" {% if f == 'nano' %}selected{% endif %}>{{ f }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
             </div>

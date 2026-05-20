@@ -126,6 +126,7 @@ final class HttpClient
     public function openEventStream(ApiVersion $version, string $path, array $options = []): SseStreamHandle
     {
         $uri = $this->uriBuilder->build($version, $path, $options['query'] ?? []);
+        $uri = $this->credentials->rewriteUri($uri, $version, $this->configuration);
 
         $request = $this->requestFactory
             ->createRequest('GET', $uri)
@@ -161,6 +162,8 @@ final class HttpClient
     private function buildRequest(string $method, ApiVersion $version, string $path, array $options): RequestInterface
     {
         $uri = $this->uriBuilder->build($version, $path, $options['query'] ?? []);
+        $uri = $this->credentials->rewriteUri($uri, $version, $this->configuration);
+
         $request = $this->requestFactory
             ->createRequest($method, $uri)
             ->withHeader('User-Agent', $this->configuration->userAgent)
