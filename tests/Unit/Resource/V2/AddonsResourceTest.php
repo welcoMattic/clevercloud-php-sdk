@@ -3,17 +3,18 @@
 namespace CleverCloud\Sdk\Tests\Unit\Resource\V2;
 
 use CleverCloud\Sdk\Resource\V2\AddonsResource;
-use CleverCloud\Sdk\Tests\Unit\Fixture\RecordingClient;
 use CleverCloud\Sdk\Tests\Unit\Fixture\ResourceFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 
 #[CoversClass(AddonsResource::class)]
 final class AddonsResourceTest extends TestCase
 {
     public function testListMapsNestedProviderAndPlan(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(200, [
+        $response = ResourceFactory::jsonResponse(200, [
             [
                 'id' => 'addon_1',
                 'name' => 'my-pg',
@@ -24,9 +25,9 @@ final class AddonsResourceTest extends TestCase
                 'configKeys' => ['POSTGRESQL_ADDON_URI'],
                 'creationDate' => 1_700_000_000_000,
             ],
-        ]));
+        ]);
 
-        $addons = $this->resource($psr18)->list('orga_1');
+        $addons = $this->resource($response)->list('orga_1');
 
         self::assertCount(1, $addons);
         self::assertSame('addon_1', $addons[0]->id);
@@ -37,18 +38,17 @@ final class AddonsResourceTest extends TestCase
         self::assertNotNull($addons[0]->plan);
         self::assertSame('dev', $addons[0]->plan->slug);
         self::assertSame(['POSTGRESQL_ADDON_URI'], $addons[0]->configKeys);
-        self::assertNotNull($psr18->lastRequest);
-        self::assertSame('https://api.clever-cloud.com/v2/organisations/orga_1/addons', (string) $psr18->lastRequest->getUri());
+        self::assertSame('https://api.clever-cloud.com/v2/organisations/orga_1/addons', $response->getRequestUrl());
     }
 
     public function testEnvFlattensList(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(200, [
+        $response = ResourceFactory::jsonResponse(200, [
             ['name' => 'POSTGRESQL_ADDON_URI', 'value' => 'postgres://x:y@host/db'],
             ['name' => 'POSTGRESQL_ADDON_HOST', 'value' => 'host'],
-        ]));
+        ]);
 
-        $env = $this->resource($psr18)->env('addon_1');
+        $env = $this->resource($response)->env('addon_1');
 
         self::assertSame([
             'POSTGRESQL_ADDON_URI' => 'postgres://x:y@host/db',
@@ -58,24 +58,23 @@ final class AddonsResourceTest extends TestCase
 
     public function testProvidersHitsProductsEndpoint(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(200, [
+        $response = ResourceFactory::jsonResponse(200, [
             ['id' => 'redis-addon', 'name' => 'Redis'],
             ['id' => 'postgresql-addon', 'name' => 'PostgreSQL'],
-        ]));
+        ]);
 
-        $providers = $this->resource($psr18)->providers();
+        $providers = $this->resource($response)->providers();
 
         self::assertCount(2, $providers);
         self::assertSame('redis-addon', $providers[0]->id);
-        self::assertNotNull($psr18->lastRequest);
-        self::assertSame('https://api.clever-cloud.com/v2/products/addonproviders', (string) $psr18->lastRequest->getUri());
+        self::assertSame('https://api.clever-cloud.com/v2/products/addonproviders', $response->getRequestUrl());
     }
 
     public function testCreatePostsBody(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(201, ['id' => 'addon_new', 'name' => 'pg', 'realId' => 'postgresql_new']));
+        $response = ResourceFactory::jsonResponse(201, ['id' => 'addon_new', 'name' => 'pg', 'realId' => 'postgresql_new']);
 
-        $addon = $this->resource($psr18)->create([
+        $addon = $this->resource($response)->create([
             'name' => 'pg',
             'region' => 'par',
             'providerId' => 'postgresql-addon',
@@ -83,28 +82,57 @@ final class AddonsResourceTest extends TestCase
         ]);
 
         self::assertSame('addon_new', $addon->id);
-        self::assertNotNull($psr18->lastRequest);
-        self::assertSame('POST', $psr18->lastRequest->getMethod());
-        self::assertSame('https://api.clever-cloud.com/v2/self/addons', (string) $psr18->lastRequest->getUri());
+        self::assertSame('POST', $response->getRequestMethod());
+        self::assertSame('https://api.clever-cloud.com/v2/self/addons', $response->getRequestUrl());
         self::assertSame(
             '{"name":"pg","region":"par","providerId":"postgresql-addon","plan":"plan_dev"}',
-            (string) $psr18->lastRequest->getBody(),
+            $response->getRequestOptions()['body'],
         );
     }
 
     public function testDeleteHitsDelete(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(204, []));
+        $response = ResourceFactory::jsonResponse(204, []);
 
-        $this->resource($psr18)->delete('addon_1', 'orga_1');
+        $this->resource($response)->delete('addon_1', 'orga_1');
 
-        self::assertNotNull($psr18->lastRequest);
-        self::assertSame('DELETE', $psr18->lastRequest->getMethod());
-        self::assertSame('https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1', (string) $psr18->lastRequest->getUri());
+        self::assertSame('DELETE', $response->getRequestMethod());
+        self::assertSame('https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1', $response->getRequestUrl());
     }
 
-    private function resource(RecordingClient $psr18): AddonsResource
+    public function testSsoReturnsRawPayload(): void
     {
-        return new AddonsResource(ResourceFactory::http($psr18), ResourceFactory::mapper());
+        $response = ResourceFactory::jsonResponse(200, [
+            'url' => 'https://addon.example/sso',
+            'signature' => 'abc123',
+            'timestamp' => 1_700_000_000,
+        ]);
+
+        $sso = $this->resource($response)->sso('addon_1');
+
+        self::assertSame('https://addon.example/sso', $sso['url']);
+        self::assertSame('https://api.clever-cloud.com/v2/self/addons/addon_1/sso', $response->getRequestUrl());
+    }
+
+    public function testMigratePostsPlan(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['id' => 'addon_1', 'name' => 'pg']);
+
+        $this->resource($response)->migrate('addon_1', 'plan_prod', 'orga_1');
+
+        self::assertSame('POST', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1/migrations',
+            $response->getRequestUrl(),
+        );
+        self::assertSame('{"plan":"plan_prod"}', $response->getRequestOptions()['body']);
+    }
+
+    private function resource(MockResponse $response): AddonsResource
+    {
+        return new AddonsResource(
+            ResourceFactory::http(new MockHttpClient([$response])),
+            ResourceFactory::mapper(),
+        );
     }
 }

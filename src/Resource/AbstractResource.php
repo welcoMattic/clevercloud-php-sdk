@@ -6,6 +6,7 @@ use AutoMapper\AutoMapperInterface;
 use CleverCloud\Sdk\ApiVersion;
 use CleverCloud\Sdk\Exception\JsonException;
 use CleverCloud\Sdk\Http\HttpClient;
+use CleverCloud\Sdk\Streaming\SseStreamHandle;
 use Psr\Http\Message\ResponseInterface;
 
 abstract readonly class AbstractResource
@@ -145,5 +146,16 @@ abstract readonly class AbstractResource
     protected function httpStream(string $method, string $path, array $options = []): ResponseInterface
     {
         return $this->http->stream($method, $this->version(), $path, $options);
+    }
+
+    /**
+     * @param array{
+     *     query?: array<string, scalar|list<scalar>|null>,
+     *     headers?: array<string, string>,
+     * } $options
+     */
+    protected function httpEventStream(string $path, array $options = []): SseStreamHandle
+    {
+        return $this->http->openEventStream($this->version(), $path, $options);
     }
 }

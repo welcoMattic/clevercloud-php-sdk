@@ -13,12 +13,17 @@ use CleverCloud\Sdk\Resource\V2\OrganisationsResource;
 use CleverCloud\Sdk\Resource\V2\SelfResource;
 use CleverCloud\Sdk\Resource\V2\UsersResource;
 use CleverCloud\Sdk\Resource\V4\BillingResource;
+use CleverCloud\Sdk\Resource\V4\DrainsResource;
 use CleverCloud\Sdk\Resource\V4\InstancesResource;
 use CleverCloud\Sdk\Resource\V4\LoadBalancersResource;
 use CleverCloud\Sdk\Resource\V4\LogsResource;
+use CleverCloud\Sdk\Resource\V4\NetworkGroupsResource;
+use CleverCloud\Sdk\Resource\V4\NotificationsResource;
 use CleverCloud\Sdk\Resource\V4\OperatorsResource;
+use CleverCloud\Sdk\Resource\V4\OrchestrationResource;
 use CleverCloud\Sdk\Resource\V4\ProductsResource;
 use CleverCloud\Sdk\Resource\V4\PulsarPoliciesResource;
+use CleverCloud\Sdk\Resource\V4\WebhooksResource;
 use CleverCloud\Sdk\Resource\V4\ZonesResource;
 
 /**
@@ -45,6 +50,11 @@ final class Client
     private ?PulsarPoliciesResource $pulsarPoliciesResource = null;
     private ?LogsResource $logsResource = null;
     private ?OperatorsResource $operatorsResource = null;
+    private ?DrainsResource $drainsResource = null;
+    private ?NotificationsResource $notificationsResource = null;
+    private ?WebhooksResource $webhooksResource = null;
+    private ?NetworkGroupsResource $networkGroupsResource = null;
+    private ?OrchestrationResource $orchestrationResource = null;
 
     public function __construct(
         public readonly HttpClient $http,
@@ -114,5 +124,25 @@ final class Client
 
     public OperatorsResource $operators {
         get => $this->operatorsResource ??= new OperatorsResource($this->http, $this->mapper);
+    }
+
+    public DrainsResource $drains {
+        get => $this->drainsResource ??= new DrainsResource($this->http, $this->mapper);
+    }
+
+    public NotificationsResource $notifications {
+        get => $this->notificationsResource ??= new NotificationsResource($this->http, $this->mapper);
+    }
+
+    public WebhooksResource $webhooks {
+        get => $this->webhooksResource ??= new WebhooksResource($this->http, $this->mapper);
+    }
+
+    public NetworkGroupsResource $networkGroups {
+        get => $this->networkGroupsResource ??= new NetworkGroupsResource($this->http, $this->mapper);
+    }
+
+    public OrchestrationResource $orchestration {
+        get => $this->orchestrationResource ??= new OrchestrationResource($this->http, $this->mapper);
     }
 }

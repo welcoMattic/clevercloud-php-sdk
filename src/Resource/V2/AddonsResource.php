@@ -22,9 +22,7 @@ final readonly class AddonsResource extends AbstractV2Resource
     public function get(string $addonId, ?string $organisationId = null): Addon
     {
         /** @var array<string, mixed> $payload */
-        $payload = $this->httpGet(
-            $this->ownerPath($organisationId).'/addons/'.rawurlencode($addonId),
-        );
+        $payload = $this->httpGet($this->addonPath($addonId, $organisationId));
 
         return $this->mapTo(Addon::class, $payload);
     }
@@ -50,7 +48,7 @@ final readonly class AddonsResource extends AbstractV2Resource
     {
         /** @var array<string, mixed> $payload */
         $payload = $this->httpPut(
-            $this->ownerPath($organisationId).'/addons/'.rawurlencode($addonId),
+            $this->addonPath($addonId, $organisationId),
             ['json' => $data],
         );
 
@@ -59,9 +57,7 @@ final readonly class AddonsResource extends AbstractV2Resource
 
     public function delete(string $addonId, ?string $organisationId = null): void
     {
-        $this->httpDelete(
-            $this->ownerPath($organisationId).'/addons/'.rawurlencode($addonId),
-        );
+        $this->httpDelete($this->addonPath($addonId, $organisationId));
     }
 
     /**
@@ -104,9 +100,7 @@ final readonly class AddonsResource extends AbstractV2Resource
     public function env(string $addonId, ?string $organisationId = null): array
     {
         /** @var list<array{name: string, value: string}> $payload */
-        $payload = $this->httpGet(
-            $this->ownerPath($organisationId).'/addons/'.rawurlencode($addonId).'/env',
-        );
+        $payload = $this->httpGet($this->addonPath($addonId, $organisationId).'/env');
 
         $map = [];
         foreach ($payload as $entry) {
@@ -124,10 +118,66 @@ final readonly class AddonsResource extends AbstractV2Resource
     public function linkedApplications(string $addonId, ?string $organisationId = null): array
     {
         /** @var list<array<string, mixed>> $payload */
-        $payload = $this->httpGet(
-            $this->ownerPath($organisationId).'/addons/'.rawurlencode($addonId).'/applications',
-        );
+        $payload = $this->httpGet($this->addonPath($addonId, $organisationId).'/applications');
 
         return $payload;
+    }
+
+    /**
+     * Returns the SSO payload (signed URL + params) for add-ons that provide
+     * a single-sign-on web UI (Pulsar, Cellar, Matomo, etc.).
+     *
+     * @return array<string, mixed>
+     */
+    public function sso(string $addonId, ?string $organisationId = null): array
+    {
+        /** @var array<string, mixed> $payload */
+        $payload = $this->httpGet($this->addonPath($addonId, $organisationId).'/sso');
+
+        return $payload;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function tags(string $addonId, ?string $organisationId = null): array
+    {
+        /** @var list<string> $payload */
+        $payload = $this->httpGet($this->addonPath($addonId, $organisationId).'/tags');
+
+        return $payload;
+    }
+
+    public function addTag(string $addonId, string $tag, ?string $organisationId = null): void
+    {
+        $this->httpPut(
+            $this->addonPath($addonId, $organisationId).'/tags/'.rawurlencode($tag),
+        );
+    }
+
+    public function removeTag(string $addonId, string $tag, ?string $organisationId = null): void
+    {
+        $this->httpDelete(
+            $this->addonPath($addonId, $organisationId).'/tags/'.rawurlencode($tag),
+        );
+    }
+
+    /**
+     * Migrates an add-on to a different plan (vertical scaling).
+     */
+    public function migrate(string $addonId, string $targetPlanId, ?string $organisationId = null): Addon
+    {
+        /** @var array<string, mixed> $payload */
+        $payload = $this->httpPost(
+            $this->addonPath($addonId, $organisationId).'/migrations',
+            ['json' => ['plan' => $targetPlanId]],
+        );
+
+        return $this->mapTo(Addon::class, $payload);
+    }
+
+    private function addonPath(string $addonId, ?string $organisationId): string
+    {
+        return $this->ownerPath($organisationId).'/addons/'.rawurlencode($addonId);
     }
 }

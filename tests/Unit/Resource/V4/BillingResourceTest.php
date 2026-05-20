@@ -3,17 +3,18 @@
 namespace CleverCloud\Sdk\Tests\Unit\Resource\V4;
 
 use CleverCloud\Sdk\Resource\V4\BillingResource;
-use CleverCloud\Sdk\Tests\Unit\Fixture\RecordingClient;
 use CleverCloud\Sdk\Tests\Unit\Fixture\ResourceFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 
 #[CoversClass(BillingResource::class)]
 final class BillingResourceTest extends TestCase
 {
     public function testListInvoicesHitsSelfPath(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(200, [
+        $response = ResourceFactory::jsonResponse(200, [
             [
                 'invoiceNumber' => 'INV-001',
                 'status' => 'PAID',
@@ -25,79 +26,77 @@ final class BillingResourceTest extends TestCase
                 'invoiceNumber' => 'INV-002',
                 'status' => 'PENDING',
             ],
-        ]));
+        ]);
 
-        $invoices = $this->resource($psr18)->listInvoices();
+        $invoices = $this->resource($response)->listInvoices();
 
         self::assertCount(2, $invoices);
         self::assertSame('INV-001', $invoices[0]->invoiceNumber);
         self::assertSame('PAID', $invoices[0]->status);
         self::assertSame('120.00', $invoices[0]->totalTaxIncluded);
         self::assertSame('PENDING', $invoices[1]->status);
-        self::assertNotNull($psr18->lastRequest);
-        self::assertSame('https://api.clever-cloud.com/v4/billing/self/invoices', (string) $psr18->lastRequest->getUri());
+        self::assertSame('https://api.clever-cloud.com/v4/billing/self/invoices', $response->getRequestUrl());
     }
 
     public function testListInvoicesForOrganisationRoutesUnderOrg(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(200, []));
+        $response = ResourceFactory::jsonResponse(200, []);
 
-        $this->resource($psr18)->listInvoices('orga_xyz');
+        $this->resource($response)->listInvoices('orga_xyz');
 
-        self::assertNotNull($psr18->lastRequest);
         self::assertSame(
             'https://api.clever-cloud.com/v4/billing/organisations/orga_xyz/invoices',
-            (string) $psr18->lastRequest->getUri(),
+            $response->getRequestUrl(),
         );
     }
 
     public function testGetBalanceHitsCreditsBalance(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(200, [
+        $response = ResourceFactory::jsonResponse(200, [
             'currency' => 'EUR',
             'balance' => 42.5,
             'remainingPrepaid' => 12.75,
-        ]));
+        ]);
 
-        $balance = $this->resource($psr18)->getBalance('orga_1');
+        $balance = $this->resource($response)->getBalance('orga_1');
 
         self::assertSame(['currency' => 'EUR', 'balance' => 42.5, 'remainingPrepaid' => 12.75], $balance);
-        self::assertNotNull($psr18->lastRequest);
         self::assertSame(
             'https://api.clever-cloud.com/v4/billing/organisations/orga_1/credits/balance',
-            (string) $psr18->lastRequest->getUri(),
+            $response->getRequestUrl(),
         );
     }
 
     public function testRemovePaymentMethodHitsDelete(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(204, []));
+        $response = ResourceFactory::jsonResponse(204, []);
 
-        $this->resource($psr18)->removePaymentMethod('pm_xyz');
+        $this->resource($response)->removePaymentMethod('pm_xyz');
 
-        self::assertNotNull($psr18->lastRequest);
-        self::assertSame('DELETE', $psr18->lastRequest->getMethod());
+        self::assertSame('DELETE', $response->getRequestMethod());
         self::assertSame(
             'https://api.clever-cloud.com/v4/billing/self/payments/methods/pm_xyz',
-            (string) $psr18->lastRequest->getUri(),
+            $response->getRequestUrl(),
         );
     }
 
     public function testConsumptionsAppendsFromToQuery(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(200, []));
+        $response = ResourceFactory::jsonResponse(200, []);
 
-        $this->resource($psr18)->consumptions('orga_1', from: 1_700_000_000_000, to: 1_710_000_000_000);
+        $this->resource($response)->consumptions('orga_1', from: 1_700_000_000_000, to: 1_710_000_000_000);
 
-        self::assertNotNull($psr18->lastRequest);
         self::assertSame(
             'https://api.clever-cloud.com/v4/billing/organisations/orga_1/consumptions?from=1700000000000&to=1710000000000',
-            (string) $psr18->lastRequest->getUri(),
+            $response->getRequestUrl(),
         );
     }
 
-    private function resource(RecordingClient $psr18): BillingResource
+    private function resource(MockResponse $response): BillingResource
     {
-        return new BillingResource(ResourceFactory::http($psr18), ResourceFactory::mapper());
+        return new BillingResource(
+            ResourceFactory::http(new MockHttpClient([$response])),
+            ResourceFactory::mapper(),
+        );
     }
 }
