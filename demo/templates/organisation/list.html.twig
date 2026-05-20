@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Organisations — Clever Cloud Dashboard{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Organisations ({{ organisations|length }})</h2>
+        {% if organisations is empty %}
+            <p>Aucune organisation.</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>ID</th>
+                        <th>Pays</th>
+                        <th>Statut TVA</th>
+                        <th>Création</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for orga in organisations %}
+                        <tr>
+                            <td><strong>{{ orga.name }}</strong></td>
+                            <td><code>{{ orga.id }}</code></td>
+                            <td>{{ orga.country ?? '—' }}</td>
+                            <td>
+                                {% if orga.vatState %}
+                                    <span class="badge {% if orga.vatState == 'VALID' %}ok{% else %}warn{% endif %}">{{ orga.vatState }}</span>
+                                {% else %}—{% endif %}
+                            </td>
+                            <td>
+                                {% if orga.creationDate %}
+                                    {{ (orga.creationDate / 1000)|round(0, 'floor')|date('Y-m-d') }}
+                                {% else %}—{% endif %}
+                            </td>
+                            <td>
+                                <a class="btn primary" href="{{ path('application_list', { owner: orga.id }) }}">Apps</a>
+                                <a class="btn primary" href="{{ path('addon_list', { owner: orga.id }) }}">Add-ons</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

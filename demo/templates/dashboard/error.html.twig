@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur — Clever Cloud Dashboard{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Erreur lors de l'appel API</h2>
+        <p><strong>{{ exception|striptags|raw }}</strong></p>
+        <pre style="background: #f3f4f6; padding: 1rem; border-radius: 4px; overflow-x: auto;">{{ exception.getMessage() }}</pre>
+        <p style="color: #6b7280;">
+            Vérifie que les variables d'environnement <code>CC_CONSUMER_KEY</code>,
+            <code>CC_CONSUMER_SECRET</code>, <code>CC_TOKEN</code>,
+            <code>CC_TOKEN_SECRET</code> sont bien définies dans <code>.env.local</code>.
+        </p>
+    </div>
+{% endblock %}

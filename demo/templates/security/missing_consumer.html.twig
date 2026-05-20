@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Configuration manquante{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Credentials Clever Cloud manquants</h2>
+        <p>
+            Pour pouvoir initier le flow OAuth, il faut renseigner
+            <code>CC_CONSUMER_KEY</code> et <code>CC_CONSUMER_SECRET</code> dans
+            <code>.env.local</code>.
+        </p>
+        <p style="color: #6b7280;">
+            Récupère-les sur
+            <a href="https://www.clever.cloud/doc/extend/cc-api/">la doc Clever Cloud</a>.
+        </p>
+    </div>
+{% endblock %}

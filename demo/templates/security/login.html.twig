@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion — Clever Cloud Dashboard{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Se connecter à Clever Cloud</h2>
+        <p>
+            Le dashboard utilise le flow OAuth 1.0a 3-legged pour récupérer un token utilisateur.
+            Tu seras redirigé vers Clever Cloud pour autoriser l'accès.
+        </p>
+        <a class="btn primary" href="{{ path('login') }}">Se connecter</a>
+    </div>
+{% endblock %}
