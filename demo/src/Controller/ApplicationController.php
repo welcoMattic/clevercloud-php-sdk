@@ -5,6 +5,7 @@ namespace App\Controller;
 use CleverCloud\Sdk\Client;
 use CleverCloud\Sdk\Exception\CleverCloudException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,22 +43,63 @@ final class ApplicationController extends AbstractController
 
         try {
             $application = $this->cc->applications->get($id, $owner);
-            $vhosts = $this->cc->domains->list($id, $owner);
-            $branches = $this->cc->applications->branches($id, $owner);
-            $tcpRedirs = $this->cc->tcpRedirections->list($id, $owner);
-            $namespaces = $this->cc->tcpRedirections->namespaces($owner);
         } catch (CleverCloudException $e) {
             return $this->render('dashboard/error.html.twig', ['exception' => $e]);
         }
 
+        // Sub-resources may fail independently (provider not supporting an endpoint,
+        // permissions, etc.) — keep the page rendering and surface the error per section.
+        $vhosts = null;
+        $vhostsError = null;
+        try {
+            $vhosts = $this->cc->domains->list($id, $owner);
+        } catch (CleverCloudException $e) {
+            $vhostsError = $e->getMessage();
+        }
+
+        $branches = null;
+        $branchesError = null;
+        try {
+            $branches = $this->cc->applications->branches($id, $owner);
+        } catch (CleverCloudException $e) {
+            $branchesError = $e->getMessage();
+        }
+
+        $tcpRedirs = null;
+        $namespaces = [];
+        $tcpError = null;
+        try {
+            $tcpRedirs = $this->cc->tcpRedirections->list($id, $owner);
+            $namespaces = $this->cc->tcpRedirections->namespaces($owner);
+        } catch (CleverCloudException $e) {
+            $tcpError = $e->getMessage();
+        }
+
         return $this->render('application/show.html.twig', [
-            'app' => $application,
+            'application' => $application,
             'vhosts' => $vhosts,
+            'vhostsError' => $vhostsError,
             'branches' => $branches,
+            'branchesError' => $branchesError,
             'tcpRedirs' => $tcpRedirs,
             'namespaces' => $namespaces,
+            'tcpError' => $tcpError,
             'owner' => $owner,
         ]);
+    }
+
+    #[Route('/applications/{id}/state.json', name: 'application_state', methods: ['GET'])]
+    public function state(Request $request, string $id): JsonResponse
+    {
+        $owner = $this->normaliseOwner($request->query->get('owner'));
+
+        try {
+            $app = $this->cc->applications->get($id, $owner);
+        } catch (CleverCloudException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 502);
+        }
+
+        return new JsonResponse(['state' => $app->state]);
     }
 
     #[Route('/applications/{id}/deploy', name: 'application_deploy', methods: ['POST'])]
@@ -73,11 +115,13 @@ final class ApplicationController extends AbstractController
                 ? \sprintf('Déploiement de %s déclenché.', $id)
                 : \sprintf('Déploiement de %s sur %s déclenché.', $id, $commit);
             $this->addFlash('success', $message);
+
+            return $this->redirectToRoute('application_show', $this->ownerQuery($id, $owner) + ['deploying' => 1]);
         } catch (CleverCloudException $e) {
             $this->addFlash('error', \sprintf('Échec du déploiement : %s', $e->getMessage()));
-        }
 
-        return $this->redirectToRoute('application_show', $this->ownerQuery($id, $owner));
+            return $this->redirectToRoute('application_show', $this->ownerQuery($id, $owner));
+        }
     }
 
     #[Route('/applications/{id}/restart', name: 'application_restart', methods: ['POST'])]
@@ -89,11 +133,13 @@ final class ApplicationController extends AbstractController
         try {
             $this->cc->applications->restart($id, $owner, withoutCache: $withoutCache);
             $this->addFlash('success', \sprintf('Redéploiement de %s lancé.', $id));
+
+            return $this->redirectToRoute('application_show', $this->ownerQuery($id, $owner) + ['deploying' => 1]);
         } catch (CleverCloudException $e) {
             $this->addFlash('error', \sprintf('Échec du redéploiement : %s', $e->getMessage()));
-        }
 
-        return $this->redirectToRoute('application_list', null === $owner ? [] : ['owner' => $owner]);
+            return $this->redirectToRoute('application_list', null === $owner ? [] : ['owner' => $owner]);
+        }
     }
 
     #[Route('/applications/{id}/stop', name: 'application_stop', methods: ['POST'])]
@@ -163,9 +209,17 @@ final class ApplicationController extends AbstractController
         return null === $owner ? ['id' => $id] : ['id' => $id, 'owner' => $owner];
     }
 
+    /**
+     * Returns null when the owner should resolve to `/self` — i.e. empty,
+     * literal `self`, or a `user_xxx` identifier (Clever Cloud user IDs are
+     * not routable under `/organisations/{id}` and must be addressed as self).
+     */
     private function normaliseOwner(mixed $raw): ?string
     {
         if (!\is_string($raw) || '' === $raw || 'self' === $raw) {
+            return null;
+        }
+        if (str_starts_with($raw, 'user_')) {
             return null;
         }
 

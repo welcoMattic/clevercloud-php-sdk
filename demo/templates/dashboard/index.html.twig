@@ -1,33 +1,34 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Accueil — Clever Cloud Dashboard{% endblock %}
+{% block page_title %}Bonjour {{ me.firstname ?? me.email }}{% endblock %}
+{% block page_subtitle %}
+    <p class="topbar__subtitle">
+        <span class="table__id">{{ me.id }}</span>
+        {% if me.email %} · {{ me.email }}{% endif %}
+    </p>
+{% endblock %}
 
 {% block body %}
     <div class="card">
-        <h2>Bienvenue {{ me.firstname ?? me.email }}</h2>
-        <p style="color: #6b7280; margin-bottom: 0;">
-            ID : <code>{{ me.id }}</code>
-            {% if me.email %}· Email : {{ me.email }}{% endif %}
-        </p>
-    </div>
-
-    <div class="card">
-        <h2>Tes organisations ({{ organisations|length }})</h2>
+        <div class="card__header">
+            <h3 class="card__title">Tes organisations{% if organisations %} <span class="badge neutral">{{ organisations|length }}</span>{% endif %}</h3>
+        </div>
         {% if organisations is empty %}
-            <p>Aucune organisation rattachée à ce compte.</p>
+            <p class="card__empty">Aucune organisation rattachée à ce compte.</p>
         {% else %}
-            <table>
-                <thead>
-                    <tr><th>Nom</th><th>ID</th><th>Actions</th></tr>
-                </thead>
+            <table class="table">
+                <thead><tr><th>Nom</th><th>ID</th><th class="table__actions">Actions</th></tr></thead>
                 <tbody>
                     {% for orga in organisations %}
                         <tr>
                             <td><strong>{{ orga.name }}</strong></td>
-                            <td><code>{{ orga.id }}</code></td>
-                            <td>
-                                <a class="btn primary" href="{{ path('application_list', { owner: orga.id }) }}">Apps</a>
-                                <a class="btn primary" href="{{ path('addon_list', { owner: orga.id }) }}">Add-ons</a>
+                            <td><span class="table__id">{{ orga.id }}</span></td>
+                            <td class="table__actions">
+                                <div class="btn-group">
+                                    <a class="btn btn--sm" href="{{ path('application_list', { owner: orga.id }) }}">Apps</a>
+                                    <a class="btn btn--sm" href="{{ path('addon_list', { owner: orga.id }) }}">Add-ons</a>
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}
@@ -37,8 +38,12 @@
     </div>
 
     <div class="card">
-        <h2>Ton espace personnel</h2>
-        <a class="btn primary" href="{{ path('application_list') }}">Mes apps</a>
-        <a class="btn primary" href="{{ path('addon_list') }}">Mes add-ons</a>
+        <div class="card__header"><h3 class="card__title">Espace personnel</h3></div>
+        <div class="card__body">
+            <div class="btn-group">
+                <a class="btn btn--primary" href="{{ path('application_list') }}">Mes apps</a>
+                <a class="btn btn--primary" href="{{ path('addon_list') }}">Mes add-ons</a>
+            </div>
+        </div>
     </div>
 {% endblock %}

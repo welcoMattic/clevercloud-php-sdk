@@ -42,25 +42,37 @@ final class AddonController extends AbstractController
 
         try {
             $addon = $this->cc->addons->get($id, $owner);
-            $migrations = $this->cc->addons->listMigrations($id, $owner);
-
-            $backups = [];
-            $backupsError = null;
-            $providerId = $addon->provider?->id;
-            if (null !== $providerId && null !== $addon->realId) {
-                try {
-                    $backups = $this->cc->backups->list($providerId, $addon->realId);
-                } catch (CleverCloudException $e) {
-                    $backupsError = $e->getMessage();
-                }
-            }
         } catch (CleverCloudException $e) {
             return $this->render('dashboard/error.html.twig', ['exception' => $e]);
+        }
+
+        // Sub-resources may not exist for every add-on type — let each fail
+        // independently and render the available sections.
+        $migrations = null;
+        $migrationsError = null;
+        try {
+            $migrations = $this->cc->addons->listMigrations($id, $owner);
+        } catch (CleverCloudException $e) {
+            $migrationsError = $e->getMessage();
+        }
+
+        $backups = [];
+        $backupsError = null;
+        $providerId = $addon->provider?->id;
+        if (null !== $providerId && null !== $addon->realId) {
+            try {
+                $backups = $this->cc->backups->list($providerId, $addon->realId);
+            } catch (CleverCloudException $e) {
+                $backupsError = $e->getMessage();
+            }
+        } else {
+            $backupsError = 'Cet add-on ne fournit pas de provider/realId exploitable.';
         }
 
         return $this->render('addon/show.html.twig', [
             'addon' => $addon,
             'migrations' => $migrations,
+            'migrationsError' => $migrationsError,
             'backups' => $backups,
             'backupsError' => $backupsError,
             'owner' => $owner,
@@ -114,6 +126,9 @@ final class AddonController extends AbstractController
     private function normaliseOwner(mixed $raw): ?string
     {
         if (!\is_string($raw) || '' === $raw || 'self' === $raw) {
+            return null;
+        }
+        if (str_starts_with($raw, 'user_')) {
             return null;
         }
 
