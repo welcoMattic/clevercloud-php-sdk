@@ -3,12 +3,38 @@
 {% block title %}Connexion — Clever Cloud Dashboard{% endblock %}
 
 {% block body %}
-    <div class="card">
-        <h2>Se connecter à Clever Cloud</h2>
-        <p>
-            Le dashboard utilise le flow OAuth 1.0a 3-legged pour récupérer un token utilisateur.
-            Tu seras redirigé vers Clever Cloud pour autoriser l'accès.
-        </p>
-        <a class="btn primary" href="{{ path('login') }}">Se connecter</a>
+    <h2>Se connecter à Clever Cloud</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+        <div class="card">
+            <h3 style="margin-top: 0;">API token (recommandé)</h3>
+            <p>
+                Crée un token API depuis la
+                <a href="https://console.clever-cloud.com/" target="_blank" rel="noopener">Console Clever Cloud</a>,
+                puis colle-le ici. C'est le mode utilisé pour les scripts et la CI.
+            </p>
+            <a class="btn primary" href="{{ path('login_token') }}">Se connecter avec un token</a>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-top: 0;">OAuth 1.0a (3-legged)</h3>
+            {% if hasConsumer %}
+                <p>
+                    Flow historique. Le dashboard va te rediriger vers Clever Cloud pour autoriser
+                    l'accès, puis revenir avec un token utilisateur.
+                </p>
+                <form method="post" action="{{ path('login_oauth') }}" style="margin: 0;">
+                    <button type="submit" class="btn">Se connecter via OAuth</button>
+                </form>
+            {% else %}
+                <p>
+                    Indisponible : <code>CC_CONSUMER_KEY</code> / <code>CC_CONSUMER_SECRET</code>
+                    ne sont pas configurés dans <code>.env.local</code>.
+                </p>
+                <button type="button" class="btn" disabled style="opacity: 0.5; cursor: not-allowed;">
+                    OAuth indisponible
+                </button>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}

@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ addon.name }} — Clever Cloud Dashboard{% endblock %}
+
+{% block body %}
+    <div style="margin-bottom: 1rem;">
+        <a href="{{ path('addon_list', owner ? { owner: owner } : {}) }}" style="text-decoration: none;">&larr; Retour à la liste</a>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-bottom: 0.25rem;">{{ addon.name }}</h2>
+        <p style="color: #6b7280; margin: 0;">
+            <code>{{ addon.id }}</code>
+            {% if addon.realId %} · realId <code>{{ addon.realId }}</code>{% endif %}
+            {% if addon.provider %} · {{ addon.provider.name ?? addon.provider.id }}{% endif %}
+            {% if addon.plan %} · <span class="badge">{{ addon.plan.name ?? addon.plan.slug }}</span>{% endif %}
+            {% if addon.region %} · {{ addon.region }}{% endif %}
+        </p>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top: 0;">Migrations ({{ migrations|length }})</h3>
+        {% if migrations is empty %}
+            <p>Aucune migration enregistrée.</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Statut</th>
+                        <th>Plan cible</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for migration in migrations %}
+                        <tr>
+                            <td><code>{{ migration.id ?? migration.migrationId ?? '—' }}</code></td>
+                            <td>
+                                <span class="badge {% if migration.status == 'success' %}ok{% elseif migration.status == 'in-progress' or migration.status == 'pending' %}warn{% else %}fail{% endif %}">
+                                    {{ migration.status ?? '—' }}
+                                </span>
+                            </td>
+                            <td>{{ migration.plan ?? migration.targetPlan ?? '—' }}</td>
+                            <td>
+                                {% set status = migration.status ?? '' %}
+                                {% if status == 'in-progress' or status == 'pending' %}
+                                    <form class="inline" method="post"
+                                          action="{{ path('addon_migration_cancel', { id: addon.id, migrationId: migration.id ?? migration.migrationId }) }}"
+                                          onsubmit="return confirm('Annuler cette migration ?')">
+                                        {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
+                                        <button class="btn danger" type="submit">Annuler</button>
+                                    </form>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top: 0;">Backups</h3>
+        {% if backupsError %}
+            <p style="color: #6b7280;">Backups indisponibles pour ce provider — <code>{{ backupsError }}</code></p>
+        {% elseif backups is empty %}
+            <p>Aucun backup pour cet add-on.</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Taille</th>
+                        <th>Statut</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for backup in backups %}
+                        <tr>
+                            <td><code>{{ backup.id }}</code></td>
+                            <td>{{ backup.createdAt }}</td>
+                            <td>{{ backup.type ?? '—' }}</td>
+                            <td>
+                                {% if backup.size %}
+                                    {{ (backup.size / 1024 / 1024)|round(1) }} MB
+                                {% else %}—{% endif %}
+                            </td>
+                            <td>
+                                <span class="badge {% if backup.status == 'success' %}ok{% else %}warn{% endif %}">
+                                    {{ backup.status ?? '—' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                                    {% if backup.downloadUrl %}
+                                        <a class="btn" href="{{ backup.downloadUrl }}" target="_blank" rel="noopener">Télécharger</a>
+                                    {% endif %}
+                                    <form class="inline" method="post"
+                                          action="{{ path('addon_backup_restore', { id: addon.id, backupId: backup.id }) }}"
+                                          onsubmit="return confirm('Restaurer ce backup ? Cette opération peut écraser les données actuelles.')">
+                                        {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
+                                        <button class="btn primary" type="submit">Restaurer</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

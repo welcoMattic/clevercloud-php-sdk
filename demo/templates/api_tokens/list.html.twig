@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}API tokens — Clever Cloud Dashboard{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>API tokens</h2>
+        <p style="color: #6b7280;">
+            Les tokens transitent par <code>api-bridge.clever-cloud.com</code>. Le token en clair
+            n'est renvoyé qu'à la création — copie-le immédiatement.
+        </p>
+    </div>
+
+    {% if lastMinted and lastMinted.token %}
+        <div class="card" style="border-left: 4px solid #2563eb;">
+            <h3 style="margin-top: 0;">Token créé : {{ lastMinted.name }}</h3>
+            <p style="font-size: 0.85rem; color: #6b7280;">Copie-le maintenant. Une fois cette page rechargée, il ne sera plus affiché.</p>
+            <code style="display: block; padding: 0.75rem; background: #f3f4f6; word-break: break-all; user-select: all;">{{ lastMinted.token }}</code>
+        </div>
+    {% endif %}
+
+    <div class="card">
+        <h3 style="margin-top: 0;">Créer un nouveau token</h3>
+        <form method="post" action="{{ path('api_tokens_create') }}" style="display: grid; gap: 0.75rem; max-width: 540px;">
+            <label>
+                <span style="display: block; font-size: 0.85rem; color: #6b7280; margin-bottom: 0.25rem;">Nom</span>
+                <input type="text" name="name" required placeholder="CI deploys" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;">
+            </label>
+            <label>
+                <span style="display: block; font-size: 0.85rem; color: #6b7280; margin-bottom: 0.25rem;">Scopes (optionnel, séparés par des virgules)</span>
+                <input type="text" name="scopes" placeholder="application:read, application:deploy" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;">
+            </label>
+            <button type="submit" class="btn primary" style="justify-self: start;">Créer le token</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top: 0;">Tokens existants ({{ tokens|length }})</h3>
+        {% if tokens is empty %}
+            <p>Aucun token actif.</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>ID</th>
+                        <th>Scopes</th>
+                        <th>Créé</th>
+                        <th>Dernier usage</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for token in tokens %}
+                        <tr>
+                            <td><strong>{{ token.name }}</strong></td>
+                            <td><code>{{ token.id }}</code></td>
+                            <td>
+                                {% if token.scopes is empty %}<em>aucun</em>{% else %}
+                                    {% for scope in token.scopes %}<code style="margin-right: 0.25rem;">{{ scope }}</code>{% endfor %}
+                                {% endif %}
+                            </td>
+                            <td>{{ token.createdAt ?? '—' }}</td>
+                            <td>{{ token.lastUsedAt ?? '—' }}</td>
+                            <td>
+                                <form class="inline" method="post"
+                                      action="{{ path('api_tokens_delete', { id: token.id }) }}"
+                                      onsubmit="return confirm('Révoquer le token {{ token.name }} ? Cette action est irréversible.')">
+                                    <button class="btn danger" type="submit">Révoquer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

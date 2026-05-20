@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion par token — Clever Cloud Dashboard{% endblock %}
+
+{% block body %}
+    <div class="card" style="max-width: 560px;">
+        <h2>Coller un token API Clever Cloud</h2>
+        <p>
+            Mint un token depuis la
+            <a href="https://console.clever-cloud.com/" target="_blank" rel="noopener">Console</a>
+            (section <em>Personal API tokens</em>). Le token est envoyé en <code>Authorization: Bearer</code>
+            sur chaque requête vers <code>api.clever-cloud.com</code> et <code>api-bridge.clever-cloud.com</code>.
+        </p>
+
+        <form method="post" action="{{ path('login_token') }}">
+            <label for="api_token" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                Token
+            </label>
+            <input type="password" id="api_token" name="api_token" required autofocus
+                   placeholder="cc_..."
+                   style="width: 100%; padding: 0.6rem; border: 1px solid #d1d5db; border-radius: 4px; font-family: monospace;">
+            <p style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
+                Le token ne quitte pas ta session PHP — il est uniquement stocké dans la session du serveur.
+            </p>
+            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                <button type="submit" class="btn primary">Se connecter</button>
+                <a class="btn" href="{{ path('login') }}">Retour</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

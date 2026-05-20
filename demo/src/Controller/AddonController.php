@@ -5,6 +5,7 @@ namespace App\Controller;
 use CleverCloud\Sdk\Client;
 use CleverCloud\Sdk\Exception\CleverCloudException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -32,6 +33,82 @@ final class AddonController extends AbstractController
             'organisations' => $organisations,
             'selectedOwner' => $owner,
         ]);
+    }
+
+    #[Route('/addons/{id}', name: 'addon_show', methods: ['GET'])]
+    public function show(Request $request, string $id): Response
+    {
+        $owner = $this->normaliseOwner($request->query->get('owner'));
+
+        try {
+            $addon = $this->cc->addons->get($id, $owner);
+            $migrations = $this->cc->addons->listMigrations($id, $owner);
+
+            $backups = [];
+            $backupsError = null;
+            $providerId = $addon->provider?->id;
+            if (null !== $providerId && null !== $addon->realId) {
+                try {
+                    $backups = $this->cc->backups->list($providerId, $addon->realId);
+                } catch (CleverCloudException $e) {
+                    $backupsError = $e->getMessage();
+                }
+            }
+        } catch (CleverCloudException $e) {
+            return $this->render('dashboard/error.html.twig', ['exception' => $e]);
+        }
+
+        return $this->render('addon/show.html.twig', [
+            'addon' => $addon,
+            'migrations' => $migrations,
+            'backups' => $backups,
+            'backupsError' => $backupsError,
+            'owner' => $owner,
+        ]);
+    }
+
+    #[Route('/addons/{id}/backups/{backupId}/restore', name: 'addon_backup_restore', methods: ['POST'])]
+    public function restoreBackup(Request $request, string $id, string $backupId): RedirectResponse
+    {
+        $owner = $this->normaliseOwner($request->request->get('owner'));
+
+        try {
+            $addon = $this->cc->addons->get($id, $owner);
+            $providerId = $addon->provider?->id;
+            $realId = $addon->realId;
+
+            if (null === $providerId || null === $realId) {
+                $this->addFlash('error', "Add-on sans provider/realId — impossible de restaurer.");
+            } else {
+                $this->cc->backups->restore($providerId, $realId, $backupId);
+                $this->addFlash('success', \sprintf('Restauration du backup %s lancée.', $backupId));
+            }
+        } catch (CleverCloudException $e) {
+            $this->addFlash('error', \sprintf('Échec de la restauration : %s', $e->getMessage()));
+        }
+
+        return $this->redirectToRoute(
+            'addon_show',
+            null === $owner ? ['id' => $id] : ['id' => $id, 'owner' => $owner],
+        );
+    }
+
+    #[Route('/addons/{id}/migrations/{migrationId}/cancel', name: 'addon_migration_cancel', methods: ['POST'])]
+    public function cancelMigration(Request $request, string $id, string $migrationId): RedirectResponse
+    {
+        $owner = $this->normaliseOwner($request->request->get('owner'));
+
+        try {
+            $this->cc->addons->cancelMigration($id, $migrationId, $owner);
+            $this->addFlash('success', \sprintf('Migration %s annulée.', $migrationId));
+        } catch (CleverCloudException $e) {
+            $this->addFlash('error', \sprintf('Échec de l\'annulation : %s', $e->getMessage()));
+        }
+
+        return $this->redirectToRoute(
+            'addon_show',
+            null === $owner ? ['id' => $id] : ['id' => $id, 'owner' => $owner],
+        );
     }
 
     private function normaliseOwner(mixed $raw): ?string
