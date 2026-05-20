@@ -2,7 +2,10 @@
 
 namespace CleverCloud\Sdk\Auth;
 
+use CleverCloud\Sdk\ApiVersion;
+use CleverCloud\Sdk\Configuration;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
 use SensitiveParameter;
 
 /**
@@ -42,4 +45,14 @@ abstract readonly class Credentials
      * HTTP client just before dispatch.
      */
     abstract public function applyTo(RequestInterface $request, OAuth1Signer $oauth1Signer): RequestInterface;
+
+    /**
+     * Last-chance hook to rewrite the request URI based on the credential
+     * type — e.g. API token credentials route all V2/V4 paths through the
+     * `api-bridge.clever-cloud.com` gateway. Default: identity.
+     */
+    public function rewriteUri(UriInterface $uri, ApiVersion $version, Configuration $configuration): UriInterface
+    {
+        return $uri;
+    }
 }

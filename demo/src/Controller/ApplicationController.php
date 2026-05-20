@@ -13,6 +13,12 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class ApplicationController extends AbstractController
 {
+    /** Clever Cloud platform-wide flavors in ascending order. */
+    private const array FLAVORS = ['pico', 'nano', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+
+    /** Sensible upper bound for the instance count dropdowns. */
+    private const array INSTANCE_COUNTS = [1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20];
+
     public function __construct(private readonly Client $cc)
     {
     }
@@ -74,6 +80,8 @@ final class ApplicationController extends AbstractController
             'organisations' => $organisations,
             'instances' => $instances,
             'zones' => $zones,
+            'flavors' => self::FLAVORS,
+            'instanceCounts' => self::INSTANCE_COUNTS,
             'owner' => $owner,
         ]);
     }
@@ -158,6 +166,8 @@ final class ApplicationController extends AbstractController
 
         return $this->render('application/edit.html.twig', [
             'application' => $application,
+            'flavors' => self::FLAVORS,
+            'instanceCounts' => self::INSTANCE_COUNTS,
             'owner' => $owner,
         ]);
     }

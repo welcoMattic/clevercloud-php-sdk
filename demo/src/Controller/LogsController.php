@@ -52,9 +52,14 @@ final class LogsController extends AbstractController
     {
         $owner = $this->normaliseOwner($request->query->get('owner'));
 
-        // Release the session lock so other requests from the same browser
-        // (e.g. navigating elsewhere) aren't blocked by this long-lived stream.
-        $request->getSession()->save();
+        // Release the PHP session lock so other requests from the same browser
+        // (e.g. navigating to another tab) aren't blocked by this long-lived
+        // stream. We use the native function directly so Symfony's Session
+        // bag stays intact — `Session::save()` clears `$_SESSION` and that
+        // breaks the response cycle later.
+        if (\PHP_SESSION_ACTIVE === session_status()) {
+            session_write_close();
+        }
 
         $response = new StreamedResponse(function () use ($id, $owner): void {
             @set_time_limit(0);
