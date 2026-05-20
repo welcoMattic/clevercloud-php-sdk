@@ -1,18 +1,19 @@
 <?php
 
-namespace CleverCloud\Sdk\Resource\V4;
+namespace CleverCloud\Sdk\Resource\V2;
 
 use CleverCloud\Sdk\Model\AddonProvider;
 use CleverCloud\Sdk\Model\Country;
 use CleverCloud\Sdk\Model\InstanceType;
 use CleverCloud\Sdk\Model\Zone;
-use CleverCloud\Sdk\Resource\AbstractV4Resource;
+use CleverCloud\Sdk\Resource\AbstractV2Resource;
 
 /**
  * Reads the public product catalog: instance types, add-on providers, zones,
- * and countries. None of these are owner-scoped.
+ * and countries. None of these are owner-scoped. Lives on the V2 API per
+ * `https://api.clever-cloud.com/v2/products/*`.
  */
-final readonly class ProductsResource extends AbstractV4Resource
+final readonly class ProductsResource extends AbstractV2Resource
 {
     /**
      * @return list<InstanceType>
