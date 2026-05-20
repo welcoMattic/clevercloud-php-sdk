@@ -84,7 +84,7 @@ final class AddonController extends AbstractController
         ]);
     }
 
-    #[Route('/addons/{id}', name: 'addon_show', methods: ['GET'])]
+    #[Route('/addons/{id}', name: 'addon_show', methods: ['GET'], requirements: ['id' => 'addon_[^/]+'])]
     public function show(Request $request, string $id): Response
     {
         $owner = $this->normaliseOwner($request->query->get('owner'));

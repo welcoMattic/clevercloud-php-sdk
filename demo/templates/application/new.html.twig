@@ -7,6 +7,17 @@
 {% block body %}
     <a class="back-link" href="{{ path('application_list', owner ? { owner: owner } : {}) }}">← Retour aux applications</a>
 
+    {% if loadErrors is defined and loadErrors is not empty %}
+        <div class="card card--warn">
+            <div class="card__body">
+                <p style="margin-top: 0;"><strong>Certaines listes n'ont pas pu être chargées :</strong></p>
+                <ul style="margin: 0;">
+                    {% for err in loadErrors %}<li>{{ err }}</li>{% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
     <form method="post" action="{{ path('application_new') }}">
         <div class="card">
             <div class="card__header"><h3 class="card__title">Contexte</h3></div>

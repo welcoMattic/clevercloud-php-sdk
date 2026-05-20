@@ -1,8 +1,8 @@
 <?php
 
-namespace CleverCloud\Sdk\Tests\Unit\Resource\V4;
+namespace CleverCloud\Sdk\Tests\Unit\Resource\V2;
 
-use CleverCloud\Sdk\Resource\V4\ProductsResource;
+use CleverCloud\Sdk\Resource\V2\ProductsResource;
 use CleverCloud\Sdk\Tests\Unit\Fixture\ResourceFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -35,7 +35,7 @@ final class ProductsResourceTest extends TestCase
         self::assertSame('S', $types[0]->flavors[0]->name);
         self::assertSame(1024, $types[0]->flavors[0]->mem);
         self::assertSame(0.34, $types[0]->flavors[0]->price);
-        self::assertSame('https://api.clever-cloud.com/v4/products/instances', $response->getRequestUrl());
+        self::assertSame('https://api.clever-cloud.com/v2/products/instances', $response->getRequestUrl());
     }
 
     public function testZonesHydratesZones(): void

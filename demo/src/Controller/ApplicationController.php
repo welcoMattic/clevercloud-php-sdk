@@ -68,12 +68,25 @@ final class ApplicationController extends AbstractController
             }
         }
 
+        $organisations = [];
+        $instances = [];
+        $zones = [];
+        $loadErrors = [];
+
         try {
             $organisations = $this->cc->organisations->list();
+        } catch (CleverCloudException $e) {
+            $loadErrors[] = 'Organisations: '.$e->getMessage();
+        }
+        try {
             $instances = $this->cc->products->instances();
+        } catch (CleverCloudException $e) {
+            $loadErrors[] = 'Instance types: '.$e->getMessage();
+        }
+        try {
             $zones = $this->cc->products->zones();
         } catch (CleverCloudException $e) {
-            return $this->render('dashboard/error.html.twig', ['exception' => $e]);
+            $loadErrors[] = 'Zones: '.$e->getMessage();
         }
 
         return $this->render('application/new.html.twig', [
@@ -82,11 +95,12 @@ final class ApplicationController extends AbstractController
             'zones' => $zones,
             'flavors' => self::FLAVORS,
             'instanceCounts' => self::INSTANCE_COUNTS,
+            'loadErrors' => $loadErrors,
             'owner' => $owner,
         ]);
     }
 
-    #[Route('/applications/{id}', name: 'application_show', methods: ['GET'])]
+    #[Route('/applications/{id}', name: 'application_show', methods: ['GET'], requirements: ['id' => 'app_[^/]+'])]
     public function show(Request $request, string $id): Response
     {
         $owner = $this->normaliseOwner($request->query->get('owner'));
