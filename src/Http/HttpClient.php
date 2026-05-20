@@ -13,6 +13,7 @@ use CleverCloud\Sdk\Exception\RateLimitException;
 use CleverCloud\Sdk\Exception\ServerException;
 use CleverCloud\Sdk\Exception\TransportException;
 use CleverCloud\Sdk\Exception\ValidationException;
+use CleverCloud\Sdk\Streaming\SseStreamHandle;
 use Closure;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
@@ -21,6 +22,9 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpClient\EventSourceHttpClient;
+use Symfony\Component\HttpClient\HttpClient as SfHttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface as SfHttpClientInterface;
 use Throwable;
 
 /**
@@ -43,6 +47,8 @@ final class HttpClient
     /** @var Closure(int): void */
     private Closure $sleeper;
 
+    private ?SfHttpClientInterface $sfHttpClient;
+
     public function __construct(
         private readonly ClientInterface $psr18,
         private readonly RequestFactoryInterface $requestFactory,
@@ -55,12 +61,14 @@ final class HttpClient
         private readonly RetryPolicy $retryPolicy = new RetryPolicy(),
         private readonly ?LoggerInterface $logger = null,
         ?Closure $sleeper = null,
+        ?SfHttpClientInterface $sfHttpClient = null,
     ) {
         $this->sleeper = $sleeper ?? static function (int $delayMs): void {
             if ($delayMs > 0) {
                 usleep($delayMs * 1_000);
             }
         };
+        $this->sfHttpClient = $sfHttpClient;
     }
 
     /**
@@ -86,6 +94,51 @@ final class HttpClient
     public function stream(string $method, ApiVersion $version, string $path, array $options = []): ResponseInterface
     {
         return $this->dispatch($this->buildRequest($method, $version, $path, $options));
+    }
+
+    /**
+     * Opens a Server-Sent Events stream against the given endpoint via Symfony's
+     * {@see EventSourceHttpClient}. The returned handle bundles the underlying
+     * Symfony HttpClient and response so callers can iterate
+     * `$handle->client->stream($handle->response)` directly.
+     *
+     * Signing happens before the connection opens: a transient PSR-7 request is
+     * built and signed by {@see OAuth1Signer}, then the resulting `Authorization`
+     * header is forwarded to the Symfony client. Retries / SSE reconnection are
+     * handled by Symfony itself.
+     *
+     * @param RequestOptions $options
+     */
+    public function openEventStream(ApiVersion $version, string $path, array $options = []): SseStreamHandle
+    {
+        $uri = $this->uriBuilder->build($version, $path, $options['query'] ?? []);
+
+        $request = $this->requestFactory
+            ->createRequest('GET', $uri)
+            ->withHeader('User-Agent', $this->configuration->userAgent)
+            ->withHeader('Accept', 'text/event-stream');
+
+        foreach ($options['headers'] ?? [] as $name => $value) {
+            $request = $request->withHeader($name, $value);
+        }
+
+        $signed = $this->signer->sign($request, $this->credentials);
+
+        $headers = [
+            'User-Agent' => $this->configuration->userAgent,
+            'Accept' => 'text/event-stream',
+            'Authorization' => $signed->getHeaderLine('Authorization'),
+        ];
+        foreach ($options['headers'] ?? [] as $name => $value) {
+            $headers[$name] = $value;
+        }
+
+        $sfClient = $this->sfHttpClient ?? SfHttpClient::create();
+        $eventSource = $sfClient instanceof EventSourceHttpClient ? $sfClient : new EventSourceHttpClient($sfClient);
+
+        $response = $eventSource->connect((string) $uri, ['headers' => $headers]);
+
+        return new SseStreamHandle($eventSource, $response);
     }
 
     /**

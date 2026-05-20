@@ -66,6 +66,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in `Symfony\Component\HttpClient\Psr18Client` instead of an in-tree
   PSR-18 fake. The custom `RecordingClient` and the QueueClient inside
   `HttpClientTest` have been removed.
+- **SSE log streaming** now delegates to Symfony's
+  `EventSourceHttpClient` + `ServerSentEvent` instead of the in-tree
+  WHATWG SSE parser. The `SseStream` / `SseEvent` classes are removed;
+  `LogsResource::stream()` still returns an iterable `LogStream<LogEntry>`,
+  but framing, reconnection, and `Last-Event-ID` tracking are now
+  handled by Symfony. New `SseStreamHandle` bundles the Symfony
+  HttpClient + response for the iterator.
+- **HTTP transport** — `symfony/http-client` is now a hard runtime
+  dependency (it was a dev dep before). `php-http/discovery` is dropped.
+  `ClientBuilder::withHttpClient()` now expects a
+  `Symfony\Contracts\HttpClient\HttpClientInterface`; the SDK wires it
+  internally through `Psr18Client` for regular calls and
+  `EventSourceHttpClient` for SSE.
 
 ## [0.1.0] — 2026-05-19
 

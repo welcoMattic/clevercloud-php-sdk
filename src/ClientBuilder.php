@@ -13,24 +13,19 @@ use CleverCloud\Sdk\Http\HttpClient;
 use CleverCloud\Sdk\Http\JsonCodec;
 use CleverCloud\Sdk\Http\RetryPolicy;
 use CleverCloud\Sdk\Http\UriBuilder;
-use Http\Discovery\Psr17FactoryDiscovery;
-use Http\Discovery\Psr18ClientDiscovery;
+use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Clock\ClockInterface;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
-use Psr\Http\Message\StreamFactoryInterface;
-use Psr\Http\Message\UriFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Clock\NativeClock;
+use Symfony\Component\HttpClient\HttpClient as SfHttpClient;
+use Symfony\Component\HttpClient\Psr18Client;
+use Symfony\Contracts\HttpClient\HttpClientInterface as SfHttpClientInterface;
 
 final class ClientBuilder
 {
     private ?Credentials $credentials = null;
     private ?Configuration $configuration = null;
-    private ?ClientInterface $psr18 = null;
-    private ?RequestFactoryInterface $requestFactory = null;
-    private ?StreamFactoryInterface $streamFactory = null;
-    private ?UriFactoryInterface $uriFactory = null;
+    private ?SfHttpClientInterface $sfHttpClient = null;
     private ?ClockInterface $clock = null;
     private ?NonceGenerator $nonceGenerator = null;
     private ?RetryPolicy $retryPolicy = null;
@@ -53,34 +48,16 @@ final class ClientBuilder
         return $clone;
     }
 
-    public function withHttpClient(ClientInterface $client): self
+    /**
+     * Override the Symfony HttpClient used by the SDK. The provided client is
+     * used both for regular request/response calls (via a {@see Psr18Client}
+     * adapter) and for SSE streaming (wrapped in an `EventSourceHttpClient`).
+     * Defaults to {@see SfHttpClient::create()} when omitted.
+     */
+    public function withHttpClient(SfHttpClientInterface $client): self
     {
         $clone = clone $this;
-        $clone->psr18 = $client;
-
-        return $clone;
-    }
-
-    public function withRequestFactory(RequestFactoryInterface $factory): self
-    {
-        $clone = clone $this;
-        $clone->requestFactory = $factory;
-
-        return $clone;
-    }
-
-    public function withStreamFactory(StreamFactoryInterface $factory): self
-    {
-        $clone = clone $this;
-        $clone->streamFactory = $factory;
-
-        return $clone;
-    }
-
-    public function withUriFactory(UriFactoryInterface $factory): self
-    {
-        $clone = clone $this;
-        $clone->uriFactory = $factory;
+        $clone->sfHttpClient = $client;
 
         return $clone;
     }
@@ -132,10 +109,9 @@ final class ClientBuilder
         }
 
         $configuration = $this->configuration ?? new Configuration();
-        $psr18 = $this->psr18 ?? Psr18ClientDiscovery::find();
-        $requestFactory = $this->requestFactory ?? Psr17FactoryDiscovery::findRequestFactory();
-        $streamFactory = $this->streamFactory ?? Psr17FactoryDiscovery::findStreamFactory();
-        $uriFactory = $this->uriFactory ?? Psr17FactoryDiscovery::findUriFactory();
+        $sfHttpClient = $this->sfHttpClient ?? SfHttpClient::create();
+        $psr17 = new Psr17Factory();
+        $psr18 = new Psr18Client($sfHttpClient, $psr17, $psr17);
 
         $signer = new OAuth1Signer(
             $this->clock ?? new NativeClock(),
@@ -144,15 +120,16 @@ final class ClientBuilder
 
         $http = new HttpClient(
             psr18: $psr18,
-            requestFactory: $requestFactory,
-            streamFactory: $streamFactory,
-            uriBuilder: new UriBuilder($configuration, $uriFactory),
+            requestFactory: $psr17,
+            streamFactory: $psr17,
+            uriBuilder: new UriBuilder($configuration, $psr17),
             signer: $signer,
             credentials: $this->credentials,
             configuration: $configuration,
             jsonCodec: new JsonCodec(),
             retryPolicy: $this->retryPolicy ?? new RetryPolicy(),
             logger: $this->logger,
+            sfHttpClient: $sfHttpClient,
         );
 
         $mapper = $this->mapper ?? AutoMapper::create();

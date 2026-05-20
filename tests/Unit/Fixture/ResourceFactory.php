@@ -65,6 +65,7 @@ final class ResourceFactory
             configuration: $configuration,
             jsonCodec: new JsonCodec(),
             retryPolicy: $policy ?? new RetryPolicy(maxAttempts: 1, jitterMs: 0),
+            sfHttpClient: $mock,
         );
     }
 
