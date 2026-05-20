@@ -5,86 +5,99 @@ namespace CleverCloud\Sdk\Tests\Unit\Resource\V4;
 use CleverCloud\Sdk\Resource\V4\Operator\KeycloakResource;
 use CleverCloud\Sdk\Resource\V4\Operator\MatomoResource;
 use CleverCloud\Sdk\Resource\V4\OperatorsResource;
-use CleverCloud\Sdk\Tests\Unit\Fixture\RecordingClient;
 use CleverCloud\Sdk\Tests\Unit\Fixture\ResourceFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 
 #[CoversClass(KeycloakResource::class)]
 #[CoversClass(MatomoResource::class)]
 #[CoversClass(OperatorsResource::class)]
 final class OperatorsResourceTest extends TestCase
 {
-    public function testKeycloakListRoutesUnderKeycloakSlug(): void
+    public function testKeycloakListRoutesUnderAddonProviders(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(200, [
+        $response = ResourceFactory::jsonResponse(200, [
             ['id' => 'op_1', 'name' => 'idp-prod', 'region' => 'par'],
-        ]));
+        ]);
 
-        $ops = $this->facade($psr18)->keycloak->list('orga_1');
+        $ops = $this->facade($response)->keycloak->list();
 
         self::assertCount(1, $ops);
         self::assertSame('op_1', $ops[0]->id);
-        self::assertNotNull($psr18->lastRequest);
         self::assertSame(
-            'https://api.clever-cloud.com/v4/operators/keycloak/organisations/orga_1',
-            (string) $psr18->lastRequest->getUri(),
+            'https://api.clever-cloud.com/v4/addon-providers/addon-keycloak/addons',
+            $response->getRequestUrl(),
         );
     }
 
     public function testMatomoCreatePostsBody(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(201, ['id' => 'op_new', 'name' => 'analytics']));
+        $response = ResourceFactory::jsonResponse(201, ['id' => 'op_new', 'name' => 'analytics']);
 
-        $this->facade($psr18)->matomo->create(['name' => 'analytics', 'region' => 'par']);
+        $this->facade($response)->matomo->create(['name' => 'analytics', 'region' => 'par']);
 
-        self::assertNotNull($psr18->lastRequest);
-        self::assertSame('POST', $psr18->lastRequest->getMethod());
+        self::assertSame('POST', $response->getRequestMethod());
         self::assertSame(
-            'https://api.clever-cloud.com/v4/operators/matomo/self',
-            (string) $psr18->lastRequest->getUri(),
+            'https://api.clever-cloud.com/v4/addon-providers/addon-matomo/addons',
+            $response->getRequestUrl(),
         );
-        self::assertSame('{"name":"analytics","region":"par"}', (string) $psr18->lastRequest->getBody());
+        self::assertSame('{"name":"analytics","region":"par"}', $response->getRequestOptions()['body']);
     }
 
     public function testRebootPostsToRebootSubpath(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(200, []));
+        $response = ResourceFactory::jsonResponse(200, []);
 
-        $this->facade($psr18)->keycloak->reboot('op_1', 'orga_1');
+        $this->facade($response)->keycloak->reboot('op_1');
 
-        self::assertNotNull($psr18->lastRequest);
-        self::assertSame('POST', $psr18->lastRequest->getMethod());
+        self::assertSame('POST', $response->getRequestMethod());
         self::assertSame(
-            'https://api.clever-cloud.com/v4/operators/keycloak/organisations/orga_1/op_1/reboot',
-            (string) $psr18->lastRequest->getUri(),
+            'https://api.clever-cloud.com/v4/addon-providers/addon-keycloak/addons/op_1/reboot',
+            $response->getRequestUrl(),
         );
     }
 
     public function testRebuildPostsToRebuildSubpath(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(200, []));
+        $response = ResourceFactory::jsonResponse(200, []);
 
-        $this->facade($psr18)->matomo->rebuild('op_1');
+        $this->facade($response)->matomo->rebuild('op_1');
 
-        self::assertNotNull($psr18->lastRequest);
         self::assertSame(
-            'https://api.clever-cloud.com/v4/operators/matomo/self/op_1/rebuild',
-            (string) $psr18->lastRequest->getUri(),
+            'https://api.clever-cloud.com/v4/addon-providers/addon-matomo/addons/op_1/rebuild',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testLinkNetworkGroupHitsNetworkgroupSubpath(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, []);
+
+        $this->facade($response)->keycloak->linkNetworkGroup('op_1');
+
+        self::assertSame('POST', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v4/addon-providers/addon-keycloak/addons/op_1/networkgroup',
+            $response->getRequestUrl(),
         );
     }
 
     public function testSubResourcesAreMemoised(): void
     {
-        $psr18 = new RecordingClient(ResourceFactory::jsonResponse(200, []));
-        $facade = $this->facade($psr18);
+        $response = ResourceFactory::jsonResponse(200, []);
+        $facade = $this->facade($response);
 
         self::assertSame($facade->keycloak, $facade->keycloak);
         self::assertSame($facade->matomo, $facade->matomo);
     }
 
-    private function facade(RecordingClient $psr18): OperatorsResource
+    private function facade(MockResponse $response): OperatorsResource
     {
-        return new OperatorsResource(ResourceFactory::http($psr18), ResourceFactory::mapper());
+        return new OperatorsResource(
+            ResourceFactory::http(new MockHttpClient([$response])),
+            ResourceFactory::mapper(),
+        );
     }
 }

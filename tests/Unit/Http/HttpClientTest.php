@@ -17,19 +17,17 @@ use CleverCloud\Sdk\Http\JsonCodec;
 use CleverCloud\Sdk\Http\RetryPolicy;
 use CleverCloud\Sdk\Http\UriBuilder;
 use CleverCloud\Sdk\Tests\Unit\Auth\StaticNonceGenerator;
+use CleverCloud\Sdk\Tests\Unit\Fixture\ResourceFactory;
 
 use const JSON_THROW_ON_ERROR;
 
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use RuntimeException;
 use Symfony\Component\Clock\MockClock;
-use Throwable;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Psr18Client;
+use Symfony\Component\HttpClient\Response\MockResponse;
 
 #[CoversClass(HttpClient::class)]
 final class HttpClientTest extends TestCase
@@ -46,24 +44,17 @@ final class HttpClientTest extends TestCase
 
     public function testDecodesJsonOnSuccess(): void
     {
-        $psr18 = new QueueClient([
-            $this->jsonResponse(200, ['id' => 'app_1', 'name' => 'hello']),
-        ]);
-        $client = $this->buildClient($psr18);
+        $client = $this->buildClient([$this->jsonResponse(200, ['id' => 'app_1', 'name' => 'hello'])]);
 
         $payload = $client->request('GET', ApiVersion::V2, '/self');
 
         self::assertSame(['id' => 'app_1', 'name' => 'hello'], $payload);
-        self::assertSame(1, $psr18->callCount);
         self::assertSame([], $this->sleeps);
     }
 
     public function testReturnsRawResponseForStream(): void
     {
-        $psr18 = new QueueClient([
-            $this->factory->createResponse(200)->withBody($this->factory->createStream('streamed')),
-        ]);
-        $client = $this->buildClient($psr18);
+        $client = $this->buildClient([new MockResponse('streamed', ['http_code' => 200])]);
 
         $response = $client->stream('GET', ApiVersion::V4, '/logs');
 
@@ -72,47 +63,43 @@ final class HttpClientTest extends TestCase
 
     public function testRetriesOn429HonouringRetryAfter(): void
     {
-        $tooMany = $this->jsonResponse(429, ['message' => 'slow down'])
-            ->withHeader('Retry-After', '2');
-
-        $psr18 = new QueueClient([
-            $tooMany,
+        $responses = [
+            new MockResponse(json_encode(['message' => 'slow down'], JSON_THROW_ON_ERROR), [
+                'http_code' => 429,
+                'response_headers' => ['retry-after' => '2', 'content-type' => 'application/json'],
+            ]),
             $this->jsonResponse(200, ['ok' => true]),
-        ]);
-        $client = $this->buildClient($psr18, new RetryPolicy(maxAttempts: 3, jitterMs: 0));
+        ];
+        $client = $this->buildClient($responses, new RetryPolicy(maxAttempts: 3, jitterMs: 0));
 
         $payload = $client->request('GET', ApiVersion::V2, '/self');
 
         self::assertSame(['ok' => true], $payload);
-        self::assertSame(2, $psr18->callCount);
         self::assertSame([2_000], $this->sleeps);
     }
 
     public function testRetriesOn5xxWithExponentialBackoff(): void
     {
-        $psr18 = new QueueClient([
+        $responses = [
             $this->jsonResponse(500, ['error' => 'oops']),
             $this->jsonResponse(503, ['error' => 'unavailable']),
             $this->jsonResponse(200, ['ok' => true]),
-        ]);
-        $policy = new RetryPolicy(maxAttempts: 3, baseDelayMs: 100, multiplier: 2.0, jitterMs: 0);
-        $client = $this->buildClient($psr18, $policy);
+        ];
+        $client = $this->buildClient($responses, new RetryPolicy(maxAttempts: 3, baseDelayMs: 100, multiplier: 2.0, jitterMs: 0));
 
         $payload = $client->request('GET', ApiVersion::V2, '/applications');
 
         self::assertSame(['ok' => true], $payload);
-        self::assertSame(3, $psr18->callCount);
         self::assertSame([100, 200], $this->sleeps);
     }
 
     public function testRaisesServerExceptionWhenRetriesExhausted(): void
     {
-        $psr18 = new QueueClient([
+        $client = $this->buildClient([
             $this->jsonResponse(500, ['error' => 'boom']),
             $this->jsonResponse(500, ['error' => 'boom']),
             $this->jsonResponse(500, ['error' => 'boom']),
-        ]);
-        $client = $this->buildClient($psr18, new RetryPolicy(maxAttempts: 3, baseDelayMs: 10, jitterMs: 0));
+        ], new RetryPolicy(maxAttempts: 3, baseDelayMs: 10, jitterMs: 0));
 
         try {
             $client->request('GET', ApiVersion::V2, '/applications');
@@ -120,17 +107,18 @@ final class HttpClientTest extends TestCase
         } catch (ServerException $e) {
             self::assertSame(500, $e->statusCode);
             self::assertSame('boom', $e->getMessage());
-            self::assertSame(3, $psr18->callCount);
             self::assertCount(2, $this->sleeps);
         }
     }
 
     public function testRaisesAuthExceptionOn401WithoutRetry(): void
     {
-        $psr18 = new QueueClient([
-            $this->jsonResponse(401, ['message' => 'bad token'])->withHeader('X-Request-Id', 'req-123'),
-        ]);
-        $client = $this->buildClient($psr18, new RetryPolicy(maxAttempts: 3));
+        $client = $this->buildClient([
+            new MockResponse(json_encode(['message' => 'bad token'], JSON_THROW_ON_ERROR), [
+                'http_code' => 401,
+                'response_headers' => ['x-request-id' => 'req-123', 'content-type' => 'application/json'],
+            ]),
+        ], new RetryPolicy(maxAttempts: 3));
 
         try {
             $client->request('GET', ApiVersion::V2, '/self');
@@ -139,17 +127,13 @@ final class HttpClientTest extends TestCase
             self::assertSame(401, $e->statusCode);
             self::assertSame('bad token', $e->getMessage());
             self::assertSame('req-123', $e->requestId);
-            self::assertSame(1, $psr18->callCount);
             self::assertSame([], $this->sleeps);
         }
     }
 
     public function testRaisesNotFoundExceptionOn404(): void
     {
-        $psr18 = new QueueClient([
-            $this->jsonResponse(404, ['message' => 'missing']),
-        ]);
-        $client = $this->buildClient($psr18);
+        $client = $this->buildClient([$this->jsonResponse(404, ['message' => 'missing'])]);
 
         $this->expectException(NotFoundException::class);
         $client->request('GET', ApiVersion::V2, '/applications/zzz');
@@ -157,7 +141,7 @@ final class HttpClientTest extends TestCase
 
     public function testRaisesValidationExceptionOn422WithFieldErrors(): void
     {
-        $psr18 = new QueueClient([
+        $client = $this->buildClient([
             $this->jsonResponse(422, [
                 'message' => 'invalid input',
                 'errors' => [
@@ -166,7 +150,6 @@ final class HttpClientTest extends TestCase
                 ],
             ]),
         ]);
-        $client = $this->buildClient($psr18);
 
         try {
             $client->request('POST', ApiVersion::V2, '/applications', ['json' => []]);
@@ -183,10 +166,7 @@ final class HttpClientTest extends TestCase
 
     public function testRaisesGenericApiExceptionForUnclassified4xx(): void
     {
-        $psr18 = new QueueClient([
-            $this->jsonResponse(418, ['message' => "I'm a teapot"]),
-        ]);
-        $client = $this->buildClient($psr18);
+        $client = $this->buildClient([$this->jsonResponse(418, ['message' => "I'm a teapot"])]);
 
         try {
             $client->request('GET', ApiVersion::V2, '/teapot');
@@ -199,11 +179,10 @@ final class HttpClientTest extends TestCase
 
     public function testWrapsTransportExceptionAfterRetries(): void
     {
-        $psr18 = new QueueClient([
-            new TransportFailure('connection reset'),
-            new TransportFailure('connection reset'),
-        ]);
-        $client = $this->buildClient($psr18, new RetryPolicy(maxAttempts: 2, baseDelayMs: 10, jitterMs: 0));
+        $client = $this->buildClient([
+            new MockResponse('', ['error' => 'connection reset']),
+            new MockResponse('', ['error' => 'connection reset']),
+        ], new RetryPolicy(maxAttempts: 2, baseDelayMs: 10, jitterMs: 0));
 
         $this->expectException(TransportException::class);
         $client->request('GET', ApiVersion::V2, '/self');
@@ -211,87 +190,95 @@ final class HttpClientTest extends TestCase
 
     public function testSignsRequestBeforeSending(): void
     {
-        $psr18 = new QueueClient([$this->jsonResponse(200, [])]);
-        $client = $this->buildClient($psr18);
+        $response = $this->jsonResponse(200, []);
+        $this->buildClient([$response])->request('GET', ApiVersion::V2, '/self');
 
-        $client->request('GET', ApiVersion::V2, '/self');
+        $auth = ResourceFactory::findHeader($response, 'Authorization');
+        self::assertNotNull($auth);
+        self::assertStringStartsWith('Authorization: OAuth ', $auth);
+        self::assertStringContainsString('oauth_signature_method="HMAC-SHA512"', $auth);
 
-        $sent = $psr18->lastRequest;
-        self::assertNotNull($sent);
-        self::assertStringStartsWith('OAuth ', $sent->getHeaderLine('Authorization'));
-        self::assertStringContainsString('oauth_signature_method="HMAC-SHA512"', $sent->getHeaderLine('Authorization'));
-        self::assertSame('application/json', $sent->getHeaderLine('Accept'));
-        self::assertSame(Configuration::DEFAULT_USER_AGENT, $sent->getHeaderLine('User-Agent'));
+        $headers = ResourceFactory::headers($response);
+        self::assertContains('Accept: application/json', $headers);
+        self::assertContains('User-Agent: '.Configuration::DEFAULT_USER_AGENT, $headers);
     }
 
     public function testBuildsFormBodyForFormOption(): void
     {
-        $psr18 = new QueueClient([$this->jsonResponse(200, [])]);
-        $client = $this->buildClient($psr18);
+        $response = $this->jsonResponse(200, []);
+        $this->buildClient([$response])->request(
+            'POST',
+            ApiVersion::V2,
+            '/self/applications',
+            ['form' => ['name' => 'app', 'zone' => 'par']],
+        );
 
-        $client->request('POST', ApiVersion::V2, '/self/applications', ['form' => ['name' => 'app', 'zone' => 'par']]);
-
-        $sent = $psr18->lastRequest;
-        self::assertNotNull($sent);
-        self::assertSame('application/x-www-form-urlencoded', $sent->getHeaderLine('Content-Type'));
-        self::assertSame('name=app&zone=par', (string) $sent->getBody());
+        self::assertContains('Content-Type: application/x-www-form-urlencoded', ResourceFactory::headers($response));
+        self::assertSame('name=app&zone=par', $response->getRequestOptions()['body']);
     }
 
     public function testBuildsJsonBodyForJsonOption(): void
     {
-        $psr18 = new QueueClient([$this->jsonResponse(200, [])]);
-        $client = $this->buildClient($psr18);
+        $response = $this->jsonResponse(200, []);
+        $this->buildClient([$response])->request(
+            'POST',
+            ApiVersion::V2,
+            '/self/applications',
+            ['json' => ['name' => 'app']],
+        );
 
-        $client->request('POST', ApiVersion::V2, '/self/applications', ['json' => ['name' => 'app']]);
-
-        $sent = $psr18->lastRequest;
-        self::assertNotNull($sent);
-        self::assertSame('application/json', $sent->getHeaderLine('Content-Type'));
-        self::assertSame('{"name":"app"}', (string) $sent->getBody());
+        self::assertContains('Content-Type: application/json', ResourceFactory::headers($response));
+        self::assertSame('{"name":"app"}', $response->getRequestOptions()['body']);
     }
 
     public function testAppendsQueryParameters(): void
     {
-        $psr18 = new QueueClient([$this->jsonResponse(200, [])]);
-        $client = $this->buildClient($psr18);
+        $response = $this->jsonResponse(200, []);
+        $this->buildClient([$response])->request(
+            'GET',
+            ApiVersion::V2,
+            '/applications',
+            ['query' => ['limit' => 10, 'fields' => ['id', 'name']]],
+        );
 
-        $client->request('GET', ApiVersion::V2, '/applications', ['query' => ['limit' => 10, 'fields' => ['id', 'name']]]);
-
-        $sent = $psr18->lastRequest;
-        self::assertNotNull($sent);
-        $uri = (string) $sent->getUri();
-        self::assertSame('https://api.clever-cloud.com/v2/applications?limit=10&fields=id&fields=name', $uri);
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/applications?limit=10&fields=id&fields=name',
+            $response->getRequestUrl(),
+        );
     }
 
     public function testRoutesV4PathsToV4BaseUrl(): void
     {
-        $psr18 = new QueueClient([$this->jsonResponse(200, [])]);
-        $client = $this->buildClient($psr18);
+        $response = $this->jsonResponse(200, []);
+        $this->buildClient([$response])->request('GET', ApiVersion::V4, '/billing/balance');
 
-        $client->request('GET', ApiVersion::V4, '/billing/balance');
-
-        self::assertNotNull($psr18->lastRequest);
-        self::assertSame('https://api.clever-cloud.com/v4/billing/balance', (string) $psr18->lastRequest->getUri());
+        self::assertSame('https://api.clever-cloud.com/v4/billing/balance', $response->getRequestUrl());
     }
 
     /**
      * @param array<string, mixed> $payload
      */
-    private function jsonResponse(int $status, array $payload): ResponseInterface
+    private function jsonResponse(int $status, array $payload): MockResponse
     {
-        return $this->factory
-            ->createResponse($status)
-            ->withHeader('Content-Type', 'application/json')
-            ->withBody($this->factory->createStream(json_encode($payload, JSON_THROW_ON_ERROR)));
+        return new MockResponse(json_encode($payload, JSON_THROW_ON_ERROR), [
+            'http_code' => $status,
+            'response_headers' => ['content-type' => 'application/json'],
+        ]);
     }
 
-    private function buildClient(QueueClient $psr18, ?RetryPolicy $policy = null): HttpClient
+    /**
+     * @param list<MockResponse> $responses
+     */
+    private function buildClient(array $responses, ?RetryPolicy $policy = null): HttpClient
     {
         $configuration = new Configuration();
         $signer = new OAuth1Signer(
             new MockClock('@1700000000'),
             new StaticNonceGenerator('test-nonce'),
         );
+
+        $mock = new MockHttpClient($responses);
+        $psr18 = new Psr18Client($mock, $this->factory, $this->factory);
 
         return new HttpClient(
             psr18: $psr18,
@@ -309,39 +296,4 @@ final class HttpClientTest extends TestCase
             },
         );
     }
-}
-
-final class QueueClient implements ClientInterface
-{
-    public int $callCount = 0;
-    public ?RequestInterface $lastRequest = null;
-
-    /**
-     * @param list<ResponseInterface|Throwable> $queue
-     */
-    public function __construct(private array $queue)
-    {
-    }
-
-    public function sendRequest(RequestInterface $request): ResponseInterface
-    {
-        ++$this->callCount;
-        $this->lastRequest = $request;
-
-        if ([] === $this->queue) {
-            throw new RuntimeException('QueueClient: no more queued responses');
-        }
-
-        $next = array_shift($this->queue);
-        if ($next instanceof Throwable) {
-            /** @var ClientExceptionInterface $next */
-            throw $next;
-        }
-
-        return $next;
-    }
-}
-
-final class TransportFailure extends RuntimeException implements ClientExceptionInterface
-{
 }

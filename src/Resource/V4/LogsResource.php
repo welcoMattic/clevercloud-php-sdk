@@ -8,7 +8,11 @@ use CleverCloud\Sdk\Streaming\LogStream;
 use CleverCloud\Sdk\Streaming\SseStream;
 
 /**
- * Real-time and historical application logs against `/v4/logs`.
+ * Real-time and historical application logs against `/v4/logs/...`.
+ *
+ * Path layout per the documentation:
+ * `/v4/logs/organisations/{ownerId}/applications/{applicationId}/logs`
+ * (use `null` for `$organisationId` to scope under `/self`).
  */
 final readonly class LogsResource extends AbstractV4Resource
 {
@@ -18,11 +22,11 @@ final readonly class LogsResource extends AbstractV4Resource
      *
      * @param array{since?: string, until?: string, filter?: string, deploymentId?: string} $filters
      */
-    public function stream(string $applicationId, array $filters = []): LogStream
+    public function stream(string $applicationId, ?string $organisationId = null, array $filters = []): LogStream
     {
         $response = $this->httpStream(
             'GET',
-            '/logs/'.rawurlencode($applicationId),
+            $this->logsPath($applicationId, $organisationId),
             [
                 'query' => $filters,
                 'headers' => ['Accept' => 'text/event-stream'],
@@ -40,14 +44,20 @@ final readonly class LogsResource extends AbstractV4Resource
      *
      * @return list<LogEntry>
      */
-    public function query(string $applicationId, array $filters = []): array
+    public function query(string $applicationId, ?string $organisationId = null, array $filters = []): array
     {
         /** @var list<array<string, mixed>> $payload */
         $payload = $this->httpGet(
-            '/logs/'.rawurlencode($applicationId),
+            $this->logsPath($applicationId, $organisationId),
             ['query' => $filters],
         );
 
         return $this->mapCollection(LogEntry::class, $payload);
+    }
+
+    private function logsPath(string $applicationId, ?string $organisationId): string
+    {
+        return '/logs'.$this->ownerPath($organisationId)
+            .'/applications/'.rawurlencode($applicationId).'/logs';
     }
 }

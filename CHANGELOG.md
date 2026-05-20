@@ -7,6 +7,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **V2 application extensions** — `dependencies()`, `addDependency()`,
+  `removeDependency()`, `tags()` / `addTag()` / `removeTag()`,
+  `exposedEnv()` / `setExposedEnv()`, `addons()` / `linkAddon()` /
+  `unlinkAddon()` on `ApplicationsResource`.
+- **V2 add-on extensions** — `sso()`, `tags()` / `addTag()` /
+  `removeTag()`, `migrate()` on `AddonsResource`.
+- **V2 self management** — `update()`, `sshKeys()` / `addSshKey()` /
+  `removeSshKey()`, `emailAddresses()` / `addEmailAddress()` /
+  `removeEmailAddress()`, OAuth consumer CRUD (`consumers()`,
+  `getConsumer()`, `createConsumer()`, `updateConsumer()`,
+  `deleteConsumer()`), MFA endpoints (`startMfa()`, `confirmMfa()`,
+  `disableMfa()`, `regenerateMfaBackupCodes()`), `changePassword()`.
+  New DTOs: `SshKey`, `EmailAddress`, `OAuthConsumer`.
+- **V2 organisation extensions** — OAuth consumers CRUD, `namespaces()`.
+  New DTO: `Namespace_`.
+- **V4 drains** — `DrainsResource` with full CRUD plus `enable()` /
+  `disable()` / `restart()`. New `Drain` DTO and `DrainType` enum
+  (Datadog / ElasticSearch / NewRelic / OVH-TCP / Raw-HTTP /
+  Syslog-TCP / Syslog-UDP).
+- **V4 notifications** — `NotificationsResource` (email notifications,
+  list/create/delete with event-type and service filters). New
+  `EmailNotification` DTO.
+- **V4 webhooks** — `WebhooksResource` (list/create/delete, format
+  raw/slack/gitter/flowdock). New `Webhook` DTO and `WebhookFormat`
+  enum.
+- **V4 network groups** — `NetworkGroupsResource` (list/get/create/
+  delete + member management + WireGuard config download for external
+  peers). New `NetworkGroup`, `NetworkGroupMember` DTOs. Operator
+  resources gained `linkNetworkGroup()` / `unlinkNetworkGroup()`
+  helpers (Keycloak / Otoroshi).
+- **V4 orchestration** — `OrchestrationResource` exposing the
+  v4 instance and deployment endpoints at
+  `/v4/orchestration/organisations/{owner}/applications/{appId}/{instances|deployments}`.
+- All new resources exposed on the `Client` facade via property hooks
+  (`$client->drains`, `$client->notifications`, `$client->webhooks`,
+  `$client->networkGroups`, `$client->orchestration`).
+
+### Fixed
+
+- **V4 logs URL** — `LogsResource` now hits
+  `/v4/logs/organisations/{owner}/applications/{appId}/logs` (was
+  `/v4/logs/{appId}`). The owner is now a required argument.
+- **V4 operators URL** — `OperatorsResource` now routes through
+  `/v4/addon-providers/addon-{kind}/addons[/{id}]` (was the made-up
+  `/v4/operators/{kind}/{owner}/...`). Owner-scoped arguments are
+  dropped — the API resolves ownership from credentials.
+- **Pulsar storage policies** — `PulsarPoliciesResource` now hits
+  `/storage-policies` (not `/policy`) and uses **PATCH** (not PUT) for
+  partial updates. The `list()` method is gone; use `get()` to read
+  the current effective policy. `delete()` was renamed `reset()`.
+
+### Changed
+
+- Tests now use `Symfony\Component\HttpClient\MockHttpClient` wrapped
+  in `Symfony\Component\HttpClient\Psr18Client` instead of an in-tree
+  PSR-18 fake. The custom `RecordingClient` and the QueueClient inside
+  `HttpClientTest` have been removed.
+
 ## [0.1.0] — 2026-05-19
 
 First public preview. PHP 8.5+, PSR-18 + discovery, OAuth 1.0a HMAC-SHA512,
