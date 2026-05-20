@@ -68,6 +68,20 @@ final readonly class ApplicationsResource extends AbstractV2Resource
         );
     }
 
+    /**
+     * Triggers a deployment for the given application, optionally pinned to a
+     * specific commit hash. Distinct from {@see restart()}: the same endpoint
+     * is used but a `commit` query parameter selects which revision deploys.
+     */
+    public function deploy(string $applicationId, ?string $commit = null, ?string $organisationId = null): void
+    {
+        $query = null === $commit ? [] : ['commit' => $commit];
+        $this->httpPost(
+            $this->appPath($applicationId, $organisationId).'/instances',
+            ['query' => $query],
+        );
+    }
+
     public function stop(string $applicationId, ?string $organisationId = null): void
     {
         $this->httpDelete($this->appPath($applicationId, $organisationId).'/instances');
@@ -79,6 +93,27 @@ final readonly class ApplicationsResource extends AbstractV2Resource
             $this->appPath($applicationId, $organisationId).'/branch',
             ['json' => ['branch' => $branch]],
         );
+    }
+
+    /**
+     * Lists git branches the deployment system has observed for this app's
+     * remote repository. Returns an empty list for non-git deploy targets.
+     *
+     * @return list<string>
+     */
+    public function branches(string $applicationId, ?string $organisationId = null): array
+    {
+        /** @var array<int|string, mixed> $payload */
+        $payload = $this->httpGet($this->appPath($applicationId, $organisationId).'/branches');
+
+        $names = [];
+        foreach ($payload as $value) {
+            if (\is_string($value)) {
+                $names[] = $value;
+            }
+        }
+
+        return $names;
     }
 
     /**

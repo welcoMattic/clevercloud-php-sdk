@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — v1.0 prep
+
+- **API token (Bearer) authentication** — `Credentials::apiToken()` mints an
+  `ApiTokenCredentials` that attaches `Authorization: Bearer <token>`. The
+  legacy OAuth1 path is preserved as `Credentials::oauth1()` returning
+  `OAuth1Credentials`. `Credentials` is now abstract; instantiation goes
+  through the named constructors.
+- **`ApiVersion::Bridge`** enum case + `Configuration::bridgeBaseUrl`
+  routing endpoints to `https://api-bridge.clever-cloud.com`.
+- **`$client->apiTokens`** — V4 / api-bridge CRUD for personal API tokens
+  (`list`, `get`, `create`, `update`, `delete`). New `ApiToken` DTO.
+- **`$client->tcpRedirections`** — V2 TCP port redirections per app, plus a
+  `namespaces()` helper. New `TcpRedirection` DTO.
+- **`$client->backups`** — V4 add-on backups (`list`, `get`, `restore`).
+  New `Backup` DTO.
+- **Application deploy/branches** — `ApplicationsResource::deploy(commit?)`
+  and `::branches()`.
+- **Domain get** — `DomainsResource::get(appId, fqdn)`.
+- **Add-on migrations** — `listMigrations()`, `getMigration()`,
+  `cancelMigration()`, `preorderMigration()` complete the `migrate()` start
+  endpoint.
+- **Lifecycle hooks** — `ClientBuilder::onRequest()` / `onResponse()`
+  callbacks invoked around every dispatch.
+
+### Changed — v1.0 prep
+
+- **`AbstractResource`** is now marked `@internal`. The class hierarchy is
+  used by the SDK's own V2/V4/Bridge subclasses; user code should not extend it.
+- README: explicit coverage matrix per family; PSR-3 log-key reference;
+  `MockHttpClient` testing pattern documented.
+
+### Removed — v1.0 prep
+
+- **`PageIterator`** skeleton has been removed. Pagination was never wired
+  to any resource — it was dead code. List endpoints continue to return
+  `array<T>`; cursor pagination will land post-1.0 when needed.
+
 ### Added
 
 - **V2 application extensions** — `dependencies()`, `addDependency()`,

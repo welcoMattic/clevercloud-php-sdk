@@ -163,7 +163,10 @@ final readonly class AddonsResource extends AbstractV2Resource
     }
 
     /**
-     * Migrates an add-on to a different plan (vertical scaling).
+     * Migrates an add-on to a different plan (vertical scaling). Returns the
+     * updated `Addon` resource. See {@see listMigrations()} / {@see getMigration()}
+     * to track in-flight migrations and {@see preorderMigration()} for a price
+     * estimate.
      */
     public function migrate(string $addonId, string $targetPlanId, ?string $organisationId = null): Addon
     {
@@ -174,6 +177,61 @@ final readonly class AddonsResource extends AbstractV2Resource
         );
 
         return $this->mapTo(Addon::class, $payload);
+    }
+
+    /**
+     * Lists past and in-progress migrations for an add-on.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function listMigrations(string $addonId, ?string $organisationId = null): array
+    {
+        /** @var list<array<string, mixed>> $payload */
+        $payload = $this->httpGet($this->addonPath($addonId, $organisationId).'/migrations');
+
+        return $payload;
+    }
+
+    /**
+     * Fetches the current status of a single migration.
+     *
+     * @return array<string, mixed>
+     */
+    public function getMigration(string $addonId, string $migrationId, ?string $organisationId = null): array
+    {
+        /** @var array<string, mixed> $payload */
+        $payload = $this->httpGet(
+            $this->addonPath($addonId, $organisationId).'/migrations/'.rawurlencode($migrationId),
+        );
+
+        return $payload;
+    }
+
+    /**
+     * Cancels an in-flight migration.
+     */
+    public function cancelMigration(string $addonId, string $migrationId, ?string $organisationId = null): void
+    {
+        $this->httpDelete(
+            $this->addonPath($addonId, $organisationId).'/migrations/'.rawurlencode($migrationId),
+        );
+    }
+
+    /**
+     * Pre-orders a migration to get a price estimate without committing to
+     * the change.
+     *
+     * @return array<string, mixed>
+     */
+    public function preorderMigration(string $addonId, string $targetPlanId, ?string $organisationId = null): array
+    {
+        /** @var array<string, mixed> $payload */
+        $payload = $this->httpPost(
+            $this->addonPath($addonId, $organisationId).'/migrations/preorder',
+            ['json' => ['plan' => $targetPlanId]],
+        );
+
+        return $payload;
     }
 
     private function addonPath(string $addonId, ?string $organisationId): string

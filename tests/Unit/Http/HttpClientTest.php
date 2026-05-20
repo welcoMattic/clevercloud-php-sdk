@@ -286,7 +286,7 @@ final class HttpClientTest extends TestCase
             streamFactory: $this->factory,
             uriBuilder: new UriBuilder($configuration, $this->factory),
             signer: $signer,
-            credentials: new Credentials('ck', 'cs', 'tk', 'ts'),
+            credentials: Credentials::oauth1('ck', 'cs', 'tk', 'ts'),
             configuration: $configuration,
             jsonCodec: new JsonCodec(),
             retryPolicy: $policy ?? new RetryPolicy(maxAttempts: 1, jitterMs: 0),

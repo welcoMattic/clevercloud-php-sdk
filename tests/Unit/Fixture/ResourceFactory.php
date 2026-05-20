@@ -61,7 +61,7 @@ final class ResourceFactory
             streamFactory: $factory,
             uriBuilder: new UriBuilder($configuration, $factory),
             signer: new OAuth1Signer(new MockClock('@1700000000'), new StaticNonceGenerator('test-nonce')),
-            credentials: new Credentials('ck', 'cs', 'tk', 'ts'),
+            credentials: Credentials::oauth1('ck', 'cs', 'tk', 'ts'),
             configuration: $configuration,
             jsonCodec: new JsonCodec(),
             retryPolicy: $policy ?? new RetryPolicy(maxAttempts: 1, jitterMs: 0),

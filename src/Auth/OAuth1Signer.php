@@ -25,7 +25,7 @@ final readonly class OAuth1Signer
     /**
      * @param array<string, scalar> $extraOAuthParams optional protocol params (oauth_callback, oauth_verifier, …)
      */
-    public function sign(RequestInterface $request, Credentials $credentials, array $extraOAuthParams = []): RequestInterface
+    public function sign(RequestInterface $request, OAuth1Credentials $credentials, array $extraOAuthParams = []): RequestInterface
     {
         $oauthParams = [
             'oauth_consumer_key' => $credentials->consumerKey,
@@ -51,7 +51,7 @@ final readonly class OAuth1Signer
     /**
      * @param array<string, string> $oauthParams without `oauth_signature`
      */
-    private function computeSignature(RequestInterface $request, Credentials $credentials, array $oauthParams): string
+    private function computeSignature(RequestInterface $request, OAuth1Credentials $credentials, array $oauthParams): string
     {
         $pairs = [];
         foreach ($oauthParams as $key => $value) {

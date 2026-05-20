@@ -2,28 +2,44 @@
 
 namespace CleverCloud\Sdk\Auth;
 
+use Psr\Http\Message\RequestInterface;
 use SensitiveParameter;
 
 /**
- * OAuth 1.0a credentials used to sign every request to Clever Cloud.
+ * Base type for authentication credentials. Build via the named constructors:
  *
- * The token / tokenSecret pair is optional only during the two-legged
- * `request_token` step of the OAuth flow; every authenticated call needs both.
+ *   Credentials::oauth1('ck', 'cs', 'tk', 'ts');
+ *   Credentials::apiToken('cc_eyJhbGciOi...');
+ *
+ * The chosen credential type drives which `Authorization` header the SDK
+ * attaches to outgoing requests. Bearer (API token) is the auth mode Clever
+ * Cloud now recommends; OAuth 1.0a is kept for legacy consumers and the
+ * 3-legged authorisation flow.
  */
-final readonly class Credentials
+abstract readonly class Credentials
 {
-    public function __construct(
-        public string $consumerKey,
+    public static function oauth1(
+        string $consumerKey,
         #[SensitiveParameter]
-        public string $consumerSecret,
-        public ?string $token = null,
+        string $consumerSecret,
+        ?string $token = null,
         #[SensitiveParameter]
-        public ?string $tokenSecret = null,
-    ) {
+        ?string $tokenSecret = null,
+    ): OAuth1Credentials {
+        return new OAuth1Credentials($consumerKey, $consumerSecret, $token, $tokenSecret);
     }
 
-    public function hasUserToken(): bool
-    {
-        return null !== $this->token && null !== $this->tokenSecret;
+    public static function apiToken(
+        #[SensitiveParameter]
+        string $token,
+    ): ApiTokenCredentials {
+        return new ApiTokenCredentials($token);
     }
+
+    /**
+     * Attach the proper `Authorization` header (or signature) to `$request`
+     * and return the resulting message. Called once per request by the
+     * HTTP client just before dispatch.
+     */
+    abstract public function applyTo(RequestInterface $request, OAuth1Signer $oauth1Signer): RequestInterface;
 }

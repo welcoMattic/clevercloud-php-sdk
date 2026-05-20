@@ -26,6 +26,19 @@ final class DomainsResourceTest extends TestCase
         self::assertSame('two.example.com', $vhosts[1]->fqdn);
     }
 
+    public function testGetReturnsTypedVhost(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['fqdn' => 'app.example.com']);
+
+        $vhost = $this->resource($response)->get('app_1', 'app.example.com', 'orga_1');
+
+        self::assertSame('app.example.com', $vhost->fqdn);
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/vhosts/app.example.com',
+            $response->getRequestUrl(),
+        );
+    }
+
     public function testAddPostsToVhostsByFqdn(): void
     {
         $response = ResourceFactory::jsonResponse(204, []);

@@ -131,6 +131,44 @@ final class ApplicationsResourceTest extends TestCase
         self::assertSame('{"branch":"feature/x"}', $response->getRequestOptions()['body']);
     }
 
+    public function testBranchesReturnsListOfNames(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['main', 'develop', 'feature/x']);
+
+        $branches = $this->resource($response)->branches('app_1', 'orga_1');
+
+        self::assertSame(['main', 'develop', 'feature/x'], $branches);
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/branches',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testDeployPostsInstancesEndpointWithCommit(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, []);
+
+        $this->resource($response)->deploy('app_1', 'abc123', 'orga_1');
+
+        self::assertSame('POST', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/instances?commit=abc123',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testDeployWithoutCommitOmitsQuery(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, []);
+
+        $this->resource($response)->deploy('app_1');
+
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/self/applications/app_1/instances',
+            $response->getRequestUrl(),
+        );
+    }
+
     public function testAddDependencyHitsPut(): void
     {
         $response = ResourceFactory::jsonResponse(204, []);

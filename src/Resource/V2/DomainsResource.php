@@ -18,6 +18,16 @@ final readonly class DomainsResource extends AbstractV2Resource
         return $this->mapCollection(Vhost::class, $payload);
     }
 
+    public function get(string $applicationId, string $fqdn, ?string $organisationId = null): Vhost
+    {
+        /** @var array<string, mixed> $payload */
+        $payload = $this->httpGet(
+            $this->vhostsPath($applicationId, $organisationId).'/'.rawurlencode($fqdn),
+        );
+
+        return $this->mapTo(Vhost::class, $payload);
+    }
+
     public function add(string $applicationId, string $fqdn, ?string $organisationId = null): void
     {
         $this->httpPost(
