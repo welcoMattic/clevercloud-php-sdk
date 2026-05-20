@@ -13,12 +13,14 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * Drives the OAuth 1.0a 3-legged flow against Clever Cloud:
+ * Two ways to log into the demo:
  *
- *   /login          → POST request_token, redirect the user to authorize URL
- *   /oauth/callback → receive oauth_token + oauth_verifier, POST access_token,
- *                     store the user token + secret in the session
- *   /logout         → clear the session
+ *   /login                → chooser page (OAuth1 or API token)
+ *   /login/oauth          → POST request_token, redirect the user to authorize URL
+ *   /oauth/callback       → receive oauth_token + oauth_verifier, POST access_token
+ *   /login/token  (GET)   → paste-an-API-token form
+ *   /login/token  (POST)  → store the token in session, redirect to /
+ *   /logout       (POST)  → clear the session
  */
 final class SecurityController extends AbstractController
 {
@@ -32,7 +34,15 @@ final class SecurityController extends AbstractController
     }
 
     #[Route('/login', name: 'login', methods: ['GET'])]
-    public function login(Request $request, UrlGeneratorInterface $urls): Response
+    public function login(): Response
+    {
+        return $this->render('security/login.html.twig', [
+            'hasConsumer' => '' !== $this->factory->consumerKey() && '' !== $this->factory->consumerSecret(),
+        ]);
+    }
+
+    #[Route('/login/oauth', name: 'login_oauth', methods: ['POST'])]
+    public function loginOAuth(Request $request, UrlGeneratorInterface $urls): Response
     {
         $session = $request->getSession();
 
@@ -97,9 +107,29 @@ final class SecurityController extends AbstractController
         $session->set(ClevercloudClientFactory::SESSION_TOKEN, $access['token']);
         $session->set(ClevercloudClientFactory::SESSION_TOKEN_SECRET, $access['tokenSecret']);
 
-        $this->addFlash('success', 'Connecté à Clever Cloud.');
+        $this->addFlash('success', 'Connecté à Clever Cloud via OAuth 1.0a.');
 
         return $this->redirectToRoute('dashboard');
+    }
+
+    #[Route('/login/token', name: 'login_token', methods: ['GET', 'POST'])]
+    public function loginToken(Request $request): Response
+    {
+        if ($request->isMethod('POST')) {
+            $token = $request->request->get('api_token');
+            if (!\is_string($token) || '' === trim($token)) {
+                $this->addFlash('error', 'Token vide — colle un token Clever Cloud valide.');
+
+                return $this->redirectToRoute('login_token');
+            }
+
+            $request->getSession()->set(ClevercloudClientFactory::SESSION_API_TOKEN, trim($token));
+            $this->addFlash('success', 'Connecté à Clever Cloud via API token.');
+
+            return $this->redirectToRoute('dashboard');
+        }
+
+        return $this->render('security/login_token.html.twig');
     }
 
     #[Route('/logout', name: 'logout', methods: ['POST'])]

@@ -39,7 +39,10 @@
                     {% for app in applications %}
                         <tr>
                             <td>
-                                <strong>{{ app.name }}</strong>
+                                <a href="{{ path('application_show', selectedOwner ? { id: app.id, owner: selectedOwner } : { id: app.id }) }}"
+                                   style="text-decoration: none; color: inherit;">
+                                    <strong>{{ app.name }}</strong>
+                                </a>
                                 {% if app.favourite %}⭐{% endif %}
                                 {% if app.archived %}<span class="badge warn">archivée</span>{% endif %}
                             </td>

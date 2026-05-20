@@ -38,7 +38,12 @@
                 <tbody>
                     {% for addon in addons %}
                         <tr>
-                            <td><strong>{{ addon.name }}</strong></td>
+                            <td>
+                                <a href="{{ path('addon_show', selectedOwner ? { id: addon.id, owner: selectedOwner } : { id: addon.id }) }}"
+                                   style="text-decoration: none; color: inherit;">
+                                    <strong>{{ addon.name }}</strong>
+                                </a>
+                            </td>
                             <td><code>{{ addon.id }}</code></td>
                             <td>
                                 {% if addon.provider %}

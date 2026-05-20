@@ -47,9 +47,16 @@
                 <a href="{{ path('organisation_list') }}">Organisations</a>
                 <a href="{{ path('application_list') }}">Applications</a>
                 <a href="{{ path('addon_list') }}">Add-ons</a>
+                <a href="{{ path('api_tokens_list') }}">API tokens</a>
             </div>
             <div>
-                {% if app.session.has('cc_user_token') %}
+                {% if app.session.has('cc_api_token') %}
+                    <span class="badge ok" style="margin-right: 0.5rem;">Bearer</span>
+                    <form method="post" action="{{ path('logout') }}" style="display: inline; margin: 0;">
+                        <button type="submit" class="btn" style="background: transparent; color: #fff;">Déconnexion</button>
+                    </form>
+                {% elseif app.session.has('cc_user_token') %}
+                    <span class="badge" style="margin-right: 0.5rem; background: #6b7280; color: #fff;">OAuth1</span>
                     <form method="post" action="{{ path('logout') }}" style="display: inline; margin: 0;">
                         <button type="submit" class="btn" style="background: transparent; color: #fff;">Déconnexion</button>
                     </form>

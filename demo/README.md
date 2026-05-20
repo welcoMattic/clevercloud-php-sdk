@@ -1,13 +1,16 @@
 # Clever Cloud Mini Dashboard
 
-Petite app **Symfony 8** qui démontre le SDK [`clevercloud/sdk`](../) :
+Petite app **Symfony 8** qui démontre tout le SDK [`clevercloud/sdk`](../) :
 
-- Login **OAuth 1.0a 3-legged** complet (seuls les consumer key/secret sont
-  pré-configurés ; le token utilisateur est obtenu automatiquement au login)
+- Double authentification : **API token (Bearer)** ou **OAuth 1.0a 3-legged**
 - Liste des organisations
 - Liste des applications (perso + par organisation)
-- Liste des add-ons (perso + par organisation, avec provider + plan typés)
-- Bouton **Redéployer** (avec / sans cache) et **Stop** sur chaque application
+- **Page de détail d'application** : domaines, branches Git, redirections TCP,
+  déploiement avec/sans SHA, restart, stop
+- Liste des add-ons (perso + par organisation)
+- **Page de détail d'add-on** : migrations (annulation incluse), backups
+  (téléchargement + restauration)
+- **Gestion des tokens API** via `api-bridge.clever-cloud.com` (CRUD)
 
 ![Capture d'écran à venir](https://placehold.co/600x300?text=Clever+Cloud+Mini+Dashboard)
 
@@ -17,121 +20,115 @@ Petite app **Symfony 8** qui démontre le SDK [`clevercloud/sdk`](../) :
 - [Symfony CLI](https://symfony.com/download) pour le serveur de dev TLS
 - Un compte Clever Cloud
 
-## Étape 1 — Créer un OAuth consumer dans la console
+## Authentification
+
+Deux modes au choix, tous deux disponibles sur `/login`.
+
+### Mode 1 — API token (recommandé)
+
+Le plus simple : pas de configuration côté démo.
 
 1. Connecte-toi à la [console Clever Cloud](https://console.clever-cloud.com/).
-2. Ouvre les paramètres de ton organisation (ou ton compte perso) →
-   *OAuth consumers* → *Create a consumer*.
-3. Renseigne :
-   - **Name** : `Mini Dashboard` (n'importe quoi)
-   - **URL** : `https://localhost:8765/`
-   - **Base URL** : `https://localhost:8765/`
-   - **Picture** : optionnel
-   - **Rights / Scopes** : coche au moins `Manage applications` (pour le
-     redéploiement) et `Read applications`, `Read addons`, `Read organisations`
-4. Valide → la console te montre **un consumer key et un consumer secret**.
-   Note-les, on en a besoin à l'étape suivante.
+2. Section *Personal API tokens* → crée un token (donne-lui un nom, des scopes
+   adaptés à ce que tu veux tester).
+3. Copie la valeur en clair (elle ne sera plus affichée).
+4. Lance la démo, va sur `/login` → *Se connecter avec un token* → colle.
 
-> Si tu vois plus tard le message *« OAuth callback is invalid »* en lançant
-> la démo, c'est que l'URL du consumer ne correspond pas exactement à ce que
-> l'app envoie comme callback (`https://localhost:8765/oauth/callback`).
-> Édite le consumer dans la console pour aligner l'URL.
+Tu peux ensuite gérer tes autres tokens directement depuis la page **API tokens**
+de la démo (CRUD complet via `api-bridge.clever-cloud.com`).
 
-## Étape 2 — Installer et configurer la démo
+### Mode 2 — OAuth 1.0a 3-legged
 
-```bash
-cd demo
-composer install
-cp .env.local.dist .env.local
-$EDITOR .env.local
-```
+Flow historique. Demande de créer un *OAuth consumer* dans la console et de
+configurer la démo.
 
-Dans `.env.local`, colle uniquement :
+1. Console Clever Cloud → ton organisation (ou compte perso) → *OAuth consumers*
+   → *Create a consumer*.
+2. Renseigne :
+   - **Name** : `Mini Dashboard` (libre)
+   - **URL** et **Base URL** : `https://localhost:8765/`
+   - **Rights / Scopes** : au minimum `Read applications`, `Manage applications`,
+     `Read addons`, `Read organisations`
+3. La console te montre **un consumer key et un consumer secret**.
+4. Configure la démo :
 
-```dotenv
-CC_CONSUMER_KEY=ton-consumer-key
-CC_CONSUMER_SECRET=ton-consumer-secret
-```
+   ```bash
+   cd demo
+   composer install
+   cp .env.local.dist .env.local
+   $EDITOR .env.local
+   ```
 
-Le user token et son secret seront obtenus automatiquement via le flow OAuth.
+   ```dotenv
+   CC_CONSUMER_KEY=ton-consumer-key
+   CC_CONSUMER_SECRET=ton-consumer-secret
+   ```
 
-## Étape 3 — Lancer le serveur
+5. Lance la démo → `/login` → *Se connecter via OAuth* → autorise sur la console
+   → tu reviens loggé.
+
+> Si tu vois *« OAuth callback is invalid »*, l'URL du consumer n'est pas
+> alignée avec ce que la démo envoie (`https://localhost:8765/oauth/callback`).
+> Édite le consumer dans la console.
+
+## Lancer le serveur
 
 ```bash
 symfony server:ca:install       # une seule fois, pour le TLS local
 symfony server:start --port=8765
 ```
 
-Ouvre **[https://localhost:8765](https://localhost:8765)** :
-
-1. tu seras redirigé vers `/login`
-2. clique sur *Se connecter*
-3. tu arrives sur Clever Cloud, autorise l'app
-4. tu reviens sur la démo, loggé
-
-## Flow OAuth en détails
-
-```
-        ┌─────────────────────────────────────────────────────────────┐
-        │                                                             │
-GET /login                                                            │
-    │                                                                 │
-    │   POST https://api.clever-cloud.com/v2/oauth/request_token      │
-    │   (signé HMAC-SHA512 avec consumer key/secret + oauth_callback) │
-    ▼                                                                 │
-[request_token + secret] ─── stockés en session ────────┐             │
-    │                                                   │             │
-    │   302 → https://api.clever-cloud.com/v2/oauth/    │             │
-    │         authorize?oauth_token=…                   │             │
-    ▼                                                   │             │
-Utilisateur autorise sur la console Clever Cloud        │             │
-    │                                                   │             │
-    │   302 → /oauth/callback?oauth_token=…             │             │
-    │         &oauth_verifier=…                         │             │
-    ▼                                                   ▼             │
-GET /oauth/callback                                                   │
-    │                                                                 │
-    │   POST .../v2/oauth/access_token                                │
-    │   (signé avec request_token + verifier)                         │
-    ▼                                                                 │
-[user_token + secret] ─── stockés en session ─────────────────────────┘
-    │
-    │   302 → /
-    ▼
-Dashboard (Client SDK construit à partir de la session)
-```
+Ouvre **[https://localhost:8765](https://localhost:8765)**.
 
 ## Comment c'est câblé
 
 | Fichier                                          | Rôle                                                            |
 | ------------------------------------------------ | --------------------------------------------------------------- |
-| `src/Service/ClevercloudClientFactory.php`       | Construit le `CleverCloud\Sdk\Client` à partir env + session     |
-| `src/Controller/SecurityController.php`          | Orchestre le 3-legged dance via `CleverCloud\Sdk\Auth\OAuthFlow` |
-| `src/Exception/NotAuthenticatedException.php`    | Levée si pas de user token en session                            |
-| `src/EventListener/NotAuthenticatedListener.php` | Catche l'exception et redirige vers `/login`                     |
-| `config/services.yaml`                           | Wiring DI + alias PSR-17/18 + `Client` en `lazy: true`           |
+| `src/Service/ClevercloudClientFactory.php`       | Construit le `Client` à partir des creds session (Bearer OU OAuth1) |
+| `src/Controller/SecurityController.php`          | Login UI + OAuth1 flow + API token form                          |
+| `src/Controller/ApplicationController.php`       | List + show (vhosts/branches/TCP) + deploy/restart/stop          |
+| `src/Controller/AddonController.php`             | List + show (migrations/backups) + restore/cancel                |
+| `src/Controller/ApiTokensController.php`         | CRUD tokens via api-bridge                                       |
+| `src/Exception/NotAuthenticatedException.php`    | Levée si pas de creds en session                                 |
+| `src/EventListener/NotAuthenticatedListener.php` | Catche et redirige vers `/login`                                 |
+| `config/services.yaml`                           | DI + `Client` en `lazy: true`                                    |
 
 ## Routes
 
-| Route                                | Méthode | Action                                |
-| ------------------------------------ | ------- | ------------------------------------- |
-| `/login`                             | GET     | Démarre le flow OAuth                 |
-| `/oauth/callback`                    | GET     | Reçoit le verifier, échange le token  |
-| `/logout`                            | POST    | Vide la session                       |
-| `/`                                  | GET     | Accueil (user + organisations)        |
-| `/organisations`                     | GET     | Liste détaillée                       |
-| `/applications?owner=<id>`           | GET     | Apps (self ou organisation)           |
-| `/applications/{id}/restart`         | POST    | Redéploiement (avec/sans cache)       |
-| `/applications/{id}/stop`            | POST    | Arrêt                                 |
-| `/addons?owner=<id>`                 | GET     | Add-ons (self ou organisation)        |
+| Route                                                 | Méthode  | Action                                              |
+| ----------------------------------------------------- | -------- | --------------------------------------------------- |
+| `/login`                                              | GET      | Page de choix de méthode (Bearer / OAuth1)          |
+| `/login/oauth`                                        | POST     | Démarre le flow OAuth 1.0a                          |
+| `/oauth/callback`                                     | GET      | Reçoit le verifier, échange le token                |
+| `/login/token`                                        | GET/POST | Formulaire d'API token + sauvegarde session        |
+| `/logout`                                             | POST     | Vide la session                                     |
+| `/`                                                   | GET      | Accueil (user + organisations)                      |
+| `/organisations`                                      | GET      | Liste détaillée                                     |
+| `/applications`                                       | GET      | Apps de l'owner sélectionné                         |
+| `/applications/{id}`                                  | GET      | Détail d'app (vhosts + branches + TCP redirs)       |
+| `/applications/{id}/deploy`                           | POST     | Déploiement avec / sans SHA de commit               |
+| `/applications/{id}/restart`                          | POST     | Redéploiement HEAD                                  |
+| `/applications/{id}/stop`                             | POST     | Arrêt                                               |
+| `/applications/{id}/tcp-redirs`                       | POST     | Ouverture d'un port TCP sur un namespace            |
+| `/applications/{id}/tcp-redirs/{port}`                | POST     | Fermeture d'un port TCP                             |
+| `/addons`                                             | GET      | Add-ons de l'owner sélectionné                      |
+| `/addons/{id}`                                        | GET      | Détail d'add-on (migrations + backups)              |
+| `/addons/{id}/backups/{backupId}/restore`             | POST     | Restauration d'un backup                            |
+| `/addons/{id}/migrations/{migrationId}/cancel`        | POST     | Annulation d'une migration en cours                 |
+| `/api-tokens`                                         | GET      | Liste des tokens (api-bridge, Bearer requis)        |
+| `/api-tokens`                                         | POST     | Création d'un nouveau token                         |
+| `/api-tokens/{id}`                                    | POST     | Révocation d'un token                               |
 
 ## Notes
 
-- **Le user token est stocké dans la session PHP** (fichier sur disque par
-  défaut). Si tu veux qu'il survive aux redémarrages du serveur, il faut un
-  store persistant (Redis, DB, etc.).
-- **Le redéploiement** appelle `POST /v2/{owner}/applications/{id}/instances`
-  via `CleverCloud\Sdk\Client::applications->restart()`. Le bouton « sans
-  cache » ajoute `?useCache=no`.
+- **Le token / les creds sont stockés dans la session PHP** (fichier sur disque
+  par défaut). Pour qu'ils survivent aux redémarrages, branche un store
+  persistant (Redis, DB).
+- **API tokens** : la page `/api-tokens` n'est accessible qu'aux sessions
+  authentifiées en Bearer. Un utilisateur connecté en OAuth1 voit un message
+  l'invitant à se reconnecter via token.
+- **Backups** : disponibles seulement si l'add-on a un `provider` et un `realId`
+  exploitables côté api-bridge. La page affiche une note neutre si le provider
+  ne supporte pas l'endpoint.
 - **Pas de Doctrine** dans la démo (la dépendance est tirée par le pack
   webapp ; on ne s'en sert pas).

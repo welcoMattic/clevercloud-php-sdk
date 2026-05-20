@@ -9,17 +9,21 @@ use CleverCloud\Sdk\ClientBuilder;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Builds a fully-authenticated `CleverCloud\Sdk\Client` from:
+ * Builds a fully-authenticated `CleverCloud\Sdk\Client` from one of two
+ * credential sources:
  *
- *   - the consumer key / secret pinned in env vars (.env.local)
- *   - the user token / secret stored in the session after a successful
- *     OAuth 1.0a 3-legged login (see {@see \App\Controller\SecurityController})
+ *   1. an **API token** (Bearer) pasted at `/login/token`, stored in session
+ *      key {@see self::SESSION_API_TOKEN};
+ *   2. the **OAuth 1.0a** user token / secret obtained at `/oauth/callback`
+ *      after the 3-legged flow against the consumer pair pinned in env vars.
  *
- * Throws {@see NotAuthenticatedException} when the session has no user
- * token yet; the matching exception listener redirects to /login.
+ * API token wins when both are present. Throws
+ * {@see NotAuthenticatedException} when no credentials are in session yet;
+ * the matching exception listener redirects to `/login`.
  */
 final class ClevercloudClientFactory
 {
+    public const string SESSION_API_TOKEN = 'cc_api_token';
     public const string SESSION_TOKEN = 'cc_user_token';
     public const string SESSION_TOKEN_SECRET = 'cc_user_token_secret';
 
@@ -40,23 +44,51 @@ final class ClevercloudClientFactory
         return $this->consumerSecret;
     }
 
+    /**
+     * Returns the auth mode currently active in session: 'api-token', 'oauth1',
+     * or null when no credentials are stored.
+     */
+    public function authMode(): ?string
+    {
+        $session = $this->requestStack->getSession();
+
+        if (\is_string($session->get(self::SESSION_API_TOKEN)) && '' !== $session->get(self::SESSION_API_TOKEN)) {
+            return 'api-token';
+        }
+
+        $token = $session->get(self::SESSION_TOKEN);
+        $secret = $session->get(self::SESSION_TOKEN_SECRET);
+        if (\is_string($token) && '' !== $token && \is_string($secret) && '' !== $secret) {
+            return 'oauth1';
+        }
+
+        return null;
+    }
+
     public function create(): Client
     {
         $session = $this->requestStack->getSession();
-        $token = $session->get(self::SESSION_TOKEN);
-        $tokenSecret = $session->get(self::SESSION_TOKEN_SECRET);
 
-        if (!\is_string($token) || !\is_string($tokenSecret) || '' === $token || '' === $tokenSecret) {
-            throw new NotAuthenticatedException('No Clever Cloud user token in session — log in first.');
+        $apiToken = $session->get(self::SESSION_API_TOKEN);
+        if (\is_string($apiToken) && '' !== $apiToken) {
+            return (new ClientBuilder())
+                ->withCredentials(Credentials::apiToken($apiToken))
+                ->build();
         }
 
-        return (new ClientBuilder())
-            ->withCredentials(new Credentials(
-                consumerKey: $this->consumerKey,
-                consumerSecret: $this->consumerSecret,
-                token: $token,
-                tokenSecret: $tokenSecret,
-            ))
-            ->build();
+        $token = $session->get(self::SESSION_TOKEN);
+        $tokenSecret = $session->get(self::SESSION_TOKEN_SECRET);
+        if (\is_string($token) && \is_string($tokenSecret) && '' !== $token && '' !== $tokenSecret) {
+            return (new ClientBuilder())
+                ->withCredentials(Credentials::oauth1(
+                    consumerKey: $this->consumerKey,
+                    consumerSecret: $this->consumerSecret,
+                    token: $token,
+                    tokenSecret: $tokenSecret,
+                ))
+                ->build();
+        }
+
+        throw new NotAuthenticatedException('No Clever Cloud credentials in session — log in first.');
     }
 }
