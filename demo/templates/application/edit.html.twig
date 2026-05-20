@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier {{ application.name }} — Clever Cloud Dashboard{% endblock %}
+{% block page_title %}Modifier {{ application.name }}{% endblock %}
+{% block page_subtitle %}
+    <p class="topbar__subtitle"><span class="table__id">{{ application.id }}</span></p>
+{% endblock %}
+
+{% block body %}
+    <a class="back-link" href="{{ path('application_show', owner ? { id: application.id, owner: owner } : { id: application.id }) }}">← Retour</a>
+
+    <form method="post" action="{{ path('application_edit', { id: application.id }) }}">
+        {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
+
+        <div class="card">
+            <div class="card__header"><h3 class="card__title">Identité</h3></div>
+            <div class="card__body" style="display: grid; gap: 0.85rem;">
+                <div class="form-field">
+                    <label class="form-field__label" for="name">Nom</label>
+                    <input id="name" name="name" type="text" required class="form-field__input" value="{{ application.name }}">
+                </div>
+                <div class="form-field">
+                    <label class="form-field__label" for="description">Description</label>
+                    <input id="description" name="description" type="text" class="form-field__input" value="{{ application.description ?? '' }}">
+                </div>
+                <div class="form-field">
+                    <label class="form-field__label" for="branch">Branche déployée</label>
+                    <input id="branch" name="branch" type="text" class="form-field__input form-field__input--mono" value="{{ application.branch ?? '' }}">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header"><h3 class="card__title">Scaling</h3></div>
+            <div class="card__body">
+                <p class="form-help" style="margin-bottom: 0.85rem;">
+                    Les flavors acceptés sont <code class="code">pico</code>, <code class="code">nano</code>,
+                    <code class="code">XS</code> à <code class="code">3XL</code>. Min/max identiques = scaling fixe.
+                </p>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label class="form-field__label" for="minInstances">Instances min</label>
+                        <input id="minInstances" name="minInstances" type="number" min="1" class="form-field__input"
+                               value="{{ application.instance.minInstances ?? '' }}">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-field__label" for="maxInstances">Instances max</label>
+                        <input id="maxInstances" name="maxInstances" type="number" min="1" class="form-field__input"
+                               value="{{ application.instance.maxInstances ?? '' }}">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-field__label" for="minFlavor">Flavor min</label>
+                        <input id="minFlavor" name="minFlavor" type="text" class="form-field__input form-field__input--mono"
+                               value="{{ application.instance.minFlavor.name ?? '' }}">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-field__label" for="maxFlavor">Flavor max</label>
+                        <input id="maxFlavor" name="maxFlavor" type="text" class="form-field__input form-field__input--mono"
+                               value="{{ application.instance.maxFlavor.name ?? '' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header"><h3 class="card__title">Options de déploiement</h3></div>
+            <div class="card__body" style="display: grid; gap: 0.75rem;">
+                <label style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="checkbox" name="cancelOnPush" value="1" {% if application.cancelOnPush %}checked{% endif %}>
+                    <span>Annuler le déploiement en cours sur un nouveau push</span>
+                </label>
+                <label style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="checkbox" name="separateBuild" value="1" {% if application.separateBuild %}checked{% endif %}>
+                    <span>Utiliser une instance dédiée au build</span>
+                </label>
+                <label style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="checkbox" name="stickySessions" value="1" {% if application.stickySessions %}checked{% endif %}>
+                    <span>Sticky sessions (load balancer)</span>
+                </label>
+                <label style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="checkbox" name="homogeneous" value="1" {% if application.homogeneous %}checked{% endif %}>
+                    <span>Déploiement homogène (toutes les instances en même temps)</span>
+                </label>
+                <label style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="checkbox" name="archived" value="1" {% if application.archived %}checked{% endif %}>
+                    <span>Archivée (masque l'app dans la liste)</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="btn-group" style="margin-top: 1rem;">
+            <button type="submit" class="btn btn--primary">Enregistrer</button>
+            <a class="btn" href="{{ path('application_show', owner ? { id: application.id, owner: owner } : { id: application.id }) }}">Annuler</a>
+        </div>
+    </form>
+{% endblock %}

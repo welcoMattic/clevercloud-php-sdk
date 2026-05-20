@@ -35,6 +35,55 @@ final class AddonController extends AbstractController
         ]);
     }
 
+    #[Route('/addons/new', name: 'addon_new', methods: ['GET', 'POST'])]
+    public function create(Request $request): Response
+    {
+        $owner = $this->normaliseOwner($request->query->get('owner') ?? $request->request->get('owner'));
+
+        if ($request->isMethod('POST')) {
+            $payload = [];
+            foreach (['name', 'providerId', 'plan', 'region'] as $field) {
+                $value = $request->request->get($field);
+                if (\is_string($value) && '' !== trim($value)) {
+                    $payload[$field] = trim($value);
+                }
+            }
+
+            if (!isset($payload['name'], $payload['providerId'], $payload['plan'])) {
+                $this->addFlash('error', 'Nom, provider et plan requis.');
+
+                return $this->redirectToRoute('addon_new', null === $owner ? [] : ['owner' => $owner]);
+            }
+
+            try {
+                $created = $this->cc->addons->create($payload, $owner);
+                $this->addFlash('success', \sprintf('Add-on %s créé.', $created->name));
+
+                return $this->redirectToRoute(
+                    'addon_show',
+                    null === $owner ? ['id' => $created->id] : ['id' => $created->id, 'owner' => $owner],
+                );
+            } catch (CleverCloudException $e) {
+                $this->addFlash('error', \sprintf('Échec de la création : %s', $e->getMessage()));
+            }
+        }
+
+        try {
+            $organisations = $this->cc->organisations->list();
+            $providers = $this->cc->addons->providers();
+            $zones = $this->cc->products->zones();
+        } catch (CleverCloudException $e) {
+            return $this->render('dashboard/error.html.twig', ['exception' => $e]);
+        }
+
+        return $this->render('addon/new.html.twig', [
+            'organisations' => $organisations,
+            'providers' => $providers,
+            'zones' => $zones,
+            'owner' => $owner,
+        ]);
+    }
+
     #[Route('/addons/{id}', name: 'addon_show', methods: ['GET'])]
     public function show(Request $request, string $id): Response
     {
