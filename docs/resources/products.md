@@ -1,6 +1,6 @@
 # Products catalogue (`/v2/products/...`)
 
-Source: [`src/Resource/V2/ProductsResource.php`](../../src/Resource/V2/ProductsResource.php)
+Source: [`src/Resource/V2/ProductsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V2/ProductsResource.php)
 
 The platform-wide catalogue of instance types, add-on providers, zones,
 and countries. Read-only, no auth scope required.

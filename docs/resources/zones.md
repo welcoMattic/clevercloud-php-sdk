@@ -1,6 +1,6 @@
 # Zones (`/v4/products/zones`)
 
-Source: [`src/Resource/V4/ZonesResource.php`](../../src/Resource/V4/ZonesResource.php)
+Source: [`src/Resource/V4/ZonesResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/ZonesResource.php)
 
 Thin alias around `$client->products->zones()` with an extra `get($name)`
 endpoint. Returns deployment zones (`par`, `mtl`, `rbx`, `scw`, …).
@@ -27,7 +27,7 @@ public function get(string $name): Zone
 
 ## `Zone` DTO
 
-Fields (verified against [`src/Model/Zone.php`](../../src/Model/Zone.php)):
+Fields (verified against [`src/Model/Zone.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Zone.php)):
 
 ```php
 public string $name;                    // 'par', 'mtl', ...

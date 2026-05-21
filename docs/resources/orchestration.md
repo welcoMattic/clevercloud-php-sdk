@@ -1,6 +1,6 @@
 # Orchestration (`/v4/orchestration/...`)
 
-Source: [`src/Resource/V4/OrchestrationResource.php`](../../src/Resource/V4/OrchestrationResource.php)
+Source: [`src/Resource/V4/OrchestrationResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/OrchestrationResource.php)
 
 Live runtime orchestration data — richer than the V2 equivalents
 (`$client->applications->instances()`, `$client->deployments`).

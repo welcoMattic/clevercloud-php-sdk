@@ -1,6 +1,6 @@
 # Load balancers (`/v4/load-balancers/...`)
 
-Source: [`src/Resource/V4/LoadBalancersResource.php`](../../src/Resource/V4/LoadBalancersResource.php)
+Source: [`src/Resource/V4/LoadBalancersResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/LoadBalancersResource.php)
 
 ## Access
 
@@ -28,4 +28,4 @@ custom domain.
 
 ## `LoadBalancer` DTO
 
-See [`src/Model/LoadBalancer.php`](../../src/Model/LoadBalancer.php).
+See [`src/Model/LoadBalancer.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/LoadBalancer.php).

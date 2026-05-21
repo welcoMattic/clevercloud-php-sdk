@@ -1,6 +1,6 @@
 # Webhooks (`/v4/notifications/webhooks/...`)
 
-Source: [`src/Resource/V4/WebhooksResource.php`](../../src/Resource/V4/WebhooksResource.php)
+Source: [`src/Resource/V4/WebhooksResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/WebhooksResource.php)
 
 ## Access
 
@@ -40,4 +40,4 @@ public function delete(string $webhookId, ?string $organisationId = null): void
 
 ## `Webhook` DTO
 
-See [`src/Model/Webhook.php`](../../src/Model/Webhook.php).
+See [`src/Model/Webhook.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Webhook.php).

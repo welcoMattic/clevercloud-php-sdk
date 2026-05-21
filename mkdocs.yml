@@ -1,0 +1,121 @@
+site_name: Clever Cloud PHP SDK
+site_description: PHP SDK for the Clever Cloud REST API (v2 + v4 + api-bridge)
+site_url: https://welcomattic.github.io/clevercloud-php-sdk/
+repo_name: welcoMattic/clevercloud-php-sdk
+repo_url: https://github.com/welcoMattic/clevercloud-php-sdk
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - search.suggest
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.action.edit
+    - content.action.view
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/welcoMattic/clevercloud-php-sdk
+    - icon: fontawesome/brands/php
+      link: https://packagist.org/
+
+nav:
+  - Home: index.md
+  - Guides:
+      - Getting started: getting-started.md
+      - Authentication: authentication.md
+      - Configuration: configuration.md
+      - Error handling: errors.md
+      - Live log streaming: logs-streaming.md
+      - Testing: testing.md
+  - V2 resources:
+      - Self: resources/self.md
+      - Users: resources/users.md
+      - Organisations: resources/organisations.md
+      - Applications: resources/applications.md
+      - Add-ons: resources/addons.md
+      - Deployments: resources/deployments.md
+      - Environment: resources/environment.md
+      - Domains: resources/domains.md
+      - TCP redirections: resources/tcp-redirections.md
+      - Products: resources/products.md
+      - Instances: resources/instances.md
+  - V4 resources:
+      - Billing: resources/billing.md
+      - Load balancers: resources/load-balancers.md
+      - Zones: resources/zones.md
+      - Logs: resources/logs.md
+      - Operators: resources/operators.md
+      - Drains: resources/drains.md
+      - Notifications: resources/notifications.md
+      - Webhooks: resources/webhooks.md
+      - Network groups: resources/network-groups.md
+      - Orchestration: resources/orchestration.md
+      - Pulsar policies: resources/pulsar-policies.md
+      - Backups: resources/backups.md
+  - Bridge:
+      - API tokens: resources/api-tokens.md
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - pymdownx.keys
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search

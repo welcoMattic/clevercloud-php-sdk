@@ -1,6 +1,6 @@
 # TCP redirections (`/v2/.../applications/{id}/tcp-redirs`)
 
-Source: [`src/Resource/V2/TcpRedirectionsResource.php`](../../src/Resource/V2/TcpRedirectionsResource.php)
+Source: [`src/Resource/V2/TcpRedirectionsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V2/TcpRedirectionsResource.php)
 
 Expose a raw TCP socket on a Clever Cloud-managed port — useful for
 non-HTTP protocols (PostgreSQL replication, custom binary protocols, …).
@@ -35,7 +35,7 @@ parameter, verified against the source).
 ## `TcpRedirection` DTO
 
 Fields (verified against
-[`src/Model/TcpRedirection.php`](../../src/Model/TcpRedirection.php)):
+[`src/Model/TcpRedirection.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/TcpRedirection.php)):
 
 ```php
 public int    $port;

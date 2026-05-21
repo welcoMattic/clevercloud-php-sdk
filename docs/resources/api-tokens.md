@@ -1,6 +1,6 @@
 # API tokens (`api-bridge.clever-cloud.com`)
 
-Source: [`src/Resource/Bridge/ApiTokensResource.php`](../../src/Resource/Bridge/ApiTokensResource.php)
+Source: [`src/Resource/Bridge/ApiTokensResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/Bridge/ApiTokensResource.php)
 
 CRUD over Personal API tokens. Lives on the **api-bridge** gateway, not the
 regular API host.
@@ -47,7 +47,7 @@ The SDK builds these URLs by:
 ## `ApiToken` DTO
 
 Fields (verified against
-[`src/Model/ApiToken.php`](../../src/Model/ApiToken.php)):
+[`src/Model/ApiToken.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/ApiToken.php)):
 
 ```php
 public string  $id;
@@ -76,7 +76,7 @@ echo "Save this token: ".$token->token;
 
 ## See also
 
-- The [`api-token.php` example](../../examples/api-token.php) shows the full
+- The [`api-token.php` example](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/examples/api-token.php) shows the full
   flow.
 - [Authentication guide](../authentication.md) for the Bearer routing
   semantics.

@@ -1,6 +1,6 @@
 # Self (`/v2/self`)
 
-Source: [`src/Resource/V2/SelfResource.php`](../../src/Resource/V2/SelfResource.php)
+Source: [`src/Resource/V2/SelfResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V2/SelfResource.php)
 
 Read and mutate the currently-authenticated user.
 

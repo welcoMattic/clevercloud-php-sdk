@@ -1,6 +1,6 @@
 # Network Groups (`/v4/networkgroups/...`)
 
-Source: [`src/Resource/V4/NetworkGroupsResource.php`](../../src/Resource/V4/NetworkGroupsResource.php)
+Source: [`src/Resource/V4/NetworkGroupsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/NetworkGroupsResource.php)
 
 WireGuard-based private networks linking applications, add-ons, and external
 peers together.

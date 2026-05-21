@@ -32,7 +32,7 @@ assert($app->name === 'hello');
 one. Pass a `Closure` instead of an array to inspect the URL/method and
 respond dynamically.
 
-A runnable variant lives at [`examples/mocking.php`](../examples/mocking.php).
+A runnable variant lives at [`examples/mocking.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/examples/mocking.php).
 
 ## Inspecting what the SDK sent
 
@@ -52,7 +52,7 @@ $response->getRequestOptions();  // ['headers' => [...], 'body' => '{}', ...]
 ```
 
 The SDK's own test suite uses this exact pattern — see
-[`tests/Unit/Resource/V2/ApplicationsResourceTest.php`](../tests/Unit/Resource/V2/ApplicationsResourceTest.php)
+[`tests/Unit/Resource/V2/ApplicationsResourceTest.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/tests/Unit/Resource/V2/ApplicationsResourceTest.php)
 or any other `*ResourceTest.php`.
 
 ## Dynamic response callback
@@ -90,7 +90,7 @@ assert(str_starts_with($auth, 'Authorization: Bearer '));
 ```
 
 Verified against the helpers in
-[`tests/Unit/Fixture/ResourceFactory.php`](../tests/Unit/Fixture/ResourceFactory.php).
+[`tests/Unit/Fixture/ResourceFactory.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/tests/Unit/Fixture/ResourceFactory.php).
 
 ## Pinning the OAuth1 signer for deterministic signatures
 
@@ -137,7 +137,7 @@ assert(count($entries) === 2);
 assert($entries[0]->message === 'hello');
 ```
 
-See [`tests/Unit/Resource/V4/LogsResourceTest.php`](../tests/Unit/Resource/V4/LogsResourceTest.php).
+See [`tests/Unit/Resource/V4/LogsResourceTest.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/tests/Unit/Resource/V4/LogsResourceTest.php).
 
 ## Asserting an exception is raised
 

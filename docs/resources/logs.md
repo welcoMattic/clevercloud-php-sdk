@@ -1,6 +1,6 @@
 # Logs (`/v4/logs/...`)
 
-Source: [`src/Resource/V4/LogsResource.php`](../../src/Resource/V4/LogsResource.php)
+Source: [`src/Resource/V4/LogsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/LogsResource.php)
 
 Real-time and historical application logs. The live streaming workflow has
 its own guide: [Live log streaming](../logs-streaming.md). This page is

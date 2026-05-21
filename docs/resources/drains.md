@@ -1,6 +1,6 @@
 # Log drains (`/v4/drains/...`)
 
-Source: [`src/Resource/V4/DrainsResource.php`](../../src/Resource/V4/DrainsResource.php)
+Source: [`src/Resource/V4/DrainsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/DrainsResource.php)
 
 Drains forward an application's (or add-on's) log stream to an external sink
 (Datadog, ElasticSearch, NewRelic, syslog, raw HTTP, …).

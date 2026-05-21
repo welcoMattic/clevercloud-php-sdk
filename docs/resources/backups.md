@@ -1,6 +1,6 @@
 # Add-on backups (`/v4/addon-providers/{providerId}/addons/{addonId}/backups`)
 
-Source: [`src/Resource/V4/BackupsResource.php`](../../src/Resource/V4/BackupsResource.php)
+Source: [`src/Resource/V4/BackupsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/BackupsResource.php)
 
 ## Access
 
@@ -31,6 +31,6 @@ see Clever Cloud's docs per add-on.
 
 ## `Backup` DTO
 
-See [`src/Model/Backup.php`](../../src/Model/Backup.php). Fields:
+See [`src/Model/Backup.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Backup.php). Fields:
 `id`, `createdAt`, `status`, `downloadUrl` (pre-signed, expires within
 minutes), `size`, `type`.

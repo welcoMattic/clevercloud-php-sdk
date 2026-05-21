@@ -1,6 +1,6 @@
 # Add-ons (`/v2/.../addons`)
 
-Source: [`src/Resource/V2/AddonsResource.php`](../../src/Resource/V2/AddonsResource.php)
+Source: [`src/Resource/V2/AddonsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V2/AddonsResource.php)
 
 ## Access
 
@@ -121,7 +121,7 @@ foreach ($client->addons->listMigrations($addonId) as $migration) {
 
 ## `Addon` DTO
 
-Source: [`src/Model/Addon.php`](../../src/Model/Addon.php). Notable fields:
+Source: [`src/Model/Addon.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Addon.php). Notable fields:
 `id`, `name`, `realId` (provider-side internal ID), `region`, `provider`
 (nested `AddonProvider`), `plan` (nested `AddonPlan`), `configKeys`,
 `creationDate` (ms).

@@ -14,3 +14,4 @@ composer.lock
 .env.local
 coverage/
 build/
+site/

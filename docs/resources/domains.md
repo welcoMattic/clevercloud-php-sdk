@@ -1,6 +1,6 @@
 # Domains / vhosts (`/v2/.../applications/{id}/vhosts`)
 
-Source: [`src/Resource/V2/DomainsResource.php`](../../src/Resource/V2/DomainsResource.php)
+Source: [`src/Resource/V2/DomainsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V2/DomainsResource.php)
 
 ## Access
 
@@ -33,7 +33,7 @@ public function unsetFavourite(string $applicationId, ?string $organisationId = 
 ## `Vhost` DTO
 
 Single field `public string $fqdn` (see
-[`src/Model/Vhost.php`](../../src/Model/Vhost.php)).
+[`src/Model/Vhost.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Vhost.php)).
 
 The "favourite" vhost (also referred to as "primary domain" in the
 Console) is the one Clever Cloud's HTTP responses advertise as canonical.

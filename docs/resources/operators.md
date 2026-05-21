@@ -1,6 +1,6 @@
 # Operators — Keycloak / Matomo / Metabase / Otoroshi
 
-Source: [`src/Resource/V4/OperatorsResource.php`](../../src/Resource/V4/OperatorsResource.php) (facade) and [`src/Resource/V4/AbstractOperatorResource.php`](../../src/Resource/V4/AbstractOperatorResource.php) (shared CRUD)
+Source: [`src/Resource/V4/OperatorsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/OperatorsResource.php) (facade) and [`src/Resource/V4/AbstractOperatorResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/AbstractOperatorResource.php) (shared CRUD)
 
 Clever Cloud's "operators" are fully-managed add-ons for popular open-source
 services. The SDK exposes them through a facade with four typed sub-clients
@@ -57,7 +57,7 @@ Keycloak and Otoroshi (per the source's docblock).
 ## `Operator` DTO
 
 Shared payload type across the four operators. See
-[`src/Model/Operator.php`](../../src/Model/Operator.php).
+[`src/Model/Operator.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Operator.php).
 
 ## Note on ownership
 
