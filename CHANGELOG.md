@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`docs/`** — full reference documentation. Resource pages with verified
+  signatures + HTTP paths, guides for getting started, authentication,
+  configuration, error handling, live log streaming, and testing patterns.
+
+### Fixed
+
+- **`InstancesResource`** is now V2-based and only exposes `list()`. The
+  1.0.0 version targeted V4 routes (`/v4/products/instances*`) that Clever
+  Cloud does not expose — every method returned 404. The redundant
+  `get(type[, version])`, `flavors(type)`, and `types()` methods are
+  removed; call `list()` and filter client-side on
+  `$instanceType->type` for per-type data. (The catalogue payload is the
+  same as the existing `$client->products->instances()` returns.)
+
 ## [1.0.0] — 2026-05-21
 
 First stable release. Public API surface is now considered locked; changes
