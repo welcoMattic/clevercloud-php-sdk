@@ -7,6 +7,11 @@ namespace CleverCloud\Sdk\Model;
  */
 final readonly class Flavor
 {
+    /**
+     * @param array<string, mixed> $memory Memory descriptor `{value, unit, formatted, ...}`;
+     *                                     left as a raw array because the v2 catalog returns
+     *                                     a nested object and the public surface keeps it flexible.
+     */
     public function __construct(
         public string $name,
         public ?int $mem = null,
@@ -18,7 +23,7 @@ final readonly class Flavor
         public ?bool $microservice = null,
         public ?bool $machineLearning = null,
         public ?bool $nice = null,
-        public ?int $memory = null,
+        public array $memory = [],
     ) {
     }
 }

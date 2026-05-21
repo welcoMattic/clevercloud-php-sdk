@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}API tokens — Clever Cloud Dashboard{% endblock %}
+{% block page_title %}API tokens{% endblock %}
+
+{% block body %}
+    <div class="card card--warn">
+        <div class="card__header"><h3 class="card__title">Indisponible dans ce mode</h3></div>
+        <div class="card__body">
+            <p>
+                La gestion des tokens passe par <code class="code">api-bridge.clever-cloud.com</code>, qui n'accepte
+                que l'authentification <strong>Bearer</strong>. Tu es actuellement connecté en OAuth 1.0a.
+            </p>
+            <ol>
+                <li>Mint un token initial depuis la <a href="https://console.clever-cloud.com/" target="_blank" rel="noopener">Console Clever Cloud</a> (section <em>Personal API tokens</em>).</li>
+                <li>Déconnecte-toi puis reconnecte-toi via <em>API token</em>.</li>
+            </ol>
+            <div class="btn-group">
+                <form class="inline" method="post" action="{{ path('logout') }}">
+                    <button class="btn btn--primary" type="submit">Se déconnecter</button>
+                </form>
+                <a class="btn" href="{{ path('dashboard') }}">Retour à l'accueil</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

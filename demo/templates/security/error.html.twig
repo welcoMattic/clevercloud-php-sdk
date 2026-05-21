@@ -1,13 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Erreur OAuth{% endblock %}
+{% block title %}Erreur OAuth — Clever Cloud Dashboard{% endblock %}
+{% block page_title %}Échec du flow OAuth{% endblock %}
 
 {% block body %}
     <div class="card">
-        <h2>Échec du flow OAuth</h2>
-        <pre style="background: #f3f4f6; padding: 1rem; border-radius: 4px; overflow-x: auto;">{{ exception.getMessage() }}</pre>
-        <p>
-            <a class="btn primary" href="{{ path('login') }}">Réessayer</a>
-        </p>
+        <div class="card__body">
+            <p class="card__error">{{ exception.getMessage() }}</p>
+            <div class="btn-group" style="margin-top: 1rem;">
+                <a class="btn btn--primary" href="{{ path('login') }}">Réessayer</a>
+            </div>
+        </div>
     </div>
 {% endblock %}

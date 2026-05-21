@@ -93,6 +93,8 @@ final class ApplicationsResourceTest extends TestCase
 
         self::assertSame('POST', $response->getRequestMethod());
         self::assertSame('https://api.clever-cloud.com/v2/self/applications/app_1/instances', $response->getRequestUrl());
+        self::assertSame('{}', $response->getRequestOptions()['body']);
+        self::assertContains('Content-Type: application/json', ResourceFactory::headers($response));
     }
 
     public function testRestartWithoutCacheAppendsQuery(): void
@@ -155,6 +157,8 @@ final class ApplicationsResourceTest extends TestCase
             'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/instances?commit=abc123',
             $response->getRequestUrl(),
         );
+        self::assertSame('{}', $response->getRequestOptions()['body']);
+        self::assertContains('Content-Type: application/json', ResourceFactory::headers($response));
     }
 
     public function testDeployWithoutCommitOmitsQuery(): void

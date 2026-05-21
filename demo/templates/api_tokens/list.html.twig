@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}API tokens — Clever Cloud Dashboard{% endblock %}
+{% block page_title %}API tokens{% endblock %}
+{% block page_subtitle %}
+    <p class="topbar__subtitle">Gérés via <code class="code">api-bridge.clever-cloud.com</code> — le token clair n'apparaît qu'à la création.</p>
+{% endblock %}
+
+{% block body %}
+    {% if lastMinted and lastMinted.token %}
+        <div class="card card--accent">
+            <div class="card__header">
+                <h3 class="card__title">Token créé : {{ lastMinted.name }}</h3>
+            </div>
+            <div class="card__body">
+                <p class="form-help" style="margin-bottom: 0.5rem;">Copie-le maintenant. Une fois cette page rechargée, il ne sera plus affiché.</p>
+                <code class="token-banner__value">{{ lastMinted.token }}</code>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="card__header"><h3 class="card__title">Créer un nouveau token</h3></div>
+        <div class="card__body">
+            <form method="post" action="{{ path('api_tokens_create') }}" style="display: grid; gap: 0.75rem; max-width: 540px;">
+                <div class="form-field">
+                    <label class="form-field__label" for="name">Nom</label>
+                    <input type="text" id="name" name="name" required placeholder="CI deploys" class="form-field__input">
+                </div>
+                <div class="form-field">
+                    <label class="form-field__label" for="scopes">Scopes (optionnel, séparés par des virgules)</label>
+                    <input type="text" id="scopes" name="scopes" placeholder="application:read, application:deploy" class="form-field__input form-field__input--mono">
+                </div>
+                <div>
+                    <button type="submit" class="btn btn--primary">Créer le token</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card__header">
+            <h3 class="card__title">Tokens existants{% if tokens %} <span class="badge neutral">{{ tokens|length }}</span>{% endif %}</h3>
+        </div>
+        {% if tokens is empty %}
+            <p class="card__empty">Aucun token actif.</p>
+        {% else %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>ID</th>
+                        <th>Scopes</th>
+                        <th>Créé</th>
+                        <th>Dernier usage</th>
+                        <th class="table__actions">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for token in tokens %}
+                        <tr>
+                            <td><strong>{{ token.name }}</strong></td>
+                            <td><span class="table__id">{{ token.id }}</span></td>
+                            <td>
+                                {% if token.scopes is empty %}<em class="form-help">aucun</em>{% else %}
+                                    <div class="flex-wrap-gap">
+                                        {% for scope in token.scopes %}<span class="chip">{{ scope }}</span>{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>{{ token.createdAt ?? '—' }}</td>
+                            <td>{{ token.lastUsedAt ?? '—' }}</td>
+                            <td class="table__actions">
+                                <form class="inline" method="post"
+                                      action="{{ path('api_tokens_delete', { id: token.id }) }}"
+                                      onsubmit="return confirm('Révoquer le token {{ token.name }} ? Cette action est irréversible.')">
+                                    <button class="btn btn--danger btn--sm" type="submit">Révoquer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

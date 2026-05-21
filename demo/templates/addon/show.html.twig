@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ addon.name }} — Clever Cloud Dashboard{% endblock %}
+{% block page_title %}{{ addon.name }}{% endblock %}
+{% block page_subtitle %}
+    <p class="topbar__subtitle">
+        <span class="table__id">{{ addon.id }}</span>
+        {% if addon.provider %} · {{ addon.provider.name ?? addon.provider.id }}{% endif %}
+        {% if addon.plan %} · <span class="badge neutral">{{ addon.plan.name ?? addon.plan.slug }}</span>{% endif %}
+        {% if addon.region %} · {{ addon.region }}{% endif %}
+    </p>
+{% endblock %}
+
+{% block body %}
+    <a class="back-link" href="{{ path('addon_list', owner ? { owner: owner } : {}) }}">← Retour aux add-ons</a>
+
+    <div class="card">
+        <div class="card__header">
+            <h3 class="card__title">Migrations{% if migrations %} <span class="badge neutral">{{ migrations|length }}</span>{% endif %}</h3>
+        </div>
+        {% if migrationsError %}
+            <p class="card__error">{{ migrationsError }}</p>
+        {% elseif migrations is empty %}
+            <p class="card__empty">Aucune migration enregistrée.</p>
+        {% else %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Statut</th>
+                        <th>Plan cible</th>
+                        <th class="table__actions">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for migration in migrations %}
+                        <tr>
+                            <td><span class="table__id">{{ migration.id ?? migration.migrationId ?? '—' }}</span></td>
+                            <td>
+                                <span class="badge {{ migration.status|cc_migration_status_variant }}">
+                                    {{ migration.status|cc_migration_status_label }}
+                                </span>
+                            </td>
+                            <td>{{ migration.plan ?? migration.targetPlan ?? '—' }}</td>
+                            <td class="table__actions">
+                                {% set status = migration.status ?? '' %}
+                                {% if status == 'in-progress' or status == 'pending' %}
+                                    <form class="inline" method="post"
+                                          action="{{ path('addon_migration_cancel', { id: addon.id, migrationId: migration.id ?? migration.migrationId }) }}"
+                                          onsubmit="return confirm('Annuler cette migration ?')">
+                                        {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
+                                        <button class="btn btn--danger btn--sm" type="submit">Annuler</button>
+                                    </form>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <div class="card__header">
+            <h3 class="card__title">Backups{% if backups %} <span class="badge neutral">{{ backups|length }}</span>{% endif %}</h3>
+        </div>
+        {% if backupsError %}
+            <p class="card__error">{{ backupsError }}</p>
+        {% elseif backups is empty %}
+            <p class="card__empty">Aucun backup pour cet add-on.</p>
+        {% else %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Taille</th>
+                        <th>Statut</th>
+                        <th class="table__actions">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for backup in backups %}
+                        <tr>
+                            <td><span class="table__id">{{ backup.id }}</span></td>
+                            <td>{{ backup.createdAt }}</td>
+                            <td>{{ backup.type ?? '—' }}</td>
+                            <td>
+                                {% if backup.size %}
+                                    {{ (backup.size / 1024 / 1024)|round(1) }} MB
+                                {% else %}—{% endif %}
+                            </td>
+                            <td>
+                                <span class="badge {% if backup.status == 'success' %}ok{% else %}warn{% endif %}">
+                                    {{ backup.status ?? '—' }}
+                                </span>
+                            </td>
+                            <td class="table__actions">
+                                <div class="btn-group">
+                                    {% if backup.downloadUrl %}
+                                        <a class="btn btn--sm" href="{{ backup.downloadUrl }}" target="_blank" rel="noopener">Télécharger</a>
+                                    {% endif %}
+                                    <form class="inline" method="post"
+                                          action="{{ path('addon_backup_restore', { id: addon.id, backupId: backup.id }) }}"
+                                          onsubmit="return confirm('Restaurer ce backup ? Cette opération peut écraser les données actuelles.')">
+                                        {% if owner %}<input type="hidden" name="owner" value="{{ owner }}">{% endif %}
+                                        <button class="btn btn--primary btn--sm" type="submit">Restaurer</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

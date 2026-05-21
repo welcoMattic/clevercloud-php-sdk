@@ -1,0 +1,136 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle application — Clever Cloud Dashboard{% endblock %}
+{% block page_title %}Nouvelle application{% endblock %}
+{% block page_subtitle %}<p class="topbar__subtitle">Création via <code class="code">POST /v2/{owner}/applications</code></p>{% endblock %}
+
+{% block body %}
+    <a class="back-link" href="{{ path('application_list', owner ? { owner: owner } : {}) }}">← Retour aux applications</a>
+
+    {% if loadErrors is defined and loadErrors is not empty %}
+        <div class="card card--warn">
+            <div class="card__body">
+                <p style="margin-top: 0;"><strong>Certaines listes n'ont pas pu être chargées :</strong></p>
+                <ul style="margin: 0;">
+                    {% for err in loadErrors %}<li>{{ err }}</li>{% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
+    <form method="post" action="{{ path('application_new') }}">
+        <div class="card">
+            <div class="card__header"><h3 class="card__title">Contexte</h3></div>
+            <div class="card__body">
+                <div class="form-field">
+                    <label class="form-field__label" for="owner-select">Propriétaire</label>
+                    <select id="owner-select" name="owner" class="form-field__select">
+                        <option value="self" {% if owner is null %}selected{% endif %}>Moi (self)</option>
+                        {% for orga in organisations %}
+                            <option value="{{ orga.id }}" {% if owner == orga.id %}selected{% endif %}>{{ orga.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header"><h3 class="card__title">Identité</h3></div>
+            <div class="card__body" style="display: grid; gap: 0.85rem;">
+                <div class="form-field">
+                    <label class="form-field__label" for="name">Nom</label>
+                    <input id="name" name="name" type="text" required class="form-field__input" placeholder="my-cool-app">
+                </div>
+                <div class="form-field">
+                    <label class="form-field__label" for="description">Description (optionnel)</label>
+                    <input id="description" name="description" type="text" class="form-field__input">
+                </div>
+                <div class="form-field">
+                    <label class="form-field__label" for="deploy">Méthode de déploiement</label>
+                    <select id="deploy" name="deploy" class="form-field__select">
+                        <option value="git" selected>Git</option>
+                        <option value="ftp">FTP / SFTP</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header"><h3 class="card__title">Runtime &amp; zone</h3></div>
+            <div class="card__body" style="display: grid; gap: 0.85rem;">
+                <div class="form-row">
+                    <div class="form-field">
+                        <label class="form-field__label" for="instanceType">Type d'instance</label>
+                        <select id="instanceType" name="instanceType" class="form-field__select">
+                            {% for inst in instances|filter(i => i.enabled is not same as(false)) %}
+                                <option value="{{ inst.type }}">{{ inst.name ?? inst.type }}{% if inst.version %} ({{ inst.version }}){% endif %}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-field__label" for="instanceVariant">Variant</label>
+                        <input id="instanceVariant" name="instanceVariant" type="text" class="form-field__input form-field__input--mono"
+                               placeholder="ex. 8.3, 20, 3.12...">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-field__label" for="zone">Zone</label>
+                        <select id="zone" name="zone" class="form-field__select">
+                            {% for z in zones %}
+                                <option value="{{ z.name }}">{{ z.displayName ?? z.city ?? z.name }} ({{ z.name }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <p class="form-help">
+                    Les variants disponibles dépendent du type d'instance. Voir
+                    <a href="https://www.clever.cloud/doc/reference/reference-environment-variables/" target="_blank" rel="noopener">la doc</a>.
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header"><h3 class="card__title">Scaling initial</h3></div>
+            <div class="card__body">
+                <div class="form-row">
+                    <div class="form-field">
+                        <label class="form-field__label" for="minInstances">Instances min</label>
+                        <select id="minInstances" name="minInstances" class="form-field__select">
+                            {% for n in instanceCounts %}
+                                <option value="{{ n }}" {% if n == 1 %}selected{% endif %}>{{ n }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-field__label" for="maxInstances">Instances max</label>
+                        <select id="maxInstances" name="maxInstances" class="form-field__select">
+                            {% for n in instanceCounts %}
+                                <option value="{{ n }}" {% if n == 1 %}selected{% endif %}>{{ n }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-field__label" for="minFlavor">Flavor min</label>
+                        <select id="minFlavor" name="minFlavor" class="form-field__select">
+                            {% for f in flavors %}
+                                <option value="{{ f }}" {% if f == 'nano' %}selected{% endif %}>{{ f }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-field__label" for="maxFlavor">Flavor max</label>
+                        <select id="maxFlavor" name="maxFlavor" class="form-field__select">
+                            {% for f in flavors %}
+                                <option value="{{ f }}" {% if f == 'nano' %}selected{% endif %}>{{ f }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group" style="margin-top: 1rem;">
+            <button type="submit" class="btn btn--primary">Créer l'application</button>
+            <a class="btn" href="{{ path('application_list') }}">Annuler</a>
+        </div>
+    </form>
+{% endblock %}

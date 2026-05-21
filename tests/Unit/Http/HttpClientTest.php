@@ -255,6 +255,34 @@ final class HttpClientTest extends TestCase
         self::assertSame('https://api.clever-cloud.com/v4/billing/balance', $response->getRequestUrl());
     }
 
+    public function testBearerCredentialsRouteV2PathsThroughApiBridge(): void
+    {
+        $response = $this->jsonResponse(200, []);
+        $this->buildClient([$response], credentials: Credentials::apiToken('cc_secret'))
+            ->request('GET', ApiVersion::V2, '/self');
+
+        self::assertSame('https://api-bridge.clever-cloud.com/v2/self', $response->getRequestUrl());
+        self::assertContains('Authorization: Bearer cc_secret', ResourceFactory::headers($response));
+    }
+
+    public function testBearerCredentialsRouteV4PathsThroughApiBridge(): void
+    {
+        $response = $this->jsonResponse(200, []);
+        $this->buildClient([$response], credentials: Credentials::apiToken('cc_secret'))
+            ->request('GET', ApiVersion::V4, '/billing/balance');
+
+        self::assertSame('https://api-bridge.clever-cloud.com/v4/billing/balance', $response->getRequestUrl());
+    }
+
+    public function testBearerCredentialsLeaveBridgeUrlsAlone(): void
+    {
+        $response = $this->jsonResponse(200, []);
+        $this->buildClient([$response], credentials: Credentials::apiToken('cc_secret'))
+            ->request('GET', ApiVersion::Bridge, '/v2/api-tokens');
+
+        self::assertSame('https://api-bridge.clever-cloud.com/v2/api-tokens', $response->getRequestUrl());
+    }
+
     /**
      * @param array<string, mixed> $payload
      */
@@ -269,7 +297,7 @@ final class HttpClientTest extends TestCase
     /**
      * @param list<MockResponse> $responses
      */
-    private function buildClient(array $responses, ?RetryPolicy $policy = null): HttpClient
+    private function buildClient(array $responses, ?RetryPolicy $policy = null, ?Credentials $credentials = null): HttpClient
     {
         $configuration = new Configuration();
         $signer = new OAuth1Signer(
@@ -286,7 +314,7 @@ final class HttpClientTest extends TestCase
             streamFactory: $this->factory,
             uriBuilder: new UriBuilder($configuration, $this->factory),
             signer: $signer,
-            credentials: Credentials::oauth1('ck', 'cs', 'tk', 'ts'),
+            credentials: $credentials ?? Credentials::oauth1('ck', 'cs', 'tk', 'ts'),
             configuration: $configuration,
             jsonCodec: new JsonCodec(),
             retryPolicy: $policy ?? new RetryPolicy(maxAttempts: 1, jitterMs: 0),

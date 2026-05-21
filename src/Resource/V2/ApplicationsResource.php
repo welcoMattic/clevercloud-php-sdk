@@ -4,6 +4,7 @@ namespace CleverCloud\Sdk\Resource\V2;
 
 use CleverCloud\Sdk\Model\Application;
 use CleverCloud\Sdk\Resource\AbstractV2Resource;
+use stdClass;
 
 final readonly class ApplicationsResource extends AbstractV2Resource
 {
@@ -64,7 +65,7 @@ final readonly class ApplicationsResource extends AbstractV2Resource
         $query = $withoutCache ? ['useCache' => 'no'] : [];
         $this->httpPost(
             $this->appPath($applicationId, $organisationId).'/instances',
-            ['query' => $query],
+            ['query' => $query, 'json' => new stdClass()],
         );
     }
 
@@ -78,7 +79,7 @@ final readonly class ApplicationsResource extends AbstractV2Resource
         $query = null === $commit ? [] : ['commit' => $commit];
         $this->httpPost(
             $this->appPath($applicationId, $organisationId).'/instances',
-            ['query' => $query],
+            ['query' => $query, 'json' => new stdClass()],
         );
     }
 

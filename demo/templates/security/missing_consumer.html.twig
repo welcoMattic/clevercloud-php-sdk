@@ -1,18 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Configuration manquante{% endblock %}
+{% block title %}Configuration manquante — Clever Cloud Dashboard{% endblock %}
+{% block page_title %}Credentials manquants{% endblock %}
 
 {% block body %}
-    <div class="card">
-        <h2>Credentials Clever Cloud manquants</h2>
-        <p>
-            Pour pouvoir initier le flow OAuth, il faut renseigner
-            <code>CC_CONSUMER_KEY</code> et <code>CC_CONSUMER_SECRET</code> dans
-            <code>.env.local</code>.
-        </p>
-        <p style="color: #6b7280;">
-            Récupère-les sur
-            <a href="https://www.clever.cloud/doc/extend/cc-api/">la doc Clever Cloud</a>.
-        </p>
+    <div class="card card--warn">
+        <div class="card__body">
+            <p>
+                Pour initier le flow OAuth, il faut renseigner
+                <code class="code">CC_CONSUMER_KEY</code> et <code class="code">CC_CONSUMER_SECRET</code>
+                dans <code class="code">.env.local</code>.
+            </p>
+            <p class="form-help">
+                Récupère-les sur <a href="https://www.clever.cloud/doc/extend/cc-api/">la doc Clever Cloud</a>.
+            </p>
+        </div>
     </div>
 {% endblock %}

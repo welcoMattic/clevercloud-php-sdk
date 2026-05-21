@@ -1,14 +1,20 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Applications — Clever Cloud Dashboard{% endblock %}
+{% block page_title %}Applications{% endblock %}
+{% block page_subtitle %}
+    <p class="topbar__subtitle">{{ applications|length }} application{{ applications|length > 1 ? 's' }} dans le contexte sélectionné</p>
+{% endblock %}
+{% block topbar_actions %}
+    <a class="btn btn--primary" href="{{ path('application_new', selectedOwner ? { owner: selectedOwner } : {}) }}">+ Nouvelle application</a>
+{% endblock %}
 
 {% block body %}
     <div class="card">
-        <h2>Applications ({{ applications|length }})</h2>
-        <form method="get" action="{{ path('application_list') }}">
-            <label>
-                Propriétaire :
-                <select name="owner" onchange="this.form.submit()">
+        <div class="card__body">
+            <form method="get" action="{{ path('application_list') }}" class="owner-filter">
+                <label class="form-field__label" for="owner-select">Propriétaire</label>
+                <select id="owner-select" name="owner" class="form-field__select" onchange="this.form.submit()">
                     <option value="self" {% if selectedOwner is null %}selected{% endif %}>Moi (self)</option>
                     {% for orga in organisations %}
                         <option value="{{ orga.id }}" {% if selectedOwner == orga.id %}selected{% endif %}>
@@ -16,58 +22,57 @@
                         </option>
                     {% endfor %}
                 </select>
-            </label>
-        </form>
+            </form>
+        </div>
     </div>
 
     <div class="card">
         {% if applications is empty %}
-            <p>Aucune application pour ce contexte.</p>
+            <p class="card__empty">Aucune application pour ce contexte.</p>
         {% else %}
-            <table>
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Nom</th>
                         <th>ID</th>
                         <th>Zone</th>
-                        <th>Branch</th>
+                        <th>Branche</th>
                         <th>État</th>
-                        <th>Actions</th>
+                        <th class="table__actions">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for app in applications %}
+                    {% for application in applications %}
                         <tr>
                             <td>
-                                <strong>{{ app.name }}</strong>
-                                {% if app.favourite %}⭐{% endif %}
-                                {% if app.archived %}<span class="badge warn">archivée</span>{% endif %}
+                                <a class="table__name" href="{{ path('application_show', selectedOwner ? { id: application.id, owner: selectedOwner } : { id: application.id }) }}">
+                                    {{ application.name }}
+                                </a>
+                                {% if application.favourite %}<span title="Favori"> ⭐</span>{% endif %}
+                                {% if application.archived %}<span class="badge warn">archivée</span>{% endif %}
                             </td>
-                            <td><code>{{ app.id }}</code></td>
-                            <td>{{ app.zone ?? '—' }}</td>
-                            <td>{{ app.branch ?? '—' }}</td>
+                            <td class="table__id-cell"><span class="table__id" title="{{ application.id }}">{{ application.id }}</span></td>
+                            <td>{{ application.zone ?? '—' }}</td>
+                            <td>{{ application.branch ?? '—' }}</td>
                             <td>
-                                {% if app.state %}
-                                    <span class="badge {% if app.state == 'SHOULD_BE_UP' %}ok{% elseif app.state == 'WANTS_TO_BE_UP' %}warn{% else %}fail{% endif %}">
-                                        {{ app.state }}
+                                {% if application.state %}
+                                    <span class="badge {{ application.state|cc_state_variant }}">
+                                        {{ application.state|cc_state_label }}
                                     </span>
                                 {% else %}—{% endif %}
                             </td>
-                            <td>
-                                <form class="inline" method="post" action="{{ path('application_restart', { id: app.id }) }}">
-                                    {% if selectedOwner %}<input type="hidden" name="owner" value="{{ selectedOwner }}">{% endif %}
-                                    <button class="btn primary" type="submit">Redéployer</button>
-                                </form>
-                                <form class="inline" method="post" action="{{ path('application_restart', { id: app.id }) }}">
-                                    {% if selectedOwner %}<input type="hidden" name="owner" value="{{ selectedOwner }}">{% endif %}
-                                    <input type="hidden" name="withoutCache" value="1">
-                                    <button class="btn primary" type="submit" title="Redéploiement sans cache">Redéployer sans cache</button>
-                                </form>
-                                <form class="inline" method="post" action="{{ path('application_stop', { id: app.id }) }}"
-                                      onsubmit="return confirm('Arrêter {{ app.name }} ?')">
-                                    {% if selectedOwner %}<input type="hidden" name="owner" value="{{ selectedOwner }}">{% endif %}
-                                    <button class="btn danger" type="submit">Stop</button>
-                                </form>
+                            <td class="table__actions">
+                                <div class="btn-group">
+                                    <form class="inline" method="post" action="{{ path('application_restart', { id: application.id }) }}">
+                                        {% if selectedOwner %}<input type="hidden" name="owner" value="{{ selectedOwner }}">{% endif %}
+                                        <button class="btn btn--primary btn--sm" type="submit">Redéployer</button>
+                                    </form>
+                                    <form class="inline" method="post" action="{{ path('application_stop', { id: application.id }) }}"
+                                          onsubmit="return confirm('Arrêter {{ application.name }} ?')">
+                                        {% if selectedOwner %}<input type="hidden" name="owner" value="{{ selectedOwner }}">{% endif %}
+                                        <button class="btn btn--danger btn--sm" type="submit">Stop</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}

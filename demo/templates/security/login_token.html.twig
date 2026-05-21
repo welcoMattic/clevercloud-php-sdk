@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Connexion par token — Clever Cloud Dashboard</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>☁️</text></svg>">
+        {{ importmap('app') }}
+    </head>
+    <body>
+        <div class="login-wrap">
+            <div class="login-panel">
+                <div class="login-panel__header">
+                    <div class="login-panel__brand">
+                        <span class="login-panel__brand-icon">☁️</span>
+                        Clever Cloud
+                    </div>
+                    <h1 class="login-panel__title">API token</h1>
+                    <p class="login-panel__subtitle">Colle un token Personal API généré depuis la Console.</p>
+                </div>
+                <div class="login-panel__body">
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}<div class="flash {{ label }}">{{ message }}</div>{% endfor %}
+                    {% endfor %}
+
+                    <form method="post" action="{{ path('login_token') }}" style="display: grid; gap: 0.85rem;">
+                        <div class="form-field">
+                            <label class="form-field__label" for="api_token">Token</label>
+                            <input type="password" id="api_token" name="api_token" required autofocus
+                                   placeholder="cc_..."
+                                   class="form-field__input form-field__input--mono">
+                        </div>
+                        <p class="form-help">
+                            Le token ne quitte pas ta session PHP — il est uniquement stocké dans la session du serveur.
+                        </p>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn--primary">Se connecter</button>
+                            <a class="btn" href="{{ path('login') }}">Retour</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

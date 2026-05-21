@@ -1,14 +1,66 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Connexion — Clever Cloud Dashboard</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>☁️</text></svg>">
+        {{ importmap('app') }}
+    </head>
+    <body>
+        <div class="login-wrap">
+            <div class="login-panel">
+                <div class="login-panel__header">
+                    <div class="login-panel__brand">
+                        <span class="login-panel__brand-icon">☁️</span>
+                        Clever Cloud
+                    </div>
+                    <h1 class="login-panel__title">Se connecter</h1>
+                    <p class="login-panel__subtitle">Choisis ta méthode d'authentification</p>
+                </div>
+                <div class="login-panel__body">
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="flash {{ label }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endfor %}
 
-{% block title %}Connexion — Clever Cloud Dashboard{% endblock %}
+                    <div class="login-option">
+                        <h3 class="login-option__title">⚿ API token <span class="badge ok">Recommandé</span></h3>
+                        <p class="login-option__desc">
+                            Crée un token depuis la
+                            <a href="https://console.clever-cloud.com/" target="_blank" rel="noopener">Console</a>,
+                            puis colle-le ici. Mode utilisé pour les scripts et la CI.
+                        </p>
+                        <div class="login-option__cta">
+                            <a class="btn btn--primary" href="{{ path('login_token') }}">Se connecter avec un token</a>
+                        </div>
+                    </div>
 
-{% block body %}
-    <div class="card">
-        <h2>Se connecter à Clever Cloud</h2>
-        <p>
-            Le dashboard utilise le flow OAuth 1.0a 3-legged pour récupérer un token utilisateur.
-            Tu seras redirigé vers Clever Cloud pour autoriser l'accès.
-        </p>
-        <a class="btn primary" href="{{ path('login') }}">Se connecter</a>
-    </div>
-{% endblock %}
+                    <div class="login-option">
+                        <h3 class="login-option__title">⏿ OAuth 1.0a</h3>
+                        {% if hasConsumer %}
+                            <p class="login-option__desc">
+                                Flow 3-legged historique. Le dashboard redirige vers Clever Cloud pour autoriser
+                                l'accès, puis revient avec un token utilisateur.
+                            </p>
+                            <div class="login-option__cta">
+                                <form method="post" action="{{ path('login_oauth') }}" class="inline">
+                                    <button type="submit" class="btn">Se connecter via OAuth</button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <p class="login-option__desc">
+                                Indisponible : <code class="code">CC_CONSUMER_KEY</code> / <code class="code">CC_CONSUMER_SECRET</code>
+                                ne sont pas configurés dans <code class="code">.env.local</code>.
+                            </p>
+                            <div class="login-option__cta">
+                                <button type="button" class="btn" disabled>OAuth indisponible</button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
