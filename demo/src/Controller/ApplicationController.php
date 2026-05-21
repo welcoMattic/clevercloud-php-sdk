@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use CleverCloud\Sdk\Client;
 use CleverCloud\Sdk\Exception\CleverCloudException;
+use CleverCloud\Sdk\Model\Enum\DeployType;
+use CleverCloud\Sdk\Model\Enum\Flavor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -13,9 +15,6 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class ApplicationController extends AbstractController
 {
-    /** Clever Cloud platform-wide flavors in ascending order. */
-    private const array FLAVORS = ['pico', 'nano', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
-
     /** Sensible upper bound for the instance count dropdowns. */
     private const array INSTANCE_COUNTS = [1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20];
 
@@ -93,7 +92,8 @@ final class ApplicationController extends AbstractController
             'organisations' => $organisations,
             'instances' => $instances,
             'zones' => $zones,
-            'flavors' => self::FLAVORS,
+            'flavors' => array_map(static fn (Flavor $f): string => $f->value, Flavor::cases()),
+            'deployTypes' => array_map(static fn (DeployType $d): string => $d->value, DeployType::cases()),
             'instanceCounts' => self::INSTANCE_COUNTS,
             'loadErrors' => $loadErrors,
             'owner' => $owner,
@@ -180,7 +180,8 @@ final class ApplicationController extends AbstractController
 
         return $this->render('application/edit.html.twig', [
             'application' => $application,
-            'flavors' => self::FLAVORS,
+            'flavors' => array_map(static fn (Flavor $f): string => $f->value, Flavor::cases()),
+            'deployTypes' => array_map(static fn (DeployType $d): string => $d->value, DeployType::cases()),
             'instanceCounts' => self::INSTANCE_COUNTS,
             'owner' => $owner,
         ]);
