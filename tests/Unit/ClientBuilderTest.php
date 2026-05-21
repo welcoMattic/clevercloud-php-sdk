@@ -31,14 +31,14 @@ final class ClientBuilderTest extends TestCase
         $this->expectNotToPerformAssertions();
 
         new ClientBuilder()
-            ->withCredentials(new Credentials('ck', 'cs', 'tk', 'ts'))
+            ->withCredentials(Credentials::oauth1('ck', 'cs', 'tk', 'ts'))
             ->build();
     }
 
     public function testMemoizesResourceClients(): void
     {
         $client = new ClientBuilder()
-            ->withCredentials(new Credentials('ck', 'cs', 'tk', 'ts'))
+            ->withCredentials(Credentials::oauth1('ck', 'cs', 'tk', 'ts'))
             ->build();
 
         self::assertSame($client->self, $client->self);
@@ -53,7 +53,7 @@ final class ClientBuilderTest extends TestCase
         ]);
 
         $client = new ClientBuilder()
-            ->withCredentials(new Credentials('ck', 'cs', 'tk', 'ts'))
+            ->withCredentials(Credentials::oauth1('ck', 'cs', 'tk', 'ts'))
             ->withHttpClient($mock)
             ->build();
 
@@ -66,7 +66,7 @@ final class ClientBuilderTest extends TestCase
     public function testBuilderIsImmutable(): void
     {
         $builder = new ClientBuilder();
-        $withCreds = $builder->withCredentials(new Credentials('ck', 'cs'));
+        $withCreds = $builder->withCredentials(Credentials::oauth1('ck', 'cs'));
 
         self::assertNotSame($builder, $withCreds);
         $this->expectException(ConfigurationException::class);

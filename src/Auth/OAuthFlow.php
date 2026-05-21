@@ -37,7 +37,7 @@ final readonly class OAuthFlow
      */
     public function requestToken(string $consumerKey, string $consumerSecret, string $callbackUrl): array
     {
-        $credentials = new Credentials($consumerKey, $consumerSecret);
+        $credentials = new OAuth1Credentials($consumerKey, $consumerSecret);
         $body = $this->dispatch(
             'POST',
             $this->configuration->v2BaseUrl.'/oauth/request_token',
@@ -66,7 +66,7 @@ final readonly class OAuthFlow
         string $requestTokenSecret,
         string $verifier,
     ): array {
-        $credentials = new Credentials($consumerKey, $consumerSecret, $requestToken, $requestTokenSecret);
+        $credentials = new OAuth1Credentials($consumerKey, $consumerSecret, $requestToken, $requestTokenSecret);
         $body = $this->dispatch(
             'POST',
             $this->configuration->v2BaseUrl.'/oauth/access_token',
@@ -85,7 +85,7 @@ final readonly class OAuthFlow
      *
      * @return array<string, string>
      */
-    private function dispatch(string $method, string $url, Credentials $credentials, array $extraOAuthParams): array
+    private function dispatch(string $method, string $url, OAuth1Credentials $credentials, array $extraOAuthParams): array
     {
         $request = $this->requestFactory
             ->createRequest($method, $url)

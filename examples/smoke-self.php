@@ -24,7 +24,7 @@ foreach ($required as $name) {
 }
 
 $client = new ClientBuilder()
-    ->withCredentials(new Credentials(
+    ->withCredentials(Credentials::oauth1(
         consumerKey: (string) getenv('CC_CONSUMER_KEY'),
         consumerSecret: (string) getenv('CC_CONSUMER_SECRET'),
         token: (string) getenv('CC_TOKEN'),

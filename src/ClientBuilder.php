@@ -13,8 +13,11 @@ use CleverCloud\Sdk\Http\HttpClient;
 use CleverCloud\Sdk\Http\JsonCodec;
 use CleverCloud\Sdk\Http\RetryPolicy;
 use CleverCloud\Sdk\Http\UriBuilder;
+use Closure;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Clock\ClockInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\HttpClient\HttpClient as SfHttpClient;
@@ -31,6 +34,12 @@ final class ClientBuilder
     private ?RetryPolicy $retryPolicy = null;
     private ?LoggerInterface $logger = null;
     private ?AutoMapperInterface $mapper = null;
+
+    /** @var list<Closure(RequestInterface): RequestInterface> */
+    private array $onRequestHooks = [];
+
+    /** @var list<Closure(ResponseInterface, RequestInterface): void> */
+    private array $onResponseHooks = [];
 
     public function withCredentials(Credentials $credentials): self
     {
@@ -102,6 +111,43 @@ final class ClientBuilder
         return $clone;
     }
 
+    /**
+     * Register a callable that receives every outgoing PSR-7 request — after
+     * URI / body construction, before authentication is applied. Return a
+     * possibly-modified `RequestInterface`. Multiple hooks compose in
+     * registration order.
+     *
+     * Typical uses: inject a tracing header, append a custom user-agent suffix,
+     * sample requests for instrumentation.
+     *
+     * @param Closure(RequestInterface): RequestInterface $hook
+     */
+    public function onRequest(Closure $hook): self
+    {
+        $clone = clone $this;
+        $clone->onRequestHooks = [...$clone->onRequestHooks, $hook];
+
+        return $clone;
+    }
+
+    /**
+     * Register a callable that receives every PSR-7 response (success and
+     * error) along with the request that produced it. Read-only — the return
+     * value is ignored. Multiple hooks fire in registration order.
+     *
+     * Typical uses: capture metrics (status / latency), forward request IDs
+     * to a tracing backend, audit failed calls.
+     *
+     * @param Closure(ResponseInterface, RequestInterface): void $hook
+     */
+    public function onResponse(Closure $hook): self
+    {
+        $clone = clone $this;
+        $clone->onResponseHooks = [...$clone->onResponseHooks, $hook];
+
+        return $clone;
+    }
+
     public function build(): Client
     {
         if (null === $this->credentials) {
@@ -130,6 +176,8 @@ final class ClientBuilder
             retryPolicy: $this->retryPolicy ?? new RetryPolicy(),
             logger: $this->logger,
             sfHttpClient: $sfHttpClient,
+            onRequestHooks: $this->onRequestHooks,
+            onResponseHooks: $this->onResponseHooks,
         );
 
         $mapper = $this->mapper ?? AutoMapper::create();

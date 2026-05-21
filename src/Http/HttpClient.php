@@ -49,6 +49,16 @@ final class HttpClient
 
     private ?SfHttpClientInterface $sfHttpClient;
 
+    /** @var list<Closure(RequestInterface): RequestInterface> */
+    private array $onRequestHooks;
+
+    /** @var list<Closure(ResponseInterface, RequestInterface): void> */
+    private array $onResponseHooks;
+
+    /**
+     * @param list<Closure(RequestInterface): RequestInterface>        $onRequestHooks
+     * @param list<Closure(ResponseInterface, RequestInterface): void> $onResponseHooks
+     */
     public function __construct(
         private readonly ClientInterface $psr18,
         private readonly RequestFactoryInterface $requestFactory,
@@ -62,6 +72,8 @@ final class HttpClient
         private readonly ?LoggerInterface $logger = null,
         ?Closure $sleeper = null,
         ?SfHttpClientInterface $sfHttpClient = null,
+        array $onRequestHooks = [],
+        array $onResponseHooks = [],
     ) {
         $this->sleeper = $sleeper ?? static function (int $delayMs): void {
             if ($delayMs > 0) {
@@ -69,6 +81,8 @@ final class HttpClient
             }
         };
         $this->sfHttpClient = $sfHttpClient;
+        $this->onRequestHooks = $onRequestHooks;
+        $this->onResponseHooks = $onResponseHooks;
     }
 
     /**
@@ -122,7 +136,7 @@ final class HttpClient
             $request = $request->withHeader($name, $value);
         }
 
-        $signed = $this->signer->sign($request, $this->credentials);
+        $signed = $this->credentials->applyTo($request, $this->signer);
 
         $headers = [
             'User-Agent' => $this->configuration->userAgent,
@@ -181,12 +195,16 @@ final class HttpClient
 
     private function dispatch(RequestInterface $request): ResponseInterface
     {
+        foreach ($this->onRequestHooks as $hook) {
+            $request = $hook($request);
+        }
+
         $attempt = 0;
 
         while (true) {
             ++$attempt;
 
-            $signed = $this->signer->sign($request, $this->credentials);
+            $signed = $this->credentials->applyTo($request, $this->signer);
 
             try {
                 $response = $this->psr18->sendRequest($signed);
@@ -215,6 +233,10 @@ final class HttpClient
                 'status' => $status,
                 'requestId' => self::extractRequestId($response),
             ]);
+
+            foreach ($this->onResponseHooks as $hook) {
+                $hook($response, $request);
+            }
 
             if ($status >= 200 && $status < 300) {
                 return $response;

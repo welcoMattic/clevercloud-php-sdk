@@ -4,6 +4,7 @@ namespace CleverCloud\Sdk;
 
 use AutoMapper\AutoMapperInterface;
 use CleverCloud\Sdk\Http\HttpClient;
+use CleverCloud\Sdk\Resource\Bridge\ApiTokensResource;
 use CleverCloud\Sdk\Resource\V2\AddonsResource;
 use CleverCloud\Sdk\Resource\V2\ApplicationsResource;
 use CleverCloud\Sdk\Resource\V2\DeploymentsResource;
@@ -11,7 +12,9 @@ use CleverCloud\Sdk\Resource\V2\DomainsResource;
 use CleverCloud\Sdk\Resource\V2\EnvironmentResource;
 use CleverCloud\Sdk\Resource\V2\OrganisationsResource;
 use CleverCloud\Sdk\Resource\V2\SelfResource;
+use CleverCloud\Sdk\Resource\V2\TcpRedirectionsResource;
 use CleverCloud\Sdk\Resource\V2\UsersResource;
+use CleverCloud\Sdk\Resource\V4\BackupsResource;
 use CleverCloud\Sdk\Resource\V4\BillingResource;
 use CleverCloud\Sdk\Resource\V4\DrainsResource;
 use CleverCloud\Sdk\Resource\V4\InstancesResource;
@@ -55,6 +58,9 @@ final class Client
     private ?WebhooksResource $webhooksResource = null;
     private ?NetworkGroupsResource $networkGroupsResource = null;
     private ?OrchestrationResource $orchestrationResource = null;
+    private ?ApiTokensResource $apiTokensResource = null;
+    private ?TcpRedirectionsResource $tcpRedirectionsResource = null;
+    private ?BackupsResource $backupsResource = null;
 
     public function __construct(
         public readonly HttpClient $http,
@@ -144,5 +150,17 @@ final class Client
 
     public OrchestrationResource $orchestration {
         get => $this->orchestrationResource ??= new OrchestrationResource($this->http, $this->mapper);
+    }
+
+    public ApiTokensResource $apiTokens {
+        get => $this->apiTokensResource ??= new ApiTokensResource($this->http, $this->mapper);
+    }
+
+    public TcpRedirectionsResource $tcpRedirections {
+        get => $this->tcpRedirectionsResource ??= new TcpRedirectionsResource($this->http, $this->mapper);
+    }
+
+    public BackupsResource $backups {
+        get => $this->backupsResource ??= new BackupsResource($this->http, $this->mapper);
     }
 }

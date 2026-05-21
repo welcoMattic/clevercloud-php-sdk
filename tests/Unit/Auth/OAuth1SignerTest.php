@@ -3,7 +3,7 @@
 namespace CleverCloud\Sdk\Tests\Unit\Auth;
 
 use CleverCloud\Sdk\Auth\Credentials;
-use CleverCloud\Sdk\Auth\NonceGenerator;
+use CleverCloud\Sdk\Auth\OAuth1Credentials;
 use CleverCloud\Sdk\Auth\OAuth1Signer;
 
 use const JSON_THROW_ON_ERROR;
@@ -26,7 +26,7 @@ final class OAuth1SignerTest extends TestCase
 
     private Psr17Factory $factory;
     private OAuth1Signer $signer;
-    private Credentials $threeLegged;
+    private OAuth1Credentials $threeLegged;
 
     protected function setUp(): void
     {
@@ -35,7 +35,7 @@ final class OAuth1SignerTest extends TestCase
             new MockClock('@'.self::FIXED_TIMESTAMP),
             new StaticNonceGenerator(self::FIXED_NONCE),
         );
-        $this->threeLegged = new Credentials(
+        $this->threeLegged = Credentials::oauth1(
             self::CONSUMER_KEY,
             self::CONSUMER_SECRET,
             self::TOKEN,
@@ -203,7 +203,7 @@ final class OAuth1SignerTest extends TestCase
 
     public function testOmitsOAuthTokenWhenAbsent(): void
     {
-        $twoLegged = new Credentials(self::CONSUMER_KEY, self::CONSUMER_SECRET);
+        $twoLegged = Credentials::oauth1(self::CONSUMER_KEY, self::CONSUMER_SECRET);
         $request = $this->factory->createRequest('POST', 'https://api.clever-cloud.com/v2/oauth/request_token');
 
         $signed = $this->signer->sign($request, $twoLegged, ['oauth_callback' => 'oob']);
@@ -357,17 +357,5 @@ final class OAuth1SignerTest extends TestCase
         $signingKey = rawurlencode($consumerSecret).'&'.rawurlencode($tokenSecret);
 
         return base64_encode(hash_hmac('sha512', $baseString, $signingKey, true));
-    }
-}
-
-final class StaticNonceGenerator implements NonceGenerator
-{
-    public function __construct(private readonly string $value)
-    {
-    }
-
-    public function generate(): string
-    {
-        return $this->value;
     }
 }

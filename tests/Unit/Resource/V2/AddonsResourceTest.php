@@ -128,6 +128,64 @@ final class AddonsResourceTest extends TestCase
         self::assertSame('{"plan":"plan_prod"}', $response->getRequestOptions()['body']);
     }
 
+    public function testListMigrationsReturnsRawList(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, [
+            ['id' => 'mig_1', 'status' => 'success'],
+            ['id' => 'mig_2', 'status' => 'in-progress'],
+        ]);
+
+        $migrations = $this->resource($response)->listMigrations('addon_1', 'orga_1');
+
+        self::assertCount(2, $migrations);
+        self::assertSame('mig_1', $migrations[0]['id']);
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1/migrations',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testGetMigrationFetchesSingleId(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['id' => 'mig_1', 'status' => 'success']);
+
+        $migration = $this->resource($response)->getMigration('addon_1', 'mig_1', 'orga_1');
+
+        self::assertSame('mig_1', $migration['id']);
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1/migrations/mig_1',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testCancelMigrationHitsDelete(): void
+    {
+        $response = ResourceFactory::emptyResponse(204);
+
+        $this->resource($response)->cancelMigration('addon_1', 'mig_1', 'orga_1');
+
+        self::assertSame('DELETE', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1/migrations/mig_1',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testPreorderMigrationPostsPlan(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['totalPrice' => 12.5]);
+
+        $preorder = $this->resource($response)->preorderMigration('addon_1', 'plan_prod', 'orga_1');
+
+        self::assertSame(12.5, $preorder['totalPrice']);
+        self::assertSame('POST', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1/migrations/preorder',
+            $response->getRequestUrl(),
+        );
+        self::assertSame('{"plan":"plan_prod"}', $response->getRequestOptions()['body']);
+    }
+
     private function resource(MockResponse $response): AddonsResource
     {
         return new AddonsResource(

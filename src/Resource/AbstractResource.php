@@ -9,6 +9,11 @@ use CleverCloud\Sdk\Http\HttpClient;
 use CleverCloud\Sdk\Streaming\SseStreamHandle;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * @internal Resource classes inside the SDK extend this base; user code should
+ * not subclass it. The protected `$http` / `$mapper` properties are part of the
+ * internal hierarchy contract — not a public extension point.
+ */
 abstract readonly class AbstractResource
 {
     public function __construct(
