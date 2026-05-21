@@ -75,5 +75,5 @@ All under `CleverCloud\Sdk\Model\Enum\`:
 
 ## See also
 
-- [Demo dashboard](../demo/README.md) — a working Symfony 8 app that exercises every public method
-- [CHANGELOG](../CHANGELOG.md)
+- [Demo dashboard](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/demo/README.md) — a working Symfony 8 app that exercises every public method
+- [CHANGELOG](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/CHANGELOG.md)

@@ -1,6 +1,6 @@
 # Billing (`/v4/billing/...`)
 
-Source: [`src/Resource/V4/BillingResource.php`](../../src/Resource/V4/BillingResource.php)
+Source: [`src/Resource/V4/BillingResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/BillingResource.php)
 
 ## Access
 
@@ -42,6 +42,6 @@ disk.
 
 ## DTOs
 
-- `Invoice` — [`src/Model/Invoice.php`](../../src/Model/Invoice.php)
-- `PaymentMethod` — [`src/Model/PaymentMethod.php`](../../src/Model/PaymentMethod.php)
-- `Consumption` — [`src/Model/Consumption.php`](../../src/Model/Consumption.php)
+- `Invoice` — [`src/Model/Invoice.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Invoice.php)
+- `PaymentMethod` — [`src/Model/PaymentMethod.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/PaymentMethod.php)
+- `Consumption` — [`src/Model/Consumption.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Consumption.php)

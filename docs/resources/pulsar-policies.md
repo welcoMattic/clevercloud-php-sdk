@@ -1,6 +1,6 @@
 # Pulsar policies (`/v4/addon-providers/addon-pulsar/addons/{id}/storage-policies`)
 
-Source: [`src/Resource/V4/PulsarPoliciesResource.php`](../../src/Resource/V4/PulsarPoliciesResource.php)
+Source: [`src/Resource/V4/PulsarPoliciesResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/PulsarPoliciesResource.php)
 
 Retention, offload, and TTL settings for a Pulsar add-on.
 
@@ -29,6 +29,6 @@ restores provider defaults.
 
 ## `PulsarPolicy` DTO
 
-See [`src/Model/PulsarPolicy.php`](../../src/Model/PulsarPolicy.php). Fields
+See [`src/Model/PulsarPolicy.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/PulsarPolicy.php). Fields
 include `addonId`, `namespace`, `retentionTimeInMinutes`,
 `retentionSizeInMB`, etc.

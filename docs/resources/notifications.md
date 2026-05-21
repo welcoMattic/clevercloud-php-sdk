@@ -1,6 +1,6 @@
 # Email notifications (`/v4/notifications/emailhooks/...`)
 
-Source: [`src/Resource/V4/NotificationsResource.php`](../../src/Resource/V4/NotificationsResource.php)
+Source: [`src/Resource/V4/NotificationsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/NotificationsResource.php)
 
 ## Access
 
@@ -35,4 +35,4 @@ Note the API field name is `notified` for recipients; the SDK takes
 
 ## `EmailNotification` DTO
 
-See [`src/Model/EmailNotification.php`](../../src/Model/EmailNotification.php).
+See [`src/Model/EmailNotification.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/EmailNotification.php).

@@ -1,6 +1,6 @@
 # Environment variables (`/v2/.../applications/{id}/env`)
 
-Source: [`src/Resource/V2/EnvironmentResource.php`](../../src/Resource/V2/EnvironmentResource.php)
+Source: [`src/Resource/V2/EnvironmentResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V2/EnvironmentResource.php)
 
 The Clever Cloud API exchanges env vars as a list of `{name, value}` pairs.
 The SDK collapses that into a `name => value` map on read and expands it

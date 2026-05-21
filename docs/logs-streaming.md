@@ -13,7 +13,7 @@ foreach ($client->logs->stream('app_xxx', 'orga_xxx') as $entry) {
 ```
 
 Signature (verified against
-[`src/Resource/V4/LogsResource.php`](../src/Resource/V4/LogsResource.php)):
+[`src/Resource/V4/LogsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/LogsResource.php)):
 
 ```php
 public function stream(
@@ -31,7 +31,7 @@ public function stream(
 
 ## `LogEntry` shape
 
-Verified against [`src/Model/LogEntry.php`](../src/Model/LogEntry.php):
+Verified against [`src/Model/LogEntry.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/LogEntry.php):
 
 ```php
 public string  $message;
@@ -92,7 +92,7 @@ This is the same routing rule as every other call — see
 ## How `LogStream` decodes frames
 
 Verified against
-[`src/Streaming/LogStream.php`](../src/Streaming/LogStream.php):
+[`src/Streaming/LogStream.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Streaming/LogStream.php):
 
 1. Symfony's `EventSourceHttpClient` yields chunks. The SDK only handles
    `ServerSentEvent` chunks; first-chunk markers and control frames are
@@ -136,9 +136,9 @@ More detail in [Testing](testing.md).
 
 ## Proxying SSE to a browser (e.g. dashboard)
 
-The demo dashboard at [`demo/`](../demo) wraps `LogStream` in a Symfony
+The demo dashboard at [`demo/`](https://github.com/welcoMattic/clevercloud-php-sdk/tree/main/demo) wraps `LogStream` in a Symfony
 `StreamedResponse` and re-emits each entry as an SSE frame to the browser's
 `EventSource`. See
-[`demo/src/Controller/LogsController.php`](../demo/src/Controller/LogsController.php)
+[`demo/src/Controller/LogsController.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/demo/src/Controller/LogsController.php)
 for the working pattern (heartbeats, session lock release, typed error
 events).

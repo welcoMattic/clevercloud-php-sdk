@@ -1,6 +1,6 @@
 # Applications
 
-Source: [`src/Resource/V2/ApplicationsResource.php`](../../src/Resource/V2/ApplicationsResource.php)
+Source: [`src/Resource/V2/ApplicationsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V2/ApplicationsResource.php)
 
 Every method takes an optional `?string $organisationId`. When `null`, the
 SDK scopes the call to `/self` (your own resources); otherwise it scopes to
@@ -39,8 +39,8 @@ $client->applications->create([
 ]);
 ```
 
-Use the [`Flavor`](../../src/Model/Enum/Flavor.php) and
-[`DeployType`](../../src/Model/Enum/DeployType.php) enums to avoid magic
+Use the [`Flavor`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Enum/Flavor.php) and
+[`DeployType`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Enum/DeployType.php) enums to avoid magic
 strings:
 
 ```php
@@ -160,7 +160,7 @@ public function unlinkAddon(string $applicationId, string $addonId, ?string $org
 
 ## `Application` DTO
 
-Source: [`src/Model/Application.php`](../../src/Model/Application.php).
+Source: [`src/Model/Application.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Application.php).
 
 ```php
 public string  $id;

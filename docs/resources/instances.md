@@ -1,6 +1,6 @@
 # Instance types (`/v2/products/instances`)
 
-Source: [`src/Resource/V2/InstancesResource.php`](../../src/Resource/V2/InstancesResource.php)
+Source: [`src/Resource/V2/InstancesResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V2/InstancesResource.php)
 
 Ergonomic alias for `$client->products->instances()`. Returns the catalogue
 of available runtime instance types (node, php, python, docker, …) with
@@ -35,7 +35,7 @@ $nodes = array_filter(
 ## `InstanceType` DTO
 
 Fields (verified against
-[`src/Model/InstanceType.php`](../../src/Model/InstanceType.php)):
+[`src/Model/InstanceType.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/InstanceType.php)):
 
 ```php
 public string  $type;          // 'node', 'php', 'docker', ...
@@ -55,4 +55,4 @@ The 1.0.0 version of `InstancesResource` also exposed `get(type[, version])`,
 `flavors(type)`, and `types()` methods, all of which targeted V4 routes
 that Clever Cloud doesn't actually expose (every call returned 404).
 They were removed in 1.0.1 — see
-[`CHANGELOG.md`](../../CHANGELOG.md).
+[`CHANGELOG.md`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/CHANGELOG.md).

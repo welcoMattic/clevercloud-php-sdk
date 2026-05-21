@@ -1,6 +1,6 @@
 # Users (`/v2/users`)
 
-Source: [`src/Resource/V2/UsersResource.php`](../../src/Resource/V2/UsersResource.php)
+Source: [`src/Resource/V2/UsersResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V2/UsersResource.php)
 
 Read-only inspection of other users (the ones you have access to via shared
 organisations).

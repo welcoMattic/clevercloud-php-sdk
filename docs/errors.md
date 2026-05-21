@@ -41,7 +41,7 @@ try {
 ```
 
 All five properties are public readonly. Constructor signature verified in
-[`src/Exception/ApiException.php`](../src/Exception/ApiException.php).
+[`src/Exception/ApiException.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Exception/ApiException.php).
 
 ## `AuthException` — 401 / 403
 
@@ -74,7 +74,7 @@ The map is filled from the response body's `errors` or `violations` field
 (in that order). String values get wrapped in a single-element list so the
 shape is always `field => list<string>`.
 
-See [`src/Exception/ValidationException.php`](../src/Exception/ValidationException.php).
+See [`src/Exception/ValidationException.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Exception/ValidationException.php).
 
 ## `RateLimitException` — 429
 
@@ -94,7 +94,7 @@ This exception is only raised when retries have been **exhausted**. While
 attempts remain, the SDK transparently sleeps for `Retry-After` (or the
 `RetryPolicy` fallback) and retries.
 
-See [`src/Exception/RateLimitException.php`](../src/Exception/RateLimitException.php).
+See [`src/Exception/RateLimitException.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Exception/RateLimitException.php).
 
 ## `ServerException` — 5xx
 
@@ -134,7 +134,7 @@ Raised by `JsonCodec` on malformed JSON in API responses, or by
 ## How status codes map to exception classes
 
 Verified against `HttpClient::mapError()` in
-[`src/Http/HttpClient.php`](../src/Http/HttpClient.php):
+[`src/Http/HttpClient.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Http/HttpClient.php):
 
 | HTTP status | Exception                |
 | ----------- | ------------------------ |

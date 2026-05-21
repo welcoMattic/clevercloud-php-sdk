@@ -19,7 +19,7 @@ new Configuration(
 ```
 
 Fields are public readonly. Defaults live as `const` on the class — see
-[`src/Configuration.php`](../src/Configuration.php).
+[`src/Configuration.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Configuration.php).
 
 `baseUrlFor(ApiVersion $version): string` returns the right base for the
 three known versions (V2, V4, Bridge).
@@ -52,7 +52,7 @@ RetryPolicy::none();        // maxAttempts=1, no delay, no jitter
 ```
 
 The constructor validates inputs and raises `ConfigurationException` if any
-of these hold (see [`src/Http/RetryPolicy.php`](../src/Http/RetryPolicy.php)):
+of these hold (see [`src/Http/RetryPolicy.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Http/RetryPolicy.php)):
 
 - `maxAttempts < 1`
 - `baseDelayMs < 0` or `jitterMs < 0` or `maxDelayMs < 0`
@@ -90,7 +90,7 @@ The SDK uses it both for regular HTTP calls (wrapped in `Psr18Client`) and
 SSE log streaming (wrapped in `EventSourceHttpClient`).
 
 If you don't supply one, the SDK calls `Symfony\Component\HttpClient\HttpClient::create()`
-internally (see [`src/ClientBuilder.php`](../src/ClientBuilder.php) `build()`).
+internally (see [`src/ClientBuilder.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/ClientBuilder.php) `build()`).
 
 ## Lifecycle hooks
 
@@ -142,7 +142,7 @@ initial connection's response.
 
 Attach any `Psr\Log\LoggerInterface`. The SDK logs on the channel
 `clevercloud-sdk` with the following levels and structured keys (verified
-against [`src/Http/HttpClient.php`](../src/Http/HttpClient.php)):
+against [`src/Http/HttpClient.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Http/HttpClient.php)):
 
 | Level | Message | Context keys |
 | --- | --- | --- |

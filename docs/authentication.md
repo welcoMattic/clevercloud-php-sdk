@@ -21,7 +21,7 @@ $client = (new ClientBuilder())
 ### What the SDK does
 
 `Credentials::apiToken()` returns an
-[`ApiTokenCredentials`](../src/Auth/ApiTokenCredentials.php) which:
+[`ApiTokenCredentials`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Auth/ApiTokenCredentials.php) which:
 
 1. Attaches `Authorization: Bearer <token>` to every outgoing request
    (`applyTo()` method).
@@ -33,7 +33,7 @@ $client = (new ClientBuilder())
 
 The host swap preserves path, query and headers. Scheme/host/port come from
 `Configuration::$bridgeBaseUrl` (defaults to `https://api-bridge.clever-cloud.com`,
-see [`src/Configuration.php`](../src/Configuration.php)).
+see [`src/Configuration.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Configuration.php)).
 
 ### Token scopes
 
@@ -64,10 +64,10 @@ requires both.
 ### What the SDK does
 
 `Credentials::oauth1()` returns an
-[`OAuth1Credentials`](../src/Auth/OAuth1Credentials.php) which:
+[`OAuth1Credentials`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Auth/OAuth1Credentials.php) which:
 
 1. Signs each request with HMAC-SHA512 per RFC 5849 using
-   [`OAuth1Signer`](../src/Auth/OAuth1Signer.php).
+   [`OAuth1Signer`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Auth/OAuth1Signer.php).
 2. Keeps the URI untouched — calls go to `api.clever-cloud.com` (V2 / V4).
 
 The signer is stateless beyond its injected
@@ -107,7 +107,7 @@ $creds = Credentials::oauth1($consumerKey, $consumerSecret, $access['token'], $a
 
 The helper speaks `application/x-www-form-urlencoded` (per RFC 5849) and
 bypasses the regular `HttpClient` stack — see
-[`src/Auth/OAuthFlow.php`](../src/Auth/OAuthFlow.php).
+[`src/Auth/OAuthFlow.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Auth/OAuthFlow.php).
 
 It raises:
 

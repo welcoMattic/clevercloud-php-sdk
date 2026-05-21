@@ -1,6 +1,6 @@
 # Organisations (`/v2/organisations`)
 
-Source: [`src/Resource/V2/OrganisationsResource.php`](../../src/Resource/V2/OrganisationsResource.php)
+Source: [`src/Resource/V2/OrganisationsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V2/OrganisationsResource.php)
 
 ## Access
 

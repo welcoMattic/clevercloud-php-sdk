@@ -1,6 +1,6 @@
 # Deployments (`/v2/.../applications/{id}/deployments`)
 
-Source: [`src/Resource/V2/DeploymentsResource.php`](../../src/Resource/V2/DeploymentsResource.php)
+Source: [`src/Resource/V2/DeploymentsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V2/DeploymentsResource.php)
 
 ## Access
 
@@ -26,7 +26,7 @@ public function cancel(string $applicationId, string $deploymentId, ?string $org
 
 ## `Deployment` DTO
 
-See [`src/Model/Deployment.php`](../../src/Model/Deployment.php). Notable
+See [`src/Model/Deployment.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Deployment.php). Notable
 fields include `id`, `action` (`DeploymentAction` enum), `state`
 (`DeploymentState` enum), `commit`, `cause`, `date`.
 

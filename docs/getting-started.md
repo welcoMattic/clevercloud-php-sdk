@@ -14,7 +14,7 @@ composer require clevercloud/sdk
 ```
 
 > The package name is `welcomattic/clevercloud-php-sdk` while the SDK is hosted
-> on this maintainer's GitHub; check the latest [Composer manifest](../composer.json)
+> on this maintainer's GitHub; check the latest [Composer manifest](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/composer.json)
 > for the exact identifier when you install.
 
 ## Pick an authentication mode
@@ -52,13 +52,13 @@ $client = (new ClientBuilder())
 
 `ClientBuilder::build()` raises `ConfigurationException` if no credentials have
 been set (verified in
-[`src/ClientBuilder.php` line 131](../src/ClientBuilder.php)).
+[`src/ClientBuilder.php` line 131](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/ClientBuilder.php)).
 
 ## Make a call
 
 Every resource is exposed as a property on the `Client` facade and lazily
 instantiated on first read (PHP 8.4+ property hook, see
-[`src/Client.php`](../src/Client.php)).
+[`src/Client.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Client.php)).
 
 ```php
 $me   = $client->self->get();                  // -> CleverCloud\Sdk\Model\User
@@ -78,7 +78,7 @@ the full method surface with verified signatures.
 
 1. The targeted resource builds a URI via `UriBuilder` against the right
    API version (V2 / V4 / Bridge) — see
-   [`src/Http/UriBuilder.php`](../src/Http/UriBuilder.php).
+   [`src/Http/UriBuilder.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Http/UriBuilder.php).
 2. Your `Credentials` object rewrites the URI if needed (Bearer rewrites
    every V2/V4 call to `api-bridge.clever-cloud.com`).
 3. Lifecycle hooks registered via `ClientBuilder::onRequest()` run.
