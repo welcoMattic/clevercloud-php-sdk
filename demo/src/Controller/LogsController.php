@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use CleverCloud\Sdk\Client;
 use CleverCloud\Sdk\Exception\CleverCloudException;
+use CleverCloud\Sdk\Exception\NotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,25 +53,33 @@ final class LogsController extends AbstractController
     {
         $owner = $this->normaliseOwner($request->query->get('owner'));
 
-        // Release the PHP session lock so other requests from the same browser
-        // (e.g. navigating to another tab) aren't blocked by this long-lived
-        // stream. We use the native function directly so Symfony's Session
-        // bag stays intact — `Session::save()` clears `$_SESSION` and that
-        // breaks the response cycle later.
+        // Eagerly resolve the Client — its factory reads session credentials.
+        $logs = $this->cc->logs;
+
+        // Release the PHP session lock so other tabs from the same browser
+        // aren't blocked by this long-lived stream. We don't touch the
+        // Symfony Session bag (that would clear `$_SESSION` and break the
+        // response cycle later).
         if (\PHP_SESSION_ACTIVE === session_status()) {
             session_write_close();
         }
 
-        $response = new StreamedResponse(function () use ($id, $owner): void {
+        $response = new StreamedResponse(function () use ($logs, $id, $owner): void {
             @set_time_limit(0);
             ignore_user_abort(false);
             while (ob_get_level() > 0) {
                 ob_end_flush();
             }
 
+            // Immediate handshake: tells the browser EventSource the connection
+            // is alive even if no logs flow for a while (e.g. idle app).
+            echo "event: connected\ndata: {}\n\n";
+            flush();
+
+            $lastHeartbeat = time();
             try {
-                $logs = $this->cc->logs->stream($id, $owner);
-                foreach ($logs as $entry) {
+                $stream = $logs->stream($id, $owner);
+                foreach ($stream as $entry) {
                     if (connection_aborted()) {
                         break;
                     }
@@ -85,16 +94,32 @@ final class LogsController extends AbstractController
 
                     echo 'data: '.$frame."\n\n";
                     flush();
+
+                    if (time() - $lastHeartbeat >= 15) {
+                        echo ": heartbeat\n\n";
+                        flush();
+                        $lastHeartbeat = time();
+                    }
                 }
+            } catch (NotFoundException $e) {
+                $frame = json_encode([
+                    'error' => 'Log stream endpoint not found (404). Either the app id is wrong, '
+                        .'or the token lacks the `application:read` scope.',
+                ], JSON_THROW_ON_ERROR);
+                echo 'event: stream-error'."\n".'data: '.$frame."\n\n";
+                flush();
             } catch (CleverCloudException $e) {
                 $frame = json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR);
-                echo 'event: error'."\n".'data: '.$frame."\n\n";
+                echo 'event: stream-error'."\n".'data: '.$frame."\n\n";
                 flush();
             }
         });
 
         $response->headers->set('Content-Type', 'text/event-stream');
-        $response->headers->set('Cache-Control', 'no-cache');
+        // `private` tells Symfony's session listener to leave the response
+        // alone (don't write a session_start in onKernelResponse), and
+        // `no-store` keeps intermediaries from buffering or replaying SSE.
+        $response->headers->set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
         // Disables proxy/server buffering (nginx, Symfony local server)
         $response->headers->set('X-Accel-Buffering', 'no');
 

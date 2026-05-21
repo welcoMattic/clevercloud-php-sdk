@@ -32,25 +32,36 @@ export default class extends Controller {
     _open() {
         this._close();
         this._source = new EventSource(this.streamUrlValue);
-        this._setStatus('Connecté', 'ok');
+        this._setStatus('Connexion…', 'warn');
+
+        this._source.addEventListener('connected', () => {
+            this._setStatus('Connecté — en attente de logs', 'ok');
+        });
 
         this._source.onmessage = (e) => {
             try {
                 const entry = JSON.parse(e.data);
                 this._append(entry);
+                this._setStatus('En direct', 'ok');
             } catch (err) {
                 console.warn('logs: bad frame', e.data);
             }
         };
 
-        this._source.addEventListener('error', (e) => {
-            if (e.data) {
-                try {
-                    const payload = JSON.parse(e.data);
-                    this._append({ severity: 'ERROR', message: '[stream error] ' + payload.error });
-                } catch (_) {}
-            }
-            this._setStatus('Déconnecté', 'fail');
+        // Custom error event the server emits on a typed upstream failure.
+        // We close the EventSource here so the browser doesn't keep retrying.
+        this._source.addEventListener('stream-error', (e) => {
+            try {
+                const payload = JSON.parse(e.data);
+                this._append({ severity: 'ERROR', message: '[upstream] ' + payload.error });
+            } catch (_) {}
+            this._close();
+            this._setStatus('Indisponible', 'fail');
+        });
+
+        // Built-in connection error (no data) — EventSource will auto-retry.
+        this._source.addEventListener('error', () => {
+            this._setStatus('Reconnexion…', 'warn');
         });
     }
 
