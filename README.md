@@ -20,6 +20,18 @@ A modern PHP SDK for the [Clever Cloud](https://www.clever-cloud.com) REST API
 composer require clevercloud/sdk
 ```
 
+## Documentation
+
+Full reference under [`docs/`](docs/index.md):
+
+- [Getting started](docs/getting-started.md) — install + first call
+- [Authentication](docs/authentication.md) — API token (Bearer) + OAuth 1.0a
+- [Configuration](docs/configuration.md) — `Configuration`, `RetryPolicy`, hooks, logging
+- [Error handling](docs/errors.md) — typed exception hierarchy
+- [Live log streaming](docs/logs-streaming.md) — Symfony SSE under the hood
+- [Testing](docs/testing.md) — `MockHttpClient` patterns
+- [Resource reference](docs/index.md#resource-reference) — one page per family
+
 ## Quick start
 
 Two auth modes, pick one:
