@@ -7,115 +7,153 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added — v1.0 prep
+## [1.0.0] — 2026-05-21
 
-- **API token (Bearer) authentication** — `Credentials::apiToken()` mints an
-  `ApiTokenCredentials` that attaches `Authorization: Bearer <token>`. The
-  legacy OAuth1 path is preserved as `Credentials::oauth1()` returning
-  `OAuth1Credentials`. `Credentials` is now abstract; instantiation goes
-  through the named constructors.
-- **`ApiVersion::Bridge`** enum case + `Configuration::bridgeBaseUrl`
-  routing endpoints to `https://api-bridge.clever-cloud.com`.
-- **`$client->apiTokens`** — V4 / api-bridge CRUD for personal API tokens
-  (`list`, `get`, `create`, `update`, `delete`). New `ApiToken` DTO.
-- **`$client->tcpRedirections`** — V2 TCP port redirections per app, plus a
-  `namespaces()` helper. New `TcpRedirection` DTO.
-- **`$client->backups`** — V4 add-on backups (`list`, `get`, `restore`).
-  New `Backup` DTO.
-- **Application deploy/branches** — `ApplicationsResource::deploy(commit?)`
-  and `::branches()`.
-- **Domain get** — `DomainsResource::get(appId, fqdn)`.
-- **Add-on migrations** — `listMigrations()`, `getMigration()`,
-  `cancelMigration()`, `preorderMigration()` complete the `migrate()` start
-  endpoint.
-- **Lifecycle hooks** — `ClientBuilder::onRequest()` / `onResponse()`
-  callbacks invoked around every dispatch.
+First stable release. Public API surface is now considered locked; changes
+that break source compatibility will trigger a major bump.
 
-### Changed — v1.0 prep
+### Highlights
 
-- **`AbstractResource`** is now marked `@internal`. The class hierarchy is
-  used by the SDK's own V2/V4/Bridge subclasses; user code should not extend it.
-- README: explicit coverage matrix per family; PSR-3 log-key reference;
-  `MockHttpClient` testing pattern documented.
+- **Two authentication modes**: Personal API token (Bearer, recommended)
+  and OAuth 1.0a 3-legged (legacy).
+- **Full v2 + v4 endpoint coverage** for the platform features most users
+  reach for: organisations, applications, add-ons, deployments, environment,
+  domains, billing, instances, load balancers, zones, products, drains,
+  notifications, webhooks, network groups, operators, pulsar policies,
+  orchestration, TCP redirections, backups, API tokens, plus
+  `api-bridge.clever-cloud.com` routing.
+- **Live log streaming** via Symfony's `EventSourceHttpClient`
+  (`Last-Event-ID` resume, transparent reconnection).
+- **AutoMapper-driven DTO hydration** — readonly, typed, with `#[MapFrom]`
+  for the snake_case ↔ camelCase fields.
 
-### Removed — v1.0 prep
+### Authentication
 
-- **`PageIterator`** skeleton has been removed. Pagination was never wired
-  to any resource — it was dead code. List endpoints continue to return
-  `array<T>`; cursor pagination will land post-1.0 when needed.
+- `Credentials` is **abstract**; build credentials via the named constructors:
+  - `Credentials::apiToken(string $token)` → `ApiTokenCredentials` —
+    `Authorization: Bearer <token>`. Routes every V2/V4 call through
+    `api-bridge.clever-cloud.com`. **Recommended.**
+  - `Credentials::oauth1(string $consumerKey, string $consumerSecret,
+    ?string $token = null, ?string $tokenSecret = null)` →
+    `OAuth1Credentials`. HMAC-SHA512 per RFC 5849.
+- `ApiVersion::Bridge` + `Configuration::bridgeBaseUrl` for routing.
+- `OAuthFlow` helper drives the 3-legged exchange.
 
-### Added
+### New resources & methods
 
-- **V2 application extensions** — `dependencies()`, `addDependency()`,
-  `removeDependency()`, `tags()` / `addTag()` / `removeTag()`,
-  `exposedEnv()` / `setExposedEnv()`, `addons()` / `linkAddon()` /
-  `unlinkAddon()` on `ApplicationsResource`.
-- **V2 add-on extensions** — `sso()`, `tags()` / `addTag()` /
-  `removeTag()`, `migrate()` on `AddonsResource`.
-- **V2 self management** — `update()`, `sshKeys()` / `addSshKey()` /
-  `removeSshKey()`, `emailAddresses()` / `addEmailAddress()` /
-  `removeEmailAddress()`, OAuth consumer CRUD (`consumers()`,
-  `getConsumer()`, `createConsumer()`, `updateConsumer()`,
-  `deleteConsumer()`), MFA endpoints (`startMfa()`, `confirmMfa()`,
-  `disableMfa()`, `regenerateMfaBackupCodes()`), `changePassword()`.
-  New DTOs: `SshKey`, `EmailAddress`, `OAuthConsumer`.
-- **V2 organisation extensions** — OAuth consumers CRUD, `namespaces()`.
-  New DTO: `Namespace_`.
-- **V4 drains** — `DrainsResource` with full CRUD plus `enable()` /
-  `disable()` / `restart()`. New `Drain` DTO and `DrainType` enum
-  (Datadog / ElasticSearch / NewRelic / OVH-TCP / Raw-HTTP /
-  Syslog-TCP / Syslog-UDP).
-- **V4 notifications** — `NotificationsResource` (email notifications,
-  list/create/delete with event-type and service filters). New
-  `EmailNotification` DTO.
-- **V4 webhooks** — `WebhooksResource` (list/create/delete, format
-  raw/slack/gitter/flowdock). New `Webhook` DTO and `WebhookFormat`
-  enum.
-- **V4 network groups** — `NetworkGroupsResource` (list/get/create/
-  delete + member management + WireGuard config download for external
-  peers). New `NetworkGroup`, `NetworkGroupMember` DTOs. Operator
-  resources gained `linkNetworkGroup()` / `unlinkNetworkGroup()`
-  helpers (Keycloak / Otoroshi).
-- **V4 orchestration** — `OrchestrationResource` exposing the
-  v4 instance and deployment endpoints at
-  `/v4/orchestration/organisations/{owner}/applications/{appId}/{instances|deployments}`.
-- All new resources exposed on the `Client` facade via property hooks
-  (`$client->drains`, `$client->notifications`, `$client->webhooks`,
-  `$client->networkGroups`, `$client->orchestration`).
+- **`$client->apiTokens`** (Bridge): `list / get / create / update / delete`.
+- **`$client->tcpRedirections`** (V2): `list / get / namespaces / add / remove`.
+- **`$client->backups`** (V4): `list / get / restore`.
+- **`$client->drains`** (V4): full CRUD + `enable / disable / restart`.
+- **`$client->notifications`** (V4): email notification CRUD with event-type
+  and service filters.
+- **`$client->webhooks`** (V4): `list / create / delete` (raw / slack /
+  gitter / flowdock formats).
+- **`$client->networkGroups`** (V4): list / get / create / delete + members
+  + WireGuard external-peer config download. Operator resources gained
+  `linkNetworkGroup()` / `unlinkNetworkGroup()` helpers.
+- **`$client->orchestration`** (V4): instances + deployments endpoints.
+- **`$client->operators`** (V4): facade routing to Keycloak / Matomo /
+  Metabase / Otoroshi with `list / get / create / update / delete / reboot /
+  rebuild`.
+- **Applications** add `deploy(?string $commit = null)`, `branches()`,
+  `instances()`, `dependencies()` + add/remove, `tags()` + add/remove,
+  `exposedEnv()` + set, `addons()` + link/unlink.
+- **Add-ons** add `sso()`, `tags()` + add/remove, `migrate()`,
+  `listMigrations()`, `getMigration()`, `cancelMigration()`,
+  `preorderMigration()`.
+- **Self** adds `update()`, SSH keys CRUD, email addresses CRUD, OAuth
+  consumer CRUD, MFA endpoints, `changePassword()`.
+- **Organisations** add OAuth consumers CRUD, `namespaces()`.
+- **Domains** add `get(applicationId, fqdn)`.
 
-### Fixed
+### Stable enums
 
-- **V4 logs URL** — `LogsResource` now hits
-  `/v4/logs/organisations/{owner}/applications/{appId}/logs` (was
-  `/v4/logs/{appId}`). The owner is now a required argument.
-- **V4 operators URL** — `OperatorsResource` now routes through
-  `/v4/addon-providers/addon-{kind}/addons[/{id}]` (was the made-up
-  `/v4/operators/{kind}/{owner}/...`). Owner-scoped arguments are
-  dropped — the API resolves ownership from credentials.
-- **Pulsar storage policies** — `PulsarPoliciesResource` now hits
-  `/storage-policies` (not `/policy`) and uses **PATCH** (not PUT) for
-  partial updates. The `list()` method is gone; use `get()` to read
-  the current effective policy. `delete()` was renamed `reset()`.
+Platform-wide values you can drop literal strings for:
 
-### Changed
+- `Flavor` (`pico..3XL`)
+- `DeployType` (`git / ftp / docker`)
+- `ApplicationState` (full lifecycle + `isStable() / isTransient()`)
+- `MigrationStatus` (+ `isTerminal()`)
+- Already shipped: `MemberRole`, `DeploymentAction`, `DeploymentState`,
+  `DrainType`, `WebhookFormat`.
 
-- Tests now use `Symfony\Component\HttpClient\MockHttpClient` wrapped
-  in `Symfony\Component\HttpClient\Psr18Client` instead of an in-tree
-  PSR-18 fake. The custom `RecordingClient` and the QueueClient inside
-  `HttpClientTest` have been removed.
-- **SSE log streaming** now delegates to Symfony's
-  `EventSourceHttpClient` + `ServerSentEvent` instead of the in-tree
-  WHATWG SSE parser. The `SseStream` / `SseEvent` classes are removed;
-  `LogsResource::stream()` still returns an iterable `LogStream<LogEntry>`,
-  but framing, reconnection, and `Last-Event-ID` tracking are now
-  handled by Symfony. New `SseStreamHandle` bundles the Symfony
-  HttpClient + response for the iterator.
-- **HTTP transport** — `symfony/http-client` is now a hard runtime
-  dependency (it was a dev dep before). `php-http/discovery` is dropped.
-  `ClientBuilder::withHttpClient()` now expects a
+### Live log streaming
+
+`LogsResource::stream($applicationId, $organisationId, $filters)` returns
+an iterable `LogStream<LogEntry>` built on Symfony's
+`EventSourceHttpClient` + `ServerSentEvent`. Bearer-auth callers transit
+api-bridge; OAuth1 callers transit api.clever-cloud.com. Framing,
+reconnection, and `Last-Event-ID` resume are Symfony's responsibility.
+
+### HTTP transport
+
+- `symfony/http-client` (`^8.0`) is now a hard runtime dependency.
+  `php-http/discovery` was removed.
+- `nyholm/psr7` (`^1.8`) is a runtime dep — used as the default PSR-7 / -17
+  implementation.
+- `ClientBuilder::withHttpClient()` now takes a
   `Symfony\Contracts\HttpClient\HttpClientInterface`; the SDK wires it
   internally through `Psr18Client` for regular calls and
   `EventSourceHttpClient` for SSE.
+
+### Lifecycle hooks
+
+- `ClientBuilder::onRequest(Closure)` runs after URI/body build, before
+  authentication. Return a modified `RequestInterface` to swap it.
+- `ClientBuilder::onResponse(Closure)` runs on every response (success +
+  error). Read-only.
+
+### Other improvements
+
+- DTO hydration via `jolicode/automapper` — readonly classes, `#[MapFrom]`
+  for snake_case API fields.
+- Typed exception hierarchy under `CleverCloudException`:
+  `ApiException` (+ `AuthException`, `NotFoundException`,
+  `ValidationException`, `RateLimitException`, `ServerException`),
+  `TransportException`, `ConfigurationException`, `JsonException`. All
+  carry `statusCode`, `errorCode`, `requestId`, decoded `body`.
+- Retry on 429 (honours `Retry-After`) and 5xx (exponential backoff with
+  configurable jitter) via `RetryPolicy`.
+- PSR-3 structured logging on channel `clevercloud-sdk`.
+
+### Bug fixes since 0.1.0
+
+- **V4 logs URL** now `/v4/logs/organisations/{owner}/applications/{appId}/logs`
+  (was `/v4/logs/{appId}`); owner is required.
+- **V4 operators URL** routes through
+  `/v4/addon-providers/addon-{kind}/addons[/{id}]` (was the made-up
+  `/v4/operators/{kind}/{owner}/...`). Ownership comes from credentials.
+- **Pulsar storage policies** hit `/storage-policies` (was `/policy`) and
+  use **PATCH** (was PUT). `list()` removed; `delete()` renamed `reset()`.
+- **Products endpoints are V2** (not V4) — `ProductsResource` moved to
+  `Resource\V2\`. `/v4/products/*` returned 404.
+- **`Zone::$tags`** typed as `list<string>` (was `?string`). New `id`,
+  `outboundIPs` fields. **`Flavor::$memory`** typed as
+  `array<string, mixed>` (the API returns a nested object).
+- **Application restart/deploy** now send `{}` JSON body with
+  `Content-Type: application/json` so the API doesn't return 415.
+- SSE stream errors surface as typed SDK exceptions
+  (`AuthException` / `NotFoundException` / `ServerException`) instead of
+  silently ending iteration.
+
+### Removed
+
+- `PageIterator` and the entire `src/Pagination/` directory. It was never
+  wired into any list endpoint. Cursor pagination will land later when
+  Clever Cloud's V4 cursor responses stabilise across endpoints.
+
+### Breaking changes since 0.1.0
+
+- `Credentials` is abstract; replace `new Credentials(...)` with
+  `Credentials::oauth1(...)` or `Credentials::apiToken(...)`.
+- `ClientBuilder::withHttpClient()` now expects a Symfony
+  `HttpClientInterface` (was PSR-18 `ClientInterface`).
+- `LogsResource::stream()` signature changes — owner is required, returns
+  a Symfony-backed `LogStream`.
+- `OperatorsResource` paths and arguments changed.
+- `PulsarPoliciesResource`: `list()` removed, `delete()` → `reset()`,
+  `update()` uses PATCH.
 
 ## [0.1.0] — 2026-05-19
 
@@ -154,5 +192,6 @@ typed DTOs via `jolicode/automapper`, no middleware in the HTTP pipeline.
 - **Pagination skeleton** — `PageIterator` for cursor-based v4 endpoints.
 - **Smoke examples** — `examples/smoke-self.php` and `examples/stream-logs.php`.
 
-[Unreleased]: https://github.com/welcoMattic/clevercloud-php-sdk/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/welcoMattic/clevercloud-php-sdk/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/welcoMattic/clevercloud-php-sdk/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/welcoMattic/clevercloud-php-sdk/releases/tag/v0.1.0

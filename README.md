@@ -3,8 +3,9 @@
 A modern PHP SDK for the [Clever Cloud](https://www.clever-cloud.com) REST API
 (v2 + v4 + api-bridge).
 
-> Status: **pre-1.0**. Public API surface is stabilising for v1.0; URL paths
-> for v4 endpoints are validated incrementally against the live API.
+> Status: **v1.0**. Public API surface is stable; changes that break
+> source compatibility will trigger a major bump per
+> [semver](https://semver.org).
 
 ## Requirements
 
