@@ -48,8 +48,9 @@
                 <div class="form-field">
                     <label class="form-field__label" for="deploy">Méthode de déploiement</label>
                     <select id="deploy" name="deploy" class="form-field__select">
-                        <option value="git" selected>Git</option>
-                        <option value="ftp">FTP / SFTP</option>
+                        {% for type in deployTypes %}
+                            <option value="{{ type }}" {% if type == 'git' %}selected{% endif %}>{{ type|upper }}</option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>

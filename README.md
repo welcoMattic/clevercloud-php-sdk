@@ -92,6 +92,65 @@ of scope at this stage.
 | ------------- | ---------------------------------------- |
 | `apiTokens`   | `list / get / create / update / delete`  |
 
+### Enums
+
+Stable, platform-wide enumerations live under `CleverCloud\Sdk\Model\Enum\`.
+They give you autocomplete, parsing (`tryFrom()`), and `cases()` for populating
+form selects without hardcoding string literals.
+
+| Enum                       | Cases                                                                                      | Use it for                              |
+| -------------------------- | ------------------------------------------------------------------------------------------ | --------------------------------------- |
+| `Flavor`                   | `Pico Nano XS S M L XL XXL XXXL` (values `pico..3XL`)                                      | Application instance sizes              |
+| `DeployType`               | `Git Ftp Docker`                                                                           | Application source delivery method      |
+| `ApplicationState`         | `ShouldBeUp WantsToBeUp ShouldBeDown WantsToBeDown Restart RestartRequested RestartFailed Deploying DeploymentPending` (+ `isStable()` / `isTransient()`) | Application lifecycle |
+| `MigrationStatus`          | `Success InProgress Pending Failed Cancelled` (+ `isTerminal()`)                          | Add-on plan migration                   |
+| `MemberRole`               | `Admin Manager Developer Accounting`                                                       | Organisation membership                 |
+| `DeploymentAction`         | (see source)                                                                               | Deployment lifecycle                    |
+| `DeploymentState`          | (see source)                                                                               | Deployment outcome                      |
+| `DrainType`                | Datadog / ElasticSearch / NewRelic / OVH-TCP / Raw-HTTP / Syslog-TCP / Syslog-UDP          | Log drain configuration                 |
+| `WebhookFormat`            | Raw / Slack / Gitter / Flowdock                                                            | Webhook payload format                  |
+
+```php
+use CleverCloud\Sdk\Model\Enum\Flavor;
+use CleverCloud\Sdk\Model\Enum\ApplicationState;
+
+// Populate a UI dropdown:
+foreach (Flavor::cases() as $flavor) {
+    echo $flavor->value;     // 'pico', 'nano', ...
+}
+
+// Branch on application state:
+$app = $client->applications->get($id);
+$state = ApplicationState::tryFrom($app->state);
+if ($state?->isTransient()) {
+    // currently deploying or restarting
+}
+
+// Build a create-app payload safely:
+$client->applications->create([
+    'name' => 'my-app',
+    'instanceType' => 'node',
+    'instanceVariant' => '20',
+    'zone' => 'par',
+    'minFlavor' => Flavor::Nano->value,
+    'maxFlavor' => Flavor::Nano->value,
+    'minInstances' => 1,
+    'maxInstances' => 1,
+]);
+```
+
+**Dynamic catalogues** (changes faster than SDK releases) are exposed via API
+calls rather than PHP enums — they pick up new entries the moment Clever Cloud
+ships them:
+
+```php
+$client->products->instances();    // -> list<InstanceType>  (php, node, docker, …)
+$client->products->zones();        // -> list<Zone>          (par, mtl, scw, …)
+$client->products->countries();    // -> list<Country>
+$client->addons->providers();      // -> list<AddonProvider> (postgresql-addon, redis-addon, …)
+$client->addons->provider($id);    // -> AddonProvider       (with its plans)
+```
+
 ### Roadmap (not in v1.0)
 
 - AI, Materia KV / TS, Cellar, Cumulocity, DNS, IPAM, Kubernetes, Function,
