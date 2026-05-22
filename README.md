@@ -41,30 +41,21 @@ Full reference under [`docs/`](docs/index.md):
 
 ## Quick start
 
-Two auth modes, pick one:
-
 ```php
 use CleverCloud\Sdk\Auth\Credentials;
 use CleverCloud\Sdk\ClientBuilder;
 
-// Recommended — API token (Bearer), minted from the Console.
 $client = (new ClientBuilder())
     ->withCredentials(Credentials::apiToken(getenv('CC_API_TOKEN')))
-    ->build();
-
-// Legacy — OAuth 1.0a, useful if you already have a consumer + user token pair.
-$client = (new ClientBuilder())
-    ->withCredentials(Credentials::oauth1(
-        consumerKey:    getenv('CC_CONSUMER_KEY'),
-        consumerSecret: getenv('CC_CONSUMER_SECRET'),
-        token:          getenv('CC_TOKEN'),
-        tokenSecret:    getenv('CC_TOKEN_SECRET'),
-    ))
     ->build();
 
 $me = $client->self->get();
 echo $me->email, "\n";
 ```
+
+Mint your token from the [Clever Cloud Console](https://console.clever-cloud.com/) (section "Personal API tokens"), set it as `CC_API_TOKEN`, and you're done.
+
+The SDK also supports OAuth 1.0a for legacy consumers and 3-legged authorisation flows — see [`docs/authentication.md`](docs/authentication.md) for the full picture.
 
 ## Coverage matrix
 

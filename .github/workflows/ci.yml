@@ -50,25 +50,25 @@ jobs:
       - name: Tests
         run: vendor/bin/phpunit --colors=always
 
-  smoke:
-    name: Smoke (live API)
+  integration:
+    name: Integration (live API)
     runs-on: ubuntu-latest
     needs: qa
-    # Only runs when the four CC_* secrets are configured on the repo.
-    # Forks / branches without secrets skip cleanly.
+    # Only runs when CC_API_TOKEN is configured on the repo.
+    # Forks / branches without the secret skip cleanly.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check secrets are wired
+      - name: Check secret is wired
         id: gate
         env:
-          CC_CONSUMER_KEY: ${{ secrets.CC_CONSUMER_KEY }}
+          CC_API_TOKEN: ${{ secrets.CC_API_TOKEN }}
         run: |
-          if [ -z "${CC_CONSUMER_KEY}" ]; then
+          if [ -z "${CC_API_TOKEN}" ]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "CC_* secrets not configured; skipping smoke job."
+            echo "CC_API_TOKEN secret not configured; skipping integration job."
           else
             echo "configured=true" >> "$GITHUB_OUTPUT"
           fi
@@ -87,8 +87,13 @@ jobs:
       - name: Run smoke-self
         if: steps.gate.outputs.configured == 'true'
         env:
-          CC_CONSUMER_KEY: ${{ secrets.CC_CONSUMER_KEY }}
-          CC_CONSUMER_SECRET: ${{ secrets.CC_CONSUMER_SECRET }}
-          CC_TOKEN: ${{ secrets.CC_TOKEN }}
-          CC_TOKEN_SECRET: ${{ secrets.CC_TOKEN_SECRET }}
+          CC_API_TOKEN: ${{ secrets.CC_API_TOKEN }}
         run: php examples/smoke-self.php
+
+      - name: Run integration test suite
+        if: steps.gate.outputs.configured == 'true'
+        env:
+          CC_API_TOKEN: ${{ secrets.CC_API_TOKEN }}
+          CC_ORG_ID: ${{ secrets.CC_ORG_ID }}
+          CC_APP_ID: ${{ secrets.CC_APP_ID }}
+        run: vendor/bin/phpunit --testsuite integration --colors=always

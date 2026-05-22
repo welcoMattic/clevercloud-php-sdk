@@ -80,7 +80,6 @@ Examples:
 
 - **PHP 8.5** minimum. Lean on modern features — property hooks,
   asymmetric visibility, readonly classes, enums.
-- **Strict types** — every file starts with `declare(strict_types=1);`.
 - **PSR-12** code style, enforced by PHP-CS-Fixer.
 - **PHPStan level max** with strict-rules — no baseline.
 - **One class per file**, namespaces mirror directory layout (PSR-4).

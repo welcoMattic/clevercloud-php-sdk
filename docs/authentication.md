@@ -43,16 +43,21 @@ the gateway returns 403 / 404 if a call exceeds them.
 
 ## OAuth 1.0a — legacy
 
-Useful when you already have a consumer pair and a long-lived user
-token / secret, or when you're driving the 3-legged authorisation flow.
+Useful when you already have a registered consumer pair, or when you're
+driving the 3-legged authorisation flow on behalf of your users.
+
+The consumer key + secret identify your application — they're what you
+configure (e.g. via env vars). The user token + token secret are
+**outputs** of the 3-legged flow, not inputs you provide up front:
 
 ```php
+// Once you've obtained the user token from the 3-legged flow below:
 $client = (new ClientBuilder())
     ->withCredentials(Credentials::oauth1(
-        consumerKey:    getenv('CC_CONSUMER_KEY'),
+        consumerKey: getenv('CC_CONSUMER_KEY'),
         consumerSecret: getenv('CC_CONSUMER_SECRET'),
-        token:          getenv('CC_TOKEN'),        // optional
-        tokenSecret:    getenv('CC_TOKEN_SECRET'), // optional
+        token: $userToken, // returned by OAuthFlow::accessToken()
+        tokenSecret: $userTokenSecret, // returned by OAuthFlow::accessToken()
     ))
     ->build();
 ```
