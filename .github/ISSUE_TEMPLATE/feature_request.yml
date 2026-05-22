@@ -1,0 +1,73 @@
+name: 💡 Feature request
+description: Suggest a new feature, API addition, or enhancement.
+title: "[Feature] "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest an improvement! Discussion
+        before implementation saves everyone time — please describe the
+        use case before proposing a specific design.
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: What are you trying to do?
+      description: Describe the real-world use case behind the request.
+      placeholder: I want to ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-limitation
+    attributes:
+      label: How does the current SDK fall short?
+      description: Why can't you do this today, or what makes it awkward?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API (optional)
+      description: |
+        If you already have a shape in mind, sketch it here. Pseudo-code
+        is fine. Leave blank if you'd rather discuss design first.
+      render: php
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any workarounds you've tried or alternative designs you've thought about.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Affected scope
+      multiple: true
+      options:
+        - v2 resources
+        - v4 resources
+        - api-bridge resources
+        - Authentication
+        - HTTP transport / retries
+        - Log streaming
+        - Documentation
+        - Tooling / CI
+        - Other
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have searched existing issues and discussions for a similar request.
+          required: true

@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Documentation
+    url: https://welcomattic.github.io/clevercloud-php-sdk/
+    about: Read the SDK documentation before opening an issue.
+  - name: 💬 Discussions
+    url: https://github.com/welcoMattic/clevercloud-php-sdk/discussions
+    about: For open-ended questions, ideas, or help — please use Discussions instead of Issues.
+  - name: 🔒 Reporting a security vulnerability
+    url: https://github.com/welcoMattic/clevercloud-php-sdk/security/advisories/new
+    about: Please report security issues privately via a GitHub Security Advisory.
