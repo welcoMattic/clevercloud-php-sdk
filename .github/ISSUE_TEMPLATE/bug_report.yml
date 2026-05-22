@@ -1,0 +1,99 @@
+name: 🐞 Bug report
+description: Report a reproducible bug in the SDK.
+title: "[Bug] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill in the
+        fields below so the issue can be triaged quickly.
+
+        Before submitting, please make sure you have:
+        - searched [existing issues](https://github.com/welcoMattic/clevercloud-php-sdk/issues?q=is%3Aissue)
+        - tried reproducing on the latest stable release
+        - **redacted any API token, OAuth secret, or personal data**
+
+  - type: input
+    id: sdk-version
+    attributes:
+      label: SDK version
+      description: Output of `composer show welcomattic/clevercloud-php-sdk | grep versions`
+      placeholder: e.g. 1.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: php-version
+    attributes:
+      label: PHP version
+      description: Output of `php -v` (first line)
+      placeholder: e.g. PHP 8.5.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: auth
+    attributes:
+      label: Authentication method in use
+      options:
+        - API token (Bearer / api-bridge)
+        - OAuth 1.0a
+        - Both / either
+        - Not relevant
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the problem.
+      placeholder: When I call `$client->applications->restart(...)`, the SDK throws ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: |
+        Smallest possible PHP snippet that triggers the bug. The more
+        self-contained, the faster it can be fixed.
+      render: php
+      placeholder: |
+        $client = (new ClientBuilder())
+            ->withCredentials(Credentials::apiToken('REDACTED'))
+            ->build();
+
+        $client->applications->restart('app_xxx');
+    validations:
+      required: true
+
+  - type: textarea
+    id: error
+    attributes:
+      label: Exception, stack trace, or logs
+      description: Paste the full exception class, message, and stack trace. **Redact tokens and personal data.**
+      render: text
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have searched existing issues and confirmed this is not a duplicate.
+          required: true
+        - label: I have redacted any token, secret, or personal data from this report.
+          required: true
+        - label: I agree to follow this project's [Code of Conduct](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/CODE_OF_CONDUCT.md).
+          required: true
