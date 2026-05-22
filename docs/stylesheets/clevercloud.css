@@ -1,0 +1,202 @@
+/* Clever Cloud — sober light theme with brand red declensions */
+
+:root {
+  /* Brand red declensions (from Clever Cloud logo) */
+  --cc-red:        #E20613;
+  --cc-red-dark:   #B40410;
+  --cc-red-darker: #8C030C;
+  --cc-red-soft:   #F03A48;
+  --cc-red-tint:   #FCE7E9;
+  --cc-red-wash:   #FFF5F6;
+
+  /* Sober neutrals */
+  --cc-ink:        #1A1A1A;
+  --cc-text:       #2C2C2C;
+  --cc-muted:      #6B6B6B;
+  --cc-border:     #E8E8E8;
+  --cc-surface:    #FAFAFA;
+}
+
+/* Material primary/accent overrides */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:         var(--cc-red);
+  --md-primary-fg-color--light:  var(--cc-red-soft);
+  --md-primary-fg-color--dark:   var(--cc-red-dark);
+  --md-primary-bg-color:         #FFFFFF;
+  --md-primary-bg-color--light:  rgba(255, 255, 255, 0.7);
+
+  --md-accent-fg-color:             var(--cc-red-dark);
+  --md-accent-fg-color--transparent: rgba(228, 6, 19, 0.08);
+  --md-accent-bg-color:             #FFFFFF;
+  --md-accent-bg-color--light:      rgba(255, 255, 255, 0.7);
+
+  --md-typeset-a-color: var(--cc-red-dark);
+}
+
+/* Body — soften and tighten */
+.md-typeset {
+  color: var(--cc-text);
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  color: var(--cc-ink);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.md-typeset h1 {
+  font-weight: 700;
+  border-bottom: 1px solid var(--cc-border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.md-typeset h2 {
+  margin-top: 2.2rem;
+  padding-top: 0.4rem;
+}
+
+/* Links — subtle red, underline on hover only */
+.md-typeset a {
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 120ms ease, color 120ms ease;
+}
+
+.md-typeset a:hover {
+  color: var(--cc-red);
+  border-bottom-color: var(--cc-red);
+}
+
+/* Header — keep red but slightly muted for sobriety */
+.md-header {
+  background-color: var(--cc-red);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+.md-tabs {
+  background-color: var(--cc-red-dark);
+}
+
+/* Search bar inside red header */
+.md-search__form {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.md-search__form:hover {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+/* Sidebar — clean, no heavy backgrounds */
+.md-nav__title {
+  color: var(--cc-ink);
+  font-weight: 600;
+}
+
+.md-nav__link--active,
+.md-nav__link[aria-current="page"] {
+  color: var(--cc-red-dark);
+  font-weight: 500;
+}
+
+/* Code blocks — quiet, framed */
+.md-typeset code {
+  background-color: var(--cc-red-wash);
+  color: var(--cc-red-darker);
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+  font-size: 0.85em;
+}
+
+.md-typeset pre > code {
+  background-color: var(--cc-surface);
+  color: var(--cc-text);
+  border: 1px solid var(--cc-border);
+  border-radius: 6px;
+  padding: 1rem;
+  font-size: 0.78rem;
+}
+
+.md-typeset .highlight {
+  border-radius: 6px;
+}
+
+/* Tables — clean borders */
+.md-typeset table:not([class]) {
+  border: 1px solid var(--cc-border);
+  border-radius: 6px;
+  font-size: 0.78rem;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--cc-surface);
+  color: var(--cc-ink);
+  font-weight: 600;
+  border-bottom: 1px solid var(--cc-border);
+}
+
+.md-typeset table:not([class]) td {
+  border-top: 1px solid var(--cc-border);
+}
+
+/* Blockquotes / admonitions — red left accent */
+.md-typeset blockquote {
+  border-left: 3px solid var(--cc-red);
+  color: var(--cc-muted);
+  padding-left: 1rem;
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 6px;
+  border-left-width: 3px;
+}
+
+/* Buttons / pills */
+.md-typeset .md-button {
+  border-radius: 4px;
+}
+
+.md-typeset .md-button--primary {
+  background-color: var(--cc-red);
+  border-color: var(--cc-red);
+  color: #FFFFFF;
+}
+
+.md-typeset .md-button--primary:hover {
+  background-color: var(--cc-red-dark);
+  border-color: var(--cc-red-dark);
+}
+
+/* Footer — minimal */
+.md-footer {
+  background-color: #1A1A1A;
+}
+
+.md-footer-meta {
+  background-color: #0E0E0E;
+}
+
+/* Copy-to-clipboard button — red on hover */
+.md-clipboard:hover::after {
+  color: var(--cc-red);
+}
+
+/* TOC right-rail — subtle */
+.md-nav--secondary .md-nav__title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--cc-muted);
+}
+
+/* Selection */
+::selection {
+  background-color: var(--cc-red-tint);
+  color: var(--cc-ink);
+}
