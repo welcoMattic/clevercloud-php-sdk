@@ -10,12 +10,8 @@
 ## Install
 
 ```bash
-composer require clevercloud/sdk
+composer require welcomattic/clevercloud-php-sdk
 ```
-
-> The package name is `welcomattic/clevercloud-php-sdk` while the SDK is hosted
-> on this maintainer's GitHub; check the latest [Composer manifest](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/composer.json)
-> for the exact identifier when you install.
 
 ## Pick an authentication mode
 

@@ -24,7 +24,7 @@ A modern PHP SDK for the [Clever Cloud](https://www.clever-cloud.com) REST API
 ## Installation
 
 ```bash
-composer require clevercloud/sdk
+composer require welcomattic/clevercloud-php-sdk
 ```
 
 ## Documentation
