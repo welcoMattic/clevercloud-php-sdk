@@ -1,0 +1,40 @@
+# Normalize line endings on checkout.
+* text=auto eol=lf
+
+# Force binary handling for SVG and image files.
+*.svg binary
+*.png binary
+*.jpg binary
+*.gif binary
+
+# -----------------------------------------------------------------------------
+# Files NOT shipped in the Packagist / `composer archive` distribution.
+# -----------------------------------------------------------------------------
+
+# Repository metadata / config
+/.editorconfig          export-ignore
+/.gitattributes         export-ignore
+/.github                export-ignore
+/.gitignore             export-ignore
+
+# Tooling configuration
+/.php-cs-fixer.dist.php export-ignore
+/.php-cs-fixer.php      export-ignore
+/phpstan.neon.dist      export-ignore
+/phpstan.neon           export-ignore
+/phpunit.xml.dist       export-ignore
+/phpunit.xml            export-ignore
+
+# Tests, examples, demos — not part of the runtime library
+/tests                  export-ignore
+/examples               export-ignore
+/demo                   export-ignore
+
+# Documentation (kept on the repo, not in the distributed package)
+/docs                   export-ignore
+/mkdocs.yml             export-ignore
+/requirements-docs.txt  export-ignore
+
+# Top-level markdown (keep README + LICENSE for Packagist display)
+/CHANGELOG.md           export-ignore
+/CONTRIBUTING.md        export-ignore
