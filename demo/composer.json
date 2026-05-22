@@ -7,7 +7,6 @@
         "php": ">=8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "clevercloud/sdk": "@dev",
         "doctrine/doctrine-bundle": "^3.2",
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.6",
@@ -44,7 +43,8 @@
         "symfony/web-link": "8.0.*",
         "symfony/yaml": "8.0.*",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.0",
+        "welcomattic/clevercloud-php-sdk": "^1.0"
     },
     "config": {
         "allow-plugins": {
@@ -93,15 +93,6 @@
     "conflict": {
         "symfony/symfony": "*"
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
     "extra": {
         "symfony": {
             "allow-contrib": false,
