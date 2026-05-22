@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/clevercloud-logo-dark.svg">
+    <img src="docs/assets/clevercloud-logo.svg" alt="Clever Cloud" width="320">
+  </picture>
+</p>
+
 # Clever Cloud PHP SDK
 
 A modern PHP SDK for the [Clever Cloud](https://www.clever-cloud.com) REST API
