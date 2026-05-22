@@ -104,19 +104,38 @@
   font-weight: 500;
 }
 
-/* Code blocks — quiet, framed */
+/* Code blocks — GitHub primer-light syntax palette */
+[data-md-color-scheme="default"] {
+  --md-code-bg-color:                 #f6f8fa; /* GH code block bg */
+  --md-code-fg-color:                 #1f2328; /* GH default text */
+
+  --md-code-hl-color:                 #1f2328;
+  --md-code-hl-keyword-color:         #cf222e; /* red (kw, ow, tag) */
+  --md-code-hl-operator-color:        #cf222e;
+  --md-code-hl-punctuation-color:     #1f2328;
+  --md-code-hl-string-color:          #0a3069; /* deep blue */
+  --md-code-hl-number-color:          #0550ae; /* GH "constant" blue */
+  --md-code-hl-comment-color:         #6e7781; /* gray */
+  --md-code-hl-name-color:            #1f2328;
+  --md-code-hl-constant-color:        #0550ae;
+  --md-code-hl-function-color:        #8250df; /* purple (entity) */
+  --md-code-hl-variable-color:        #953800; /* orange-brown ($vars) */
+  --md-code-hl-special-color:         #8250df;
+  --md-code-hl-generic-color:         #6e7781;
+}
+
 .md-typeset code {
-  background-color: var(--cc-red-wash);
-  color: var(--cc-red-darker);
+  background-color: rgba(175, 184, 193, 0.2); /* GH inline code bg */
+  color: #1f2328;
   border-radius: 3px;
   padding: 0.1em 0.35em;
   font-size: 0.85em;
 }
 
 .md-typeset pre > code {
-  background-color: var(--cc-surface);
-  color: var(--cc-text);
-  border: 1px solid var(--cc-border);
+  background-color: var(--md-code-bg-color);
+  color: var(--md-code-fg-color);
+  border: 1px solid #d0d7de; /* GH border */
   border-radius: 6px;
   padding: 1rem;
   font-size: 0.78rem;
@@ -124,6 +143,17 @@
 
 .md-typeset .highlight {
   border-radius: 6px;
+}
+
+/* PHP "name.other" tokens (\Foo\Bar refs) default to plain text;
+ * GitHub colors fully-qualified class references like entities. */
+.md-typeset .highlight .nx {
+  color: var(--md-code-hl-name-color);
+}
+
+/* PHP "name.attribute" (method calls like ->foo()) → entity purple */
+.md-typeset .highlight .na {
+  color: var(--md-code-hl-function-color);
 }
 
 /* Tables — clean borders */
