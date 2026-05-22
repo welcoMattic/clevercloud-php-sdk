@@ -4,9 +4,7 @@
  * End-to-end smoke test against the real /v2/self endpoint.
  *
  * Usage:
- *   CC_CONSUMER_KEY=... CC_CONSUMER_SECRET=... \
- *   CC_TOKEN=... CC_TOKEN_SECRET=... \
- *       php examples/smoke-self.php
+ *   CC_API_TOKEN=cc_... php examples/smoke-self.php
  */
 
 require __DIR__.'/../vendor/autoload.php';
@@ -15,21 +13,14 @@ use CleverCloud\Sdk\Auth\Credentials;
 use CleverCloud\Sdk\ClientBuilder;
 use CleverCloud\Sdk\Exception\CleverCloudException;
 
-$required = ['CC_CONSUMER_KEY', 'CC_CONSUMER_SECRET', 'CC_TOKEN', 'CC_TOKEN_SECRET'];
-foreach ($required as $name) {
-    if (false === getenv($name) || '' === getenv($name)) {
-        fwrite(\STDERR, "Missing env var: {$name}\n");
-        exit(2);
-    }
+$apiToken = getenv('CC_API_TOKEN');
+if (false === $apiToken || '' === $apiToken) {
+    fwrite(\STDERR, "Missing env var: CC_API_TOKEN\n");
+    exit(2);
 }
 
 $client = new ClientBuilder()
-    ->withCredentials(Credentials::oauth1(
-        consumerKey: (string) getenv('CC_CONSUMER_KEY'),
-        consumerSecret: (string) getenv('CC_CONSUMER_SECRET'),
-        token: (string) getenv('CC_TOKEN'),
-        tokenSecret: (string) getenv('CC_TOKEN_SECRET'),
-    ))
+    ->withCredentials(Credentials::apiToken($apiToken))
     ->build();
 
 try {

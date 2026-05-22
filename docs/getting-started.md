@@ -15,24 +15,21 @@ composer require welcomattic/clevercloud-php-sdk
 
 ## Pick an authentication mode
 
-The SDK supports two:
+The recommended path is a Personal API token (Bearer):
 
 ```php
 use CleverCloud\Sdk\Auth\Credentials;
 
-// Recommended — Personal API token (Bearer). Mint one from
-// https://console.clever-cloud.com/.
-$creds = Credentials::apiToken('cc_secret_...');
-
-// Legacy — OAuth 1.0a, useful if you already have a consumer pair plus a user
-// token from the 3-legged flow.
-$creds = Credentials::oauth1(
-    consumerKey:    getenv('CC_CONSUMER_KEY'),
-    consumerSecret: getenv('CC_CONSUMER_SECRET'),
-    token:          getenv('CC_TOKEN'),
-    tokenSecret:    getenv('CC_TOKEN_SECRET'),
-);
+$creds = Credentials::apiToken(getenv('CC_API_TOKEN'));
 ```
+
+Mint the token from the [Console](https://console.clever-cloud.com/) (section
+"Personal API tokens").
+
+OAuth 1.0a is also supported — pair a registered consumer with a user
+token / secret obtained through the [3-legged flow](authentication.md#3-legged-oauth-flow-helper).
+The token / secret are flow outputs, **not** something users typically
+configure as env vars.
 
 [Full authentication reference →](authentication.md)
 

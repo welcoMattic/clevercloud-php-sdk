@@ -10,12 +10,14 @@ call it explicitly.
 use CleverCloud\Sdk\Configuration;
 
 new Configuration(
-    v2BaseUrl:       'https://api.clever-cloud.com/v2',         // default
-    v4BaseUrl:       'https://api.clever-cloud.com/v4',         // default
-    bridgeBaseUrl:   'https://api-bridge.clever-cloud.com',     // default
-    userAgent:       'clevercloud-sdk-php',                     // default
-    timeoutSeconds:  30,                                        // default
+    v2BaseUrl: 'https://api.clever-cloud.com/v2',
+    v4BaseUrl: 'https://api.clever-cloud.com/v4',
+    bridgeBaseUrl: 'https://api-bridge.clever-cloud.com',
+    userAgent: 'clevercloud-sdk-php',
+    timeoutSeconds: 30,
 );
+
+// All arguments are optional and default to the values shown above.
 ```
 
 Fields are public readonly. Defaults live as `const` on the class — see
@@ -40,15 +42,18 @@ responses.
 use CleverCloud\Sdk\Http\RetryPolicy;
 
 new RetryPolicy(
-    maxAttempts:  3,        // default — initial try plus 2 retries
-    baseDelayMs:  200,      // default
-    multiplier:   2.0,      // default — exponential backoff
-    jitterMs:     100,      // default — random 0..jitterMs added per attempt
-    maxDelayMs:   5_000,    // default — cap
+    maxAttempts: 3,
+    baseDelayMs: 200,
+    multiplier: 2.0,
+    jitterMs: 100,
+    maxDelayMs: 5_000,
 );
 
-// Or disable retries entirely:
-RetryPolicy::none();        // maxAttempts=1, no delay, no jitter
+// All arguments shown above are the defaults: initial try plus 2 retries,
+// 200ms base delay, exponential 2× backoff, 0..100ms jitter, capped at 5s.
+
+// Or disable retries entirely (single attempt, no delay, no jitter):
+RetryPolicy::none();
 ```
 
 The constructor validates inputs and raises `ConfigurationException` if any

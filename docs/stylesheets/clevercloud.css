@@ -2,33 +2,33 @@
 
 :root {
   /* Brand red declensions (from Clever Cloud logo) */
-  --cc-red:        #E20613;
-  --cc-red-dark:   #B40410;
+  --cc-red: #E20613;
+  --cc-red-dark: #B40410;
   --cc-red-darker: #8C030C;
-  --cc-red-soft:   #F03A48;
-  --cc-red-tint:   #FCE7E9;
-  --cc-red-wash:   #FFF5F6;
+  --cc-red-soft: #F03A48;
+  --cc-red-tint: #FCE7E9;
+  --cc-red-wash: #FFF5F6;
 
   /* Sober neutrals */
-  --cc-ink:        #1A1A1A;
-  --cc-text:       #2C2C2C;
-  --cc-muted:      #6B6B6B;
-  --cc-border:     #E8E8E8;
-  --cc-surface:    #FAFAFA;
+  --cc-ink: #1A1A1A;
+  --cc-text: #2C2C2C;
+  --cc-muted: #6B6B6B;
+  --cc-border: #E8E8E8;
+  --cc-surface: #FAFAFA;
 }
 
 /* Material primary/accent overrides */
 [data-md-color-scheme="default"] {
-  --md-primary-fg-color:         var(--cc-red);
-  --md-primary-fg-color--light:  var(--cc-red-soft);
-  --md-primary-fg-color--dark:   var(--cc-red-dark);
-  --md-primary-bg-color:         #FFFFFF;
-  --md-primary-bg-color--light:  rgba(255, 255, 255, 0.7);
+  --md-primary-fg-color: var(--cc-red);
+  --md-primary-fg-color--light: var(--cc-red-soft);
+  --md-primary-fg-color--dark: var(--cc-red-dark);
+  --md-primary-bg-color: #FFFFFF;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.7);
 
-  --md-accent-fg-color:             var(--cc-red-dark);
+  --md-accent-fg-color: var(--cc-red-dark);
   --md-accent-fg-color--transparent: rgba(228, 6, 19, 0.08);
-  --md-accent-bg-color:             #FFFFFF;
-  --md-accent-bg-color--light:      rgba(255, 255, 255, 0.7);
+  --md-accent-bg-color: #FFFFFF;
+  --md-accent-bg-color--light: rgba(255, 255, 255, 0.7);
 
   --md-typeset-a-color: var(--cc-red-dark);
 }
@@ -106,22 +106,22 @@
 
 /* Code blocks — GitHub primer-light syntax palette */
 [data-md-color-scheme="default"] {
-  --md-code-bg-color:                 #f6f8fa; /* GH code block bg */
-  --md-code-fg-color:                 #1f2328; /* GH default text */
+  --md-code-bg-color: #f6f8fa;
+  --md-code-fg-color: #1f2328;
 
-  --md-code-hl-color:                 #1f2328;
-  --md-code-hl-keyword-color:         #cf222e; /* red (kw, ow, tag) */
-  --md-code-hl-operator-color:        #cf222e;
-  --md-code-hl-punctuation-color:     #1f2328;
-  --md-code-hl-string-color:          #0a3069; /* deep blue */
-  --md-code-hl-number-color:          #0550ae; /* GH "constant" blue */
-  --md-code-hl-comment-color:         #6e7781; /* gray */
-  --md-code-hl-name-color:            #1f2328;
-  --md-code-hl-constant-color:        #0550ae;
-  --md-code-hl-function-color:        #8250df; /* purple (entity) */
-  --md-code-hl-variable-color:        #953800; /* orange-brown ($vars) */
-  --md-code-hl-special-color:         #8250df;
-  --md-code-hl-generic-color:         #6e7781;
+  --md-code-hl-color: #1f2328;
+  --md-code-hl-keyword-color: #cf222e;
+  --md-code-hl-operator-color: #cf222e;
+  --md-code-hl-punctuation-color: #1f2328;
+  --md-code-hl-string-color: #0a3069;
+  --md-code-hl-number-color: #0550ae;
+  --md-code-hl-comment-color: #6e7781;
+  --md-code-hl-name-color: #1f2328;
+  --md-code-hl-constant-color: #0550ae;
+  --md-code-hl-function-color: #8250df;
+  --md-code-hl-variable-color: #953800;
+  --md-code-hl-special-color: #8250df;
+  --md-code-hl-generic-color: #6e7781;
 }
 
 .md-typeset code {

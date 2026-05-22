@@ -80,7 +80,6 @@ Examples:
 
 - **PHP 8.5** minimum. Lean on modern features — property hooks,
   asymmetric visibility, readonly classes, enums.
-- **Strict types** — every file starts with `declare(strict_types=1);`.
 - **PSR-12** code style, enforced by PHP-CS-Fixer.
 - **PHPStan level max** with strict-rules — no baseline.
 - **One class per file**, namespaces mirror directory layout (PSR-4).
@@ -109,8 +108,16 @@ PR should pass CI.
 
 - **Unit tests** under `tests/Unit/` — fast, isolated, no network. Use
   the Symfony `MockHttpClient` to feed scripted responses.
-- **Integration tests** under `tests/Integration/` — guarded by env
-  vars (`CC_API_TOKEN` or `CC_OAUTH_*`). Skipped by default.
+- **Integration tests** under `tests/Integration/` — hit the real
+  Clever Cloud API. **Local-only**, never run in CI (to avoid token
+  leaks). Guarded by env vars (`CC_API_TOKEN` preferred; OAuth1
+  quad `CC_CONSUMER_KEY` / `CC_CONSUMER_SECRET` / `CC_TOKEN` /
+  `CC_TOKEN_SECRET` as a fallback). Skip cleanly when env vars are
+  absent. Run them with:
+  ```bash
+  CC_API_TOKEN=cc_... vendor/bin/phpunit --testsuite integration
+  ```
+  Optional `CC_ORG_ID` / `CC_APP_ID` narrow the target.
 
 New public methods should land with unit tests. Bug fixes should land
 with a regression test that fails before the fix.

@@ -4,9 +4,7 @@
  * Streams live logs for a Clever Cloud application via /v4/logs.
  *
  * Usage:
- *   CC_CONSUMER_KEY=... CC_CONSUMER_SECRET=... \
- *   CC_TOKEN=... CC_TOKEN_SECRET=... \
- *       php examples/stream-logs.php <app_id>
+ *   CC_API_TOKEN=cc_... php examples/stream-logs.php <app_id>
  */
 
 require __DIR__.'/../vendor/autoload.php';
@@ -22,21 +20,14 @@ if ($argc < 2) {
 
 $appId = $argv[1];
 
-$required = ['CC_CONSUMER_KEY', 'CC_CONSUMER_SECRET', 'CC_TOKEN', 'CC_TOKEN_SECRET'];
-foreach ($required as $name) {
-    if (false === getenv($name) || '' === getenv($name)) {
-        fwrite(\STDERR, "Missing env var: {$name}\n");
-        exit(2);
-    }
+$apiToken = getenv('CC_API_TOKEN');
+if (false === $apiToken || '' === $apiToken) {
+    fwrite(\STDERR, "Missing env var: CC_API_TOKEN\n");
+    exit(2);
 }
 
 $client = new ClientBuilder()
-    ->withCredentials(Credentials::oauth1(
-        consumerKey: (string) getenv('CC_CONSUMER_KEY'),
-        consumerSecret: (string) getenv('CC_CONSUMER_SECRET'),
-        token: (string) getenv('CC_TOKEN'),
-        tokenSecret: (string) getenv('CC_TOKEN_SECRET'),
-    ))
+    ->withCredentials(Credentials::apiToken($apiToken))
     ->build();
 
 try {
