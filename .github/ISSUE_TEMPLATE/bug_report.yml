@@ -95,5 +95,3 @@ body:
           required: true
         - label: I have redacted any token, secret, or personal data from this report.
           required: true
-        - label: I agree to follow this project's [Code of Conduct](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/CODE_OF_CONDUCT.md).
-          required: true

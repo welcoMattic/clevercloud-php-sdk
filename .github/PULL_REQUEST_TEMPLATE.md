@@ -41,7 +41,6 @@ Closes #
 - [ ] I have updated the documentation under `docs/` for any public API change
 - [ ] I have added an entry to `CHANGELOG.md` if relevant
 - [ ] My commits follow [Conventional Commits](https://www.conventionalcommits.org/)
-- [ ] I have read and agree to the [Code of Conduct](../blob/main/CODE_OF_CONDUCT.md)
 
 ## Notes for reviewers
 

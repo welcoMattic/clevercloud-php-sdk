@@ -3,8 +3,6 @@
 Thanks for taking the time to contribute! This SDK is community-maintained
 — issues, pull requests, and feedback are all welcome.
 
-Before contributing, please read the [Code of Conduct](CODE_OF_CONDUCT.md).
-
 ## Quick links
 
 - 🐞 [Report a bug](https://github.com/welcoMattic/clevercloud-php-sdk/issues/new?template=bug_report.yml)
@@ -129,6 +127,18 @@ GitHub Pages via MkDocs Material. If your PR changes a public API:
   python -m venv .venv-docs && .venv-docs/bin/pip install -r requirements-docs.txt
   .venv-docs/bin/mkdocs build --strict
   ```
+
+## Contact
+
+For anything that doesn't fit a public issue — private feedback,
+maintainer questions, etc. — reach out to:
+
+**msantostefano@proton.me**
+
+For **security vulnerabilities**, please use the
+[GitHub Security Advisory form](https://github.com/welcoMattic/clevercloud-php-sdk/security/advisories/new)
+rather than email or a public issue, so the report stays confidential
+until a fix is available.
 
 ## License
 
