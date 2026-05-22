@@ -4,85 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ca3c7e997f2dd431c63c5ce6d4d34b9a",
+    "content-hash": "765917e5d366d544ec7364915022f5f1",
     "packages": [
-        {
-            "name": "clevercloud/sdk",
-            "version": "dev-feat/demo-v1-features",
-            "dist": {
-                "type": "path",
-                "url": "..",
-                "reference": "89a37afdd3acf1600cf1c96373b6eec624c18f12"
-            },
-            "require": {
-                "ext-hash": "*",
-                "ext-json": "*",
-                "jolicode/automapper": "^10.0",
-                "nyholm/psr7": "^1.8",
-                "php": ">=8.5",
-                "psr/clock": "^1.0",
-                "psr/http-client": "^1.0",
-                "psr/http-factory": "^1.0",
-                "psr/http-message": "^2.0",
-                "psr/log": "^3.0",
-                "symfony/clock": "^7.0 || ^8.0",
-                "symfony/http-client": "^7.2 || ^8.0",
-                "symfony/http-client-contracts": "^3.5 || ^4.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.65",
-                "phpstan/phpstan": "^2.1",
-                "phpstan/phpstan-phpunit": "^2.0",
-                "phpstan/phpstan-strict-rules": "^2.0",
-                "phpunit/phpunit": "^11.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "CleverCloud\\Sdk\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "CleverCloud\\Sdk\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "phpstan": [
-                    "phpstan analyse"
-                ],
-                "cs": [
-                    "php-cs-fixer fix --dry-run --diff"
-                ],
-                "cs-fix": [
-                    "php-cs-fixer fix"
-                ],
-                "test": [
-                    "phpunit"
-                ],
-                "check": [
-                    "@cs",
-                    "@phpstan",
-                    "@test"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "PHP SDK for the Clever Cloud REST API (v2 + v4).",
-            "homepage": "https://github.com/welcoMattic/clevercloud-php-sdk",
-            "keywords": [
-                "api",
-                "clever-cloud",
-                "oauth1",
-                "paas",
-                "sdk"
-            ],
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
-        },
         {
             "name": "composer/semver",
             "version": "3.4.4",
@@ -8121,6 +8044,67 @@
                 "source": "https://github.com/webmozarts/assert/tree/2.3.0"
             },
             "time": "2026-04-11T10:33:05+00:00"
+        },
+        {
+            "name": "welcomattic/clevercloud-php-sdk",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/welcoMattic/clevercloud-php-sdk.git",
+                "reference": "dbd0920dcc270d84a4ee676b66dcc8eb65271ae7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/welcoMattic/clevercloud-php-sdk/zipball/dbd0920dcc270d84a4ee676b66dcc8eb65271ae7",
+                "reference": "dbd0920dcc270d84a4ee676b66dcc8eb65271ae7",
+                "shasum": ""
+            },
+            "require": {
+                "ext-hash": "*",
+                "ext-json": "*",
+                "jolicode/automapper": "^10.0",
+                "nyholm/psr7": "^1.8",
+                "php": ">=8.5",
+                "psr/clock": "^1.0",
+                "psr/http-client": "^1.0",
+                "psr/http-factory": "^1.0",
+                "psr/http-message": "^2.0",
+                "psr/log": "^3.0",
+                "symfony/clock": "^8.0",
+                "symfony/http-client": "^8.0",
+                "symfony/http-client-contracts": "^3.7"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.65",
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpunit/phpunit": "^11.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "CleverCloud\\Sdk\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP SDK for the Clever Cloud REST API (v2 + v4).",
+            "homepage": "https://github.com/welcoMattic/clevercloud-php-sdk",
+            "keywords": [
+                "api",
+                "clever-cloud",
+                "oauth1",
+                "paas",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/welcoMattic/clevercloud-php-sdk/issues",
+                "source": "https://github.com/welcoMattic/clevercloud-php-sdk/tree/v1.0.0"
+            },
+            "time": "2026-05-21T11:59:13+00:00"
         }
     ],
     "packages-dev": [
@@ -10389,9 +10373,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "clevercloud/sdk": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
