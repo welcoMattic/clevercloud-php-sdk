@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Streams live logs for a Clever Cloud application via /v4/logs.
+ * Streams live logs for a Clever Cloud application.
  *
  * Usage:
  *   CC_API_TOKEN=cc_... php examples/stream-logs.php <app_id>
