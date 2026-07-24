@@ -73,43 +73,51 @@ $flow = new OAuthFlow(
 if (null === $userToken || null === $userTokenSecret) {
     echo "Starting OAuth flow...\n";
     
-    // Step 1: Get request token
-    $requestToken = $flow->requestToken($consumerKey, $consumerSecret, 'oob');
-    echo "Request token received.\n";
-    
-    // Step 2: Get authorization URL
-    $authorizeUrl = $flow->authorizationUrl($requestToken['token']);
-    echo "Please open this URL in your browser to authorize:\n";
-    echo $authorizeUrl . "\n\n";
-    echo "After authorizing, paste the verifier code here: ";
-    
-    // Read verifier from stdin
-    $verifier = trim(fgets(STDIN));
-    
-    if (empty($verifier)) {
-        fwrite(\STDERR, "No verifier provided. Aborting.\n");
+    try {
+        // Step 1: Get request token
+        // Use 'oob' for CLI apps (out-of-band), or a real callback URL for web apps
+        $callbackUrl = 'oob';
+        $requestToken = $flow->requestToken($consumerKey, $consumerSecret, $callbackUrl);
+        echo "Request token received.\n";
+        
+        // Step 2: Get authorization URL
+        $authorizeUrl = $flow->authorizationUrl($requestToken['token']);
+        echo "Please open this URL in your browser to authorize:\n";
+        echo $authorizeUrl . "\n\n";
+        echo "After authorizing, paste the verifier code here: ";
+        
+        // Read verifier from stdin
+        $verifier = trim(fgets(STDIN));
+        
+        if (empty($verifier)) {
+            fwrite(\STDERR, "No verifier provided. Aborting.\n");
+            exit(1);
+        }
+        
+        // Step 3: Exchange verifier for access token
+        $accessToken = $flow->accessToken(
+            $consumerKey,
+            $consumerSecret,
+            $requestToken['token'],
+            $requestToken['tokenSecret'],
+            $verifier
+        );
+        
+        $userToken = $accessToken['token'];
+        $userTokenSecret = $accessToken['tokenSecret'];
+        
+        // Cache the tokens
+        file_put_contents($tokenCacheFile, json_encode([
+            'token' => $userToken,
+            'token_secret' => $userTokenSecret,
+        ]));
+        
+        echo "Tokens cached. You won't need to authorize again next time.\n\n";
+    } catch (\CleverCloud\Sdk\Exception\CleverCloudException $e) {
+        fwrite(\STDERR, \sprintf("OAuth error: %s (%s)\n", $e->getMessage(), $e::class));
+        fwrite(\STDERR, "Please check your CC_CONSUMER_KEY and CC_CONSUMER_SECRET are valid.\n");
         exit(1);
     }
-    
-    // Step 3: Exchange verifier for access token
-    $accessToken = $flow->accessToken(
-        $consumerKey,
-        $consumerSecret,
-        $requestToken['token'],
-        $requestToken['tokenSecret'],
-        $verifier
-    );
-    
-    $userToken = $accessToken['token'];
-    $userTokenSecret = $accessToken['tokenSecret'];
-    
-    // Cache the tokens
-    file_put_contents($tokenCacheFile, json_encode([
-        'token' => $userToken,
-        'token_secret' => $userTokenSecret,
-    ]));
-    
-    echo "Tokens cached. You won't need to authorize again next time.\n\n";
 }
 
 // Build client with OAuth credentials
