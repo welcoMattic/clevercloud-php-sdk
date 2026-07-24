@@ -81,10 +81,13 @@ GET /v2/organisations/{ownerId}/applications/{applicationId}/logs
 `$organisationId === null`. Path constructed by `logsPath()` in
 `LogsResource`.
 
+**Important:** The logs endpoint **only works with OAuth 1.0a credentials**.
+API tokens (Bearer) are **NOT supported** by Clever Cloud for logs streaming.
+
 The host depends on your credentials:
 
-- **API token (Bearer)** → `api-bridge.clever-cloud.com`
-- **OAuth 1.0a** → `api.clever-cloud.com`
+- **API token (Bearer)** → `api-bridge.clever-cloud.com` (but logs will return 404)
+- **OAuth 1.0a** → `api.clever-cloud.com` (required for logs)
 
 This is the same routing rule as every other call — see
 [Authentication](authentication.md).
