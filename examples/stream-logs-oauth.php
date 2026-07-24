@@ -23,8 +23,10 @@ use CleverCloud\Sdk\Auth\Credentials;
 use CleverCloud\Sdk\Auth\OAuthFlow;
 use CleverCloud\Sdk\Auth\OAuth1Signer;
 use CleverCloud\Sdk\ClientBuilder;
+use CleverCloud\Sdk\Configuration;
 use CleverCloud\Sdk\Exception\CleverCloudException;
-use Nyholm\Psr7\HttpClient as NyholmHttpClient;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Symfony\Component\HttpClient\Psr18Client;
 
 if ($argc < 2) {
     fwrite(\STDERR, "Usage: php examples/stream-logs-oauth.php <app_id> [owner_id]\n");
@@ -57,9 +59,15 @@ if (file_exists($tokenCacheFile)) {
     }
 }
 
-$httpClient = new NyholmHttpClient();
+$psr17Factory = new Psr17Factory();
+$psr18Client = new Psr18Client();
 $signer = new OAuth1Signer();
-$flow = new OAuthFlow($signer, $httpClient, new \Nyholm\Psr7\RequestFactory());
+$flow = new OAuthFlow(
+    signer: $signer,
+    psr18: $psr18Client,
+    requestFactory: $psr17Factory,
+    configuration: new Configuration(),
+);
 
 // If we don't have tokens, start the OAuth flow
 if (null === $userToken || null === $userTokenSecret) {
