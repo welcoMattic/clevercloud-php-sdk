@@ -1,19 +1,19 @@
 <?php
 
-namespace CleverCloud\Sdk\Resource\V4;
+namespace CleverCloud\Sdk\Resource\V2;
 
 use CleverCloud\Sdk\Model\LogEntry;
-use CleverCloud\Sdk\Resource\AbstractV4Resource;
+use CleverCloud\Sdk\Resource\AbstractV2Resource;
 use CleverCloud\Sdk\Streaming\LogStream;
 
 /**
- * Real-time and historical application logs against `/v4/logs/...`.
+ * Real-time and historical application logs against `/v2/logs/...`.
  *
  * Path layout per the documentation:
- * `/v4/logs/organisations/{ownerId}/applications/{applicationId}/logs`
+ * `/v2/logs/organisations/{ownerId}/applications/{applicationId}/logs`
  * (use `null` for `$organisationId` to scope under `/self`).
  */
-final readonly class LogsResource extends AbstractV4Resource
+final readonly class LogsResource extends AbstractV2Resource
 {
     /**
      * Opens an SSE stream for live logs. The returned LogStream is iterable —

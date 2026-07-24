@@ -1,4 +1,4 @@
-# Logs (`/v4/logs/...`)
+# Logs (`/v2/logs/...`)
 
 Source: [`src/Resource/V4/LogsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/LogsResource.php)
 
@@ -21,8 +21,8 @@ public function query(string $applicationId, ?string $organisationId = null, arr
 
 | Method | HTTP | Path | Returns |
 | --- | --- | --- | --- |
-| `stream()` | GET (SSE) | `/v4/logs/.../applications/{appId}/logs` | Iterable `LogStream<LogEntry>` |
-| `query()` | GET | `/v4/logs/.../applications/{appId}/logs` | One-shot `list<LogEntry>` |
+| `stream()` | GET (SSE) | `/v2/logs/.../applications/{appId}/logs` | Iterable `LogStream<LogEntry>` |
+| `query()` | GET | `/v2/logs/.../applications/{appId}/logs` | One-shot `list<LogEntry>` |
 
 `stream()` opens a Server-Sent Events connection via Symfony's
 `EventSourceHttpClient`. The returned `LogStream` implements

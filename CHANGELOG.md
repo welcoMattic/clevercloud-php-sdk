@@ -135,8 +135,8 @@ reconnection, and `Last-Event-ID` resume are Symfony's responsibility.
 
 ### Bug fixes since 0.1.0
 
-- **V4 logs URL** now `/v4/logs/organisations/{owner}/applications/{appId}/logs`
-  (was `/v4/logs/{appId}`); owner is required.
+- **V2 logs URL** now `/v2/logs/organisations/{owner}/applications/{appId}/logs`
+  (was `/v2/logs/{appId}`); owner is required.
 - **V4 operators URL** routes through
   `/v4/addon-providers/addon-{kind}/addons[/{id}]` (was the made-up
   `/v4/operators/{kind}/{owner}/...`). Ownership comes from credentials.
@@ -200,7 +200,7 @@ typed DTOs via `jolicode/automapper`, no middleware in the HTTP pipeline.
   `PulsarPoliciesResource` (+ DTOs: `Invoice`, `PaymentMethod`,
   `Consumption`, `InstanceType`, `Flavor`, `Zone`, `Country`,
   `LoadBalancer`, `PulsarPolicy`).
-- **V4 logs streaming** — `LogsResource::stream/query`, `LogStream`,
+- **V2 logs streaming** — `LogsResource::stream/query`, `LogStream`,
   `SseStream`, `SseEvent` (+ `LogEntry` DTO).
 - **V4 operators** — `OperatorsResource` facade routing to
   `KeycloakResource`, `MatomoResource`, `MetabaseResource`,

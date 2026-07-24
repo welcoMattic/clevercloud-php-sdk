@@ -74,10 +74,10 @@ public function query(
 Both methods hit:
 
 ```
-GET /v4/logs/organisations/{ownerId}/applications/{applicationId}/logs
+GET /v2/logs/organisations/{ownerId}/applications/{applicationId}/logs
 ```
 
-— or `/logs/self/applications/{applicationId}/logs` when
+— or `/v2/logs/self/applications/{applicationId}/logs` when
 `$organisationId === null`. Path constructed by `logsPath()` in
 `LogsResource`.
 
