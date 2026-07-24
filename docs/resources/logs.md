@@ -21,8 +21,8 @@ public function query(string $applicationId, ?string $organisationId = null, arr
 
 | Method | HTTP | Path | Returns |
 | --- | --- | --- | --- |
-| `stream()` | GET (SSE) | `/v2/logs/.../applications/{appId}/logs` | Iterable `LogStream<LogEntry>` |
-| `query()` | GET | `/v2/logs/.../applications/{appId}/logs` | One-shot `list<LogEntry>` |
+| `stream()` | GET (SSE) | `/v2/{owner}/applications/{appId}/logs` | Iterable `LogStream<LogEntry>` |
+| `query()` | GET | `/v2/{owner}/applications/{appId}/logs` | One-shot `list<LogEntry>` |
 
 `stream()` opens a Server-Sent Events connection via Symfony's
 `EventSourceHttpClient`. The returned `LogStream` implements

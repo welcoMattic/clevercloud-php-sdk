@@ -46,7 +46,7 @@ final class LogsResourceTest extends TestCase
         self::assertSame('world', $entries[1]->message);
         self::assertSame('i_2', $entries[1]->instanceId);
         self::assertSame(
-            'https://api.clever-cloud.com/v2/logs/organisations/orga_1/applications/app_42/logs',
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_42/logs',
             $response->getRequestUrl(),
         );
     }
@@ -68,7 +68,7 @@ final class LogsResourceTest extends TestCase
         self::assertCount(1, $entries);
         self::assertSame('x', $entries[0]->message);
         self::assertSame(
-            'https://api.clever-cloud.com/v2/logs/self/applications/app_42/logs',
+            'https://api.clever-cloud.com/v2/self/applications/app_42/logs',
             $response->getRequestUrl(),
         );
     }
@@ -86,7 +86,7 @@ final class LogsResourceTest extends TestCase
         self::assertSame('old', $entries[0]->message);
         self::assertSame('i_0', $entries[0]->instanceId);
         self::assertSame(
-            'https://api.clever-cloud.com/v2/logs/organisations/orga_1/applications/app_42/logs?limit=50',
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_42/logs?limit=50',
             $response->getRequestUrl(),
         );
     }
@@ -99,7 +99,7 @@ final class LogsResourceTest extends TestCase
 
         self::assertSame([], $entries);
         self::assertSame(
-            'https://api.clever-cloud.com/v2/logs/self/applications/app_42/logs',
+            'https://api.clever-cloud.com/v2/self/applications/app_42/logs',
             $response->getRequestUrl(),
         );
     }

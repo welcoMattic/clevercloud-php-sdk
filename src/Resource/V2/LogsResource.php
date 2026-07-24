@@ -7,11 +7,11 @@ use CleverCloud\Sdk\Resource\AbstractV2Resource;
 use CleverCloud\Sdk\Streaming\LogStream;
 
 /**
- * Real-time and historical application logs against `/v2/logs/...`.
+ * Real-time and historical application logs.
  *
  * Path layout per the documentation:
- * `/v2/logs/organisations/{ownerId}/applications/{applicationId}/logs`
- * (use `null` for `$organisationId` to scope under `/self`).
+ * `/v2/organisations/{ownerId}/applications/{applicationId}/logs`
+ * or `/v2/self/applications/{applicationId}/logs` when `$organisationId === null`.
  */
 final readonly class LogsResource extends AbstractV2Resource
 {
@@ -53,7 +53,7 @@ final readonly class LogsResource extends AbstractV2Resource
 
     private function logsPath(string $applicationId, ?string $organisationId): string
     {
-        return '/logs'.$this->ownerPath($organisationId)
+        return $this->ownerPath($organisationId)
             .'/applications/'.rawurlencode($applicationId).'/logs';
     }
 }
