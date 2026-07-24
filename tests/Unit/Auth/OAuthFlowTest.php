@@ -35,7 +35,7 @@ final class OAuthFlowTest extends TestCase
         $sent = $psr18->lastRequest;
         self::assertNotNull($sent);
         self::assertSame('POST', $sent->getMethod());
-        self::assertSame('https://api.clever-cloud.com/v2/oauth/request_token', (string) $sent->getUri());
+        self::assertSame('https://api.clever-cloud.com/v2/oauth/request_token_query', (string) $sent->getUri());
 
         $authHeader = $sent->getHeaderLine('Authorization');
         self::assertStringStartsWith('OAuth ', $authHeader);
@@ -64,7 +64,7 @@ final class OAuthFlowTest extends TestCase
 
         $sent = $psr18->lastRequest;
         self::assertNotNull($sent);
-        self::assertSame('https://api.clever-cloud.com/v2/oauth/access_token', (string) $sent->getUri());
+        self::assertSame('https://api.clever-cloud.com/v2/oauth/access_token_query', (string) $sent->getUri());
 
         $authHeader = $sent->getHeaderLine('Authorization');
         self::assertStringContainsString('oauth_verifier="verifier-xyz"', $authHeader);

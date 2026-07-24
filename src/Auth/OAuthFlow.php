@@ -40,7 +40,7 @@ final readonly class OAuthFlow
         $credentials = new OAuth1Credentials($consumerKey, $consumerSecret);
         $body = $this->dispatch(
             'POST',
-            $this->configuration->v2BaseUrl.'/oauth/request_token',
+            $this->configuration->v2BaseUrl.'/oauth/request_token_query',
             $credentials,
             ['oauth_callback' => $callbackUrl],
         );
@@ -69,7 +69,7 @@ final readonly class OAuthFlow
         $credentials = new OAuth1Credentials($consumerKey, $consumerSecret, $requestToken, $requestTokenSecret);
         $body = $this->dispatch(
             'POST',
-            $this->configuration->v2BaseUrl.'/oauth/access_token',
+            $this->configuration->v2BaseUrl.'/oauth/access_token_query',
             $credentials,
             ['oauth_verifier' => $verifier],
         );
