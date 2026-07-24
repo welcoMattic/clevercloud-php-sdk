@@ -39,21 +39,11 @@ final readonly class OAuth1Credentials extends Credentials
     }
 
     /**
-     * OAuth 1.0a endpoints use api.clever-cloud.com, but logs are only available
-     * on console.clever-cloud.com. Rewrite logs paths to use the console host.
+     * OAuth 1.0a endpoints use api.clever-cloud.com for all requests including logs.
+     * No URI rewriting is needed as the default base URL is already correct.
      */
     public function rewriteUri(\Psr\Http\Message\UriInterface $uri, ApiVersion $version, Configuration $configuration): \Psr\Http\Message\UriInterface
     {
-        $path = (string) $uri->getPath();
-        
-        // Logs endpoints must go through console.clever-cloud.com
-        if (str_contains($path, '/applications/') && str_ends_with($path, '/logs')) {
-            return $uri
-                ->withScheme('https')
-                ->withHost('console.clever-cloud.com');
-        }
-        
-        // All other OAuth endpoints use api.clever-cloud.com (default from UriBuilder)
         return $uri;
     }
 }
