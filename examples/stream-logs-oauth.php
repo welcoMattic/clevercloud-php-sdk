@@ -75,8 +75,8 @@ if (null === $userToken || null === $userTokenSecret) {
 
     try {
         // Step 1: Get request token
-        // Pass null for CLI apps (no callback), or a real callback URL for web apps
-        $requestToken = $flow->requestToken($consumerKey, $consumerSecret, null);
+        // Use 'oob' for CLI apps (out-of-band)
+        $requestToken = $flow->requestToken($consumerKey, $consumerSecret, 'oob');
         echo "Request token received.\n";
 
         // Step 2: Get authorization URL
