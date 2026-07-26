@@ -35,14 +35,18 @@ final readonly class OAuthFlow
     /**
      * @return array{token: string, tokenSecret: string}
      */
-    public function requestToken(string $consumerKey, string $consumerSecret, string $callbackUrl): array
+    public function requestToken(string $consumerKey, string $consumerSecret, ?string $callbackUrl = null): array
     {
         $credentials = new OAuth1Credentials($consumerKey, $consumerSecret);
+        $extraParams = [];
+        if (null !== $callbackUrl && '' !== $callbackUrl) {
+            $extraParams['oauth_callback'] = $callbackUrl;
+        }
         $body = $this->dispatch(
             'POST',
             $this->configuration->v2BaseUrl.'/oauth/request_token_query',
             $credentials,
-            ['oauth_callback' => $callbackUrl],
+            $extraParams,
         );
 
         return [
