@@ -26,7 +26,7 @@ final class ApiTokensResourceTest extends TestCase
         self::assertSame('CI', $tokens[0]->name);
         self::assertSame(['orga:read'], $tokens[0]->scopes);
         self::assertSame('Dashboard', $tokens[1]->name);
-        self::assertSame('https://api-bridge.clever-cloud.com/v2/api-tokens', $response->getRequestUrl());
+        self::assertSame('https://api-bridge.clever-cloud.com/api-tokens', $response->getRequestUrl());
     }
 
     public function testGetReturnsSingleToken(): void
@@ -45,7 +45,7 @@ final class ApiTokensResourceTest extends TestCase
         self::assertSame('2026-01-01T00:00:00Z', $token->createdAt);
         self::assertSame('2026-12-31T23:59:59Z', $token->expiresAt);
         self::assertSame('2026-05-19T10:00:00Z', $token->lastUsedAt);
-        self::assertSame('https://api-bridge.clever-cloud.com/v2/api-tokens/tok_1', $response->getRequestUrl());
+        self::assertSame('https://api-bridge.clever-cloud.com/api-tokens/tok_1', $response->getRequestUrl());
     }
 
     public function testCreateReturnsTokenWithPlaintext(): void
@@ -65,7 +65,7 @@ final class ApiTokensResourceTest extends TestCase
         self::assertSame('tok_new', $token->id);
         self::assertSame('cc_secret_eyJhbGciOi...', $token->token);
         self::assertSame('POST', $response->getRequestMethod());
-        self::assertSame('https://api-bridge.clever-cloud.com/v2/api-tokens', $response->getRequestUrl());
+        self::assertSame('https://api-bridge.clever-cloud.com/api-tokens', $response->getRequestUrl());
         self::assertSame(
             '{"name":"Backup script","scopes":["addon:read","addon:backup:create"]}',
             $response->getRequestOptions()['body'],
@@ -79,7 +79,7 @@ final class ApiTokensResourceTest extends TestCase
         $this->resource($response)->update('tok_1', ['name' => 'renamed']);
 
         self::assertSame('PATCH', $response->getRequestMethod());
-        self::assertSame('https://api-bridge.clever-cloud.com/v2/api-tokens/tok_1', $response->getRequestUrl());
+        self::assertSame('https://api-bridge.clever-cloud.com/api-tokens/tok_1', $response->getRequestUrl());
         self::assertSame('{"name":"renamed"}', $response->getRequestOptions()['body']);
     }
 
@@ -90,7 +90,7 @@ final class ApiTokensResourceTest extends TestCase
         $this->resource($response)->delete('tok_1');
 
         self::assertSame('DELETE', $response->getRequestMethod());
-        self::assertSame('https://api-bridge.clever-cloud.com/v2/api-tokens/tok_1', $response->getRequestUrl());
+        self::assertSame('https://api-bridge.clever-cloud.com/api-tokens/tok_1', $response->getRequestUrl());
     }
 
     private function resource(MockResponse $response): ApiTokensResource
