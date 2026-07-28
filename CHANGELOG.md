@@ -79,6 +79,14 @@ bumping.
 - **Documentation claimed logs required OAuth 1.0a** and that API tokens always
   got a 404. That was a misdiagnosis of the broken path: Bearer tokens stream
   and query logs correctly through `api-bridge.clever-cloud.com`.
+- **The OAuth 1.0a CLI example sent `oob` as its callback**, which Clever Cloud
+  rejects with HTTP 500. It now sends a real URL and reads `oauth_verifier` back
+  from the browser's address bar, with `CC_OAUTH_CALLBACK` to override the host.
+- **`api-bridge` demo and docs now explain the `13502` callback rejection.** The
+  callback is validated against the scheme and host of the consumer's Base URL
+  (port and path are not checked), so a consumer registered on `http://` refuses
+  an `https://` callback. The demo surfaces the mismatch and the `clever
+  oauth-consumers update` command to fix it instead of only echoing the error.
 
 ### Added
 

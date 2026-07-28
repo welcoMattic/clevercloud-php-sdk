@@ -58,7 +58,19 @@ final class SecurityController extends AbstractController
         try {
             $request_token = $this->oauth->requestToken($consumerKey, $consumerSecret, $callback);
         } catch (CleverCloudException $e) {
-            return $this->render('security/error.html.twig', ['exception' => $e]);
+            return $this->render('security/error.html.twig', [
+                'exception' => $e,
+                // Clever Cloud validates the callback against the scheme and the
+                // host of the consumer's Base URL (port and path are ignored),
+                // and answers 13502 when they differ.
+                'hint' => str_contains($e->getMessage(), 'OAuth callback is invalid')
+                    ? \sprintf(
+                        'Callback envoyé : %s. Clever Cloud valide son scheme et son host contre la Base URL du consumer (le port et le chemin sont ignorés). Aligne-les : clever oauth-consumers update <consumer-key> --base-url %s',
+                        $callback,
+                        $request->getSchemeAndHttpHost(),
+                    )
+                    : null,
+            ]);
         }
 
         $session->set(self::SESSION_REQUEST_TOKEN, $request_token['token']);
@@ -99,7 +111,7 @@ final class SecurityController extends AbstractController
                 $verifier,
             );
         } catch (CleverCloudException $e) {
-            return $this->render('security/error.html.twig', ['exception' => $e]);
+            return $this->render('security/error.html.twig', ['exception' => $e, 'hint' => null]);
         }
 
         $session->remove(self::SESSION_REQUEST_TOKEN);

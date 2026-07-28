@@ -20,8 +20,8 @@
 require __DIR__.'/../vendor/autoload.php';
 
 use CleverCloud\Sdk\Auth\Credentials;
-use CleverCloud\Sdk\Auth\OAuthFlow;
 use CleverCloud\Sdk\Auth\OAuth1Signer;
+use CleverCloud\Sdk\Auth\OAuthFlow;
 use CleverCloud\Sdk\ClientBuilder;
 use CleverCloud\Sdk\Configuration;
 use CleverCloud\Sdk\Exception\CleverCloudException;
@@ -39,11 +39,19 @@ $ownerId = $argc > 2 ? $argv[2] : null;
 $consumerKey = getenv('CC_CONSUMER_KEY');
 $consumerSecret = getenv('CC_CONSUMER_SECRET');
 
-if (false === $consumerKey || '' === $consumerKey ||
-    false === $consumerSecret || '' === $consumerSecret) {
+if (false === $consumerKey || '' === $consumerKey
+    || false === $consumerSecret || '' === $consumerSecret) {
     fwrite(\STDERR, "Missing env vars: CC_CONSUMER_KEY, CC_CONSUMER_SECRET\n");
     exit(2);
 }
+
+// Callback URL sent at step 1 of the flow. Clever Cloud validates it against
+// the *scheme and host* of your OAuth consumer's Base URL; the port and the
+// path are not checked. The out-of-band value 'oob' is NOT supported (the API
+// answers HTTP 500), so a CLI still has to send a real URL: nothing listens on
+// it, you just read `oauth_verifier` from your browser's address bar.
+// Set CC_OAUTH_CALLBACK if your consumer is registered on another host.
+$callbackUrl = getenv('CC_OAUTH_CALLBACK') ?: 'http://localhost/oauth/callback';
 
 // Token cache file
 $tokenCacheFile = getenv('HOME').'/.clevercloud-php-sdk-tokens';
@@ -75,18 +83,18 @@ if (null === $userToken || null === $userTokenSecret) {
 
     try {
         // Step 1: Get request token
-        // Use 'oob' for CLI apps (out-of-band)
-        $requestToken = $flow->requestToken($consumerKey, $consumerSecret, 'oob');
+        $requestToken = $flow->requestToken($consumerKey, $consumerSecret, $callbackUrl);
         echo "Request token received.\n";
 
         // Step 2: Get authorization URL
         $authorizeUrl = $flow->authorizationUrl($requestToken['token']);
         echo "Please open this URL in your browser to authorize:\n";
-        echo $authorizeUrl . "\n\n";
-        echo "After authorizing, paste the verifier code here: ";
+        echo $authorizeUrl."\n\n";
+        echo "You will be redirected to {$callbackUrl}?oauth_token=...&oauth_verifier=...\n";
+        echo 'Copy the oauth_verifier value from the address bar and paste it here: ';
 
         // Read verifier from stdin
-        $verifier = trim(fgets(STDIN));
+        $verifier = trim(fgets(\STDIN));
 
         if (empty($verifier)) {
             fwrite(\STDERR, "No verifier provided. Aborting.\n");
@@ -112,9 +120,15 @@ if (null === $userToken || null === $userTokenSecret) {
         ]));
 
         echo "Tokens cached. You won't need to authorize again next time.\n\n";
-    } catch (\CleverCloud\Sdk\Exception\CleverCloudException $e) {
+    } catch (CleverCloudException $e) {
         fwrite(\STDERR, \sprintf("OAuth error: %s (%s)\n", $e->getMessage(), $e::class));
         fwrite(\STDERR, "Please check your CC_CONSUMER_KEY and CC_CONSUMER_SECRET are valid.\n");
+        fwrite(\STDERR, \sprintf(
+            "On \"OAuth callback is invalid\": %s must share the scheme and host of your\n"
+            ."consumer's Base URL. Check it with `clever oauth-consumers get %s`.\n",
+            $callbackUrl,
+            $consumerKey,
+        ));
         exit(1);
     }
 }

@@ -46,7 +46,12 @@ configurer la démo.
    → *Create a consumer*.
 2. Renseigne :
    - **Name** : `Mini Dashboard` (libre)
-   - **URL** et **Base URL** : `https://localhost:8765/`
+   - **URL** et **Base URL** : le **scheme et le host exacts** par lesquels tu
+     ouvres la démo, ex. `https://localhost:8765`. C'est le seul champ qui
+     compte pour le flow : Clever Cloud valide le `oauth_callback` envoyé à
+     l'étape 1 contre le **scheme + host** de la Base URL. Le port et le chemin
+     ne sont pas vérifiés, mais `http` vs `https` et `localhost` vs `127.0.0.1`
+     le sont.
    - **Rights / Scopes** : au minimum `Read applications`, `Manage applications`,
      `Read addons`, `Read organisations`
 3. La console te montre **un consumer key et un consumer secret**.
@@ -67,9 +72,21 @@ configurer la démo.
 5. Lance la démo → `/login` → *Se connecter via OAuth* → autorise sur la console
    → tu reviens loggé.
 
-> Si tu vois *« OAuth callback is invalid »*, l'URL du consumer n'est pas
-> alignée avec ce que la démo envoie (`https://localhost:8765/oauth/callback`).
-> Édite le consumer dans la console.
+> **« OAuth callback is invalid » (erreur 13502)** : le callback que la démo
+> envoie n'a pas le même scheme ou le même host que la **Base URL** du consumer.
+> La démo dérive ce callback de l'URL par laquelle tu la consultes
+> (`UrlGeneratorInterface::ABSOLUTE_URL`), donc `symfony server:start` avec TLS
+> envoie `https://…` : un consumer enregistré en `http://…` sera refusé, et
+> inversement. Aligne les deux :
+>
+> ```bash
+> clever oauth-consumers get <consumer-key>          # voir la Base URL actuelle
+> clever oauth-consumers update <consumer-key> \
+>   --url https://127.0.0.1:8000 --base-url https://127.0.0.1:8000
+> ```
+>
+> Autre option : servir la démo en clair (`symfony server:start --no-tls`) pour
+> qu'elle envoie un callback `http://…`.
 
 ## Lancer le serveur
 
