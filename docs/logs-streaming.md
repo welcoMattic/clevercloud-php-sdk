@@ -1,7 +1,7 @@
 # Live log streaming
 
-Clever Cloud streams application logs over Server-Sent Events. The SDK wraps
-Symfony's `EventSourceHttpClient` so you iterate typed `LogEntry` objects —
+Clever Cloud streams application logs over Server-Sent Events (SSE). The SDK wraps
+Symfony's `EventSourceHttpClient` so you iterate typed `LogEntry` objects -
 framing, reconnection, and `Last-Event-ID` resume are Symfony's job.
 
 ## Read live logs
@@ -23,31 +23,46 @@ public function stream(
 ): LogStream
 ```
 
-- `$organisationId === null` scopes to `/self` (your own apps).
+- `$organisationId === null` triggers a `/v2/self` lookup to resolve the personal
+  organisation id, costing one extra request. There is no `/self` variant of the
+  logs endpoint; the personal organisation is addressed by its own `user_<uuid>` id.
 - Filter keys accepted: `since`, `until`, `filter`, `deploymentId`. Everything
   goes into the query string as-is.
-- The returned `LogStream` implements `IteratorAggregate<int, LogEntry>` —
-  `foreach` is the only public consumer surface.
+- The returned `LogStream` implements `IteratorAggregate<int, LogEntry>` -
+  `foreach` is the only public consumer surface. `LogStream` now accepts an optional
+  `$maxDurationSeconds` parameter to bound iteration time.
+- Both `stream()` and `query()` use the same SSE endpoint. There is **no JSON endpoint**;
+  the API only supports `text/event-stream` content type.
 
 ## `LogEntry` shape
 
-Verified against [`src/Model/LogEntry.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/LogEntry.php):
+Verified against [`src/Model/LogEntry.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/LogEntry.php).
+The API sends camelCase field names; the model now matches the wire format:
 
 ```php
-public string  $message;
-public ?string $instanceId;     // from `instance_id`
-public ?string $applicationId;  // from `application_id`
-public ?string $stream;
+public string  $message;       // required
+public ?string $id;
 public ?string $severity;
-public ?string $zone;
-public ?string $deploymentId;   // from `deployment_id`
+public ?int    $priority;
 public ?string $date;
-public array   $raw;            // any extra fields the API may add later
+public ?string $instanceId;
+public ?string $applicationId;
+public ?string $deploymentId;
+public ?string $commitId;
+public ?string $service;       // e.g. "run-p2993-i2993" (previously misnamed as $stream)
+public ?string $region;
+public ?string $zone;
+public ?string $version;
+public array   $raw;           // any extra fields the API may add later
 ```
+
+Note: `instanceId`, `applicationId` and `deploymentId` were always null before the
+fix because the model asked for snake_case keys the API never sends.
 
 ## Historical query
 
-When you don't need live tailing — `query()` returns a one-shot list:
+When you don't need live tailing - `query()` returns a one-shot list by consuming
+the SSE stream and stopping early:
 
 ```php
 /** @var list<LogEntry> $logs */
@@ -56,7 +71,7 @@ $logs = $client->logs->query('app_xxx', 'orga_xxx', [
     'until' => '2026-05-02T00:00:00Z',
     'filter' => 'level:error',
     'limit' => 100,
-]);
+], 30); // maxDurationSeconds - required to bound quiet streams
 ```
 
 Signature:
@@ -66,31 +81,44 @@ public function query(
     string $applicationId,
     ?string $organisationId = null,
     array $filters = [], // {since?, until?, filter?, deploymentId?, limit?}
+    int $maxDurationSeconds = 10,
 ): array
 ```
+
+**Important:** `query()` needs a `since` filter to be historical at all. Without one,
+the endpoint only sends entries produced from that moment on, so the call
+degenerates into a short live tail. Two bounds are needed: `limit` is sent
+upstream and the server closes the connection once that many entries have been
+sent, but for quiet applications the endpoint holds the connection open and
+emits HEARTBEAT events forever. No combination of `since` / `until` / `limit`
+makes it hang up (verified against the live API), so `$maxDurationSeconds` is
+what actually guarantees this method returns.
 
 ## Endpoint and authentication
 
 Both methods hit:
 
 ```
-GET /v2/organisations/{ownerId}/applications/{applicationId}/logs
+GET /v4/logs/organisations/{ownerId}/applications/{applicationId}/logs
 ```
 
-— or `/v2/self/applications/{applicationId}/logs` when
-`$organisationId === null`. Path constructed by `logsPath()` in
-`LogsResource`.
+The endpoint only supports Server-Sent Events with content type
+`text/event-stream`. There is no JSON endpoint, which is why `query()` consumes
+the stream instead of doing a plain GET. The
+`/v2/organisations/{org}/applications/{app}/logs` path that this SDK targeted
+before does not exist and always answered 404.
 
-**Important:** The logs endpoint **only works with OAuth 1.0a credentials**.
-API tokens (Bearer) are **NOT supported** by Clever Cloud for logs streaming.
+Both credential types work. An earlier version of this page claimed logs
+required OAuth 1.0a and that API tokens always got a 404. That was a
+misdiagnosis: the 404 came from the wrong path above, not from the
+authentication mode. Streaming and querying logs with a Bearer token through
+`api-bridge.clever-cloud.com` is verified working.
 
-The host depends on your credentials:
+The host depends on your credentials, which is the same routing rule as every
+other call, see [Authentication](authentication.md):
 
-- **API token (Bearer)** → `api-bridge.clever-cloud.com` (but logs will return 404)
-- **OAuth 1.0a** → `api.clever-cloud.com` (required for logs)
-
-This is the same routing rule as every other call — see
-[Authentication](authentication.md).
+- **API token (Bearer)** goes to `api-bridge.clever-cloud.com`
+- **OAuth 1.0a** goes to `api.clever-cloud.com`
 
 ## How `LogStream` decodes frames
 
@@ -113,13 +141,13 @@ Verified against
 
 `EventSourceHttpClient` keeps track of the last received event ID and sends
 it back on reconnect via the `Last-Event-ID` header. You don't have to do
-anything — the iteration just resumes.
+anything - the iteration just resumes.
 
 ## Mocking the stream in tests
 
 ```php
-$frame1 = json_encode(['message' => 'hello', 'instance_id' => 'i_1']);
-$frame2 = json_encode(['message' => 'world', 'instance_id' => 'i_2']);
+$frame1 = json_encode(['message' => 'hello', 'instanceId' => 'i_1']);
+$frame2 = json_encode(['message' => 'world', 'instanceId' => 'i_2']);
 
 $response = new MockResponse(
     ['data: '.$frame1."\n\n", 'data: '.$frame2."\n\n"],

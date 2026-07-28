@@ -13,10 +13,14 @@ $client->apiTokens
 
 ## Authentication requirement
 
-This resource only works when your client is authenticated with a Bearer
-token — `api-bridge.clever-cloud.com` returns 401 for OAuth1 callers. The
-demo dashboard handles this gracefully via `oauth_blocked.html.twig`; the
-SDK does **not** check upfront — the API will respond 401 if you call it
+This resource **requires OAuth 1.0a authentication**. The gateway validates
+the header shape and rejects Bearer tokens with `HTTP 400` and the message
+`headers/authorization Invalid input: must start with "OAuth "`. This is the
+point of these endpoints: you sign with your OAuth 1.0a consumer credentials
+in order to mint a Bearer token. So a client authenticated with an API token
+CANNOT manage API tokens.
+
+The SDK does **not** check upfront - the API will respond 400 if you call it
 with the wrong credentials.
 
 ## Methods
@@ -31,17 +35,17 @@ public function delete(string $tokenId): void
 
 | Method | HTTP | Path | Body |
 | --- | --- | --- | --- |
-| `list()` | GET | `https://api-bridge.clever-cloud.com/v2/api-tokens` | — |
-| `get()` | GET | `.../v2/api-tokens/{id}` | — |
-| `create()` | POST | `.../v2/api-tokens` | `{"name": "...", "scopes": ["..."]?, "expires_at": "..."?}` |
-| `update()` | PATCH | `.../v2/api-tokens/{id}` | `{"name"?: "...", "scopes"?: [...]}` |
-| `delete()` | DELETE | `.../v2/api-tokens/{id}` | — |
+| `list()` | GET | `https://api-bridge.clever-cloud.com/api-tokens` | - |
+| `get()` | GET | `.../api-tokens/{id}` | - |
+| `create()` | POST | `.../api-tokens` | `{"name": "...", "scopes": ["..."]?, "expires_at": "..."?}` |
+| `update()` | PATCH | `.../api-tokens/{id}` | `{"name"?: "...", "scopes"?: [...]}` |
+| `delete()` | DELETE | `.../api-tokens/{id}` | - |
 
 The SDK builds these URLs by:
 1. Using `ApiVersion::Bridge` (which `AbstractBridgeResource::version()` pins).
 2. `Configuration::baseUrlFor(Bridge)` returning `bridgeBaseUrl` (default
    `https://api-bridge.clever-cloud.com`).
-3. The resource itself writing the full `/v2/api-tokens` path — there's no
+3. The resource itself writing the full `/api-tokens` path - there's no
    implicit `/v1` or `/v2` prefix on the Bridge base URL.
 
 ## `ApiToken` DTO
@@ -52,7 +56,7 @@ Fields (verified against
 ```php
 public string  $id;
 public string  $name;
-public ?string $token;        // ⚠ Only populated on creation responses — store it immediately
+public ?string $token;        // ⚠ Only populated on creation responses - store it immediately
 public array   $scopes;       // list<string>
 public ?string $createdAt;
 public ?string $expiresAt;

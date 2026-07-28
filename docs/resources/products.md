@@ -17,7 +17,7 @@ $client->products
 public function instances(): list<InstanceType>
 public function addonProviders(): list<AddonProvider>
 public function zones(): list<Zone>
-public function countries(): list<Country>
+public function countries(): array<string, string>
 ```
 
 | Method | HTTP | Path |
@@ -37,3 +37,7 @@ form selects, validate user input against platform-supported values, etc.
 | --- | --- |
 | Stable platform-wide constants (Flavor, DeployType, ApplicationState, MigrationStatus, MemberRole, DrainType, WebhookFormat, DeploymentAction, DeploymentState) | PHP enums under `CleverCloud\Sdk\Model\Enum\` |
 | Lists that Clever Cloud updates faster than SDK releases (zones, instance types, add-on providers, countries) | These products methods |
+
+Note: `countries()` returns an associative array mapping upper-case English country
+names to their ISO 3166-1 alpha-2 codes (e.g. `{'FRANCE': 'FR', 'CZECHIA': 'CZ'}`).
+The `Country` model class has been removed.

@@ -55,7 +55,7 @@ echo $me->email, "\n";
 
 Mint your token from the [Clever Cloud Console](https://console.clever-cloud.com/) (section "Personal API tokens"), set it as `CC_API_TOKEN`, and you're done.
 
-The SDK also supports OAuth 1.0a for legacy consumers and 3-legged authorisation flows — see [`docs/authentication.md`](docs/authentication.md) for the full picture.
+The SDK also supports OAuth 1.0a for legacy consumers and 3-legged authorisation flows - see [`docs/authentication.md`](docs/authentication.md) for the full picture.
 
 ## Coverage matrix
 
@@ -157,7 +157,7 @@ ships them:
 ```php
 $client->products->instances();    // -> list<InstanceType>  (php, node, docker, …)
 $client->products->zones();        // -> list<Zone>          (par, mtl, scw, …)
-$client->products->countries();    // -> list<Country>
+$client->products->countries();    // -> array<string, string>
 $client->addons->providers();      // -> list<AddonProvider> (postgresql-addon, redis-addon, …)
 $client->addons->provider($id);    // -> AddonProvider       (with its plans)
 ```
@@ -175,9 +175,11 @@ $client->addons->provider($id);    // -> AddonProvider       (with its plans)
 ### API token (recommended)
 
 Tokens are minted from the Console (or via `$client->apiTokens->create()` with
-an existing token). They go in `Credentials::apiToken()`, are sent as
+an existing OAuth 1.0a client). They go in `Credentials::apiToken()`, are sent as
 `Authorization: Bearer <token>`, and the `apiTokens` resource itself routes
-to `api-bridge.clever-cloud.com` so the gateway can validate the scopes.
+to `api-bridge.clever-cloud.com` so the gateway can validate the scopes. Note
+that the `apiTokens` resource **requires OAuth 1.0a authentication** - you cannot
+manage tokens with a Bearer token.
 
 ### OAuth 1.0a (legacy)
 

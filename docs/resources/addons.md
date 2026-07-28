@@ -52,7 +52,7 @@ public function plans(string $providerId): list<array<string, mixed>>
 | --- | --- | --- |
 | `providers()` | GET | `/v2/products/addonproviders` |
 | `provider()` | GET | `/v2/products/addonproviders/{id}` (includes plans) |
-| `plans()` | GET | `/v2/products/addonproviders/{id}/plans` (raw list) |
+| `plans()` | GET | `/v2/products/addonproviders/{id}` (returns nested `plans` key) |
 
 These are the same routes as `$client->products->addonProviders()` — kept
 on the addons resource for discoverability when you're already in the

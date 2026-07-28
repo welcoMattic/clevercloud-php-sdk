@@ -119,8 +119,8 @@ $client = (new ClientBuilder())
 returns SSE frames the same way regular responses work:
 
 ```php
-$frame1 = json_encode(['message' => 'hello', 'instance_id' => 'i_1']);
-$frame2 = json_encode(['message' => 'world', 'instance_id' => 'i_2']);
+$frame1 = json_encode(['message' => 'hello', 'instanceId' => 'i_1']);
+$frame2 = json_encode(['message' => 'world', 'instanceId' => 'i_2']);
 
 $response = new MockResponse(
     ['data: '.$frame1."\n\n", 'data: '.$frame2."\n\n"],

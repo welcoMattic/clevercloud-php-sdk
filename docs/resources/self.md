@@ -22,6 +22,9 @@ public function update(array $data): User
 | `get()` | GET | `/v2/self` | |
 | `update(array $data)` | PUT | `/v2/self` | Payload keys: `firstname`, `lastname`, `address`, etc. |
 
+Note: the read shape exposes only a single `name` field, not separate `firstname`/`lastname`.
+The accepted write keys are not verified.
+
 ## SSH keys
 
 ```php
