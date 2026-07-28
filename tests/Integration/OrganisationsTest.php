@@ -12,7 +12,11 @@ final class OrganisationsTest extends IntegrationTestCase
 
         self::assertIsList($organisations);
         foreach ($organisations as $organisation) {
-            self::assertStringStartsWith('orga_', $organisation->id);
+            // Personal organisation has user_ prefix, regular ones have orga_
+            self::assertTrue(
+                str_starts_with($organisation->id, 'orga_') || str_starts_with($organisation->id, 'user_'),
+                \sprintf('Organisation id "%s" should start with "orga_" or "user_"', $organisation->id),
+            );
             self::assertNotEmpty($organisation->name);
         }
     }
