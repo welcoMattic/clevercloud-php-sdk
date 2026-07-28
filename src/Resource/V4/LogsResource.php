@@ -41,6 +41,11 @@ final readonly class LogsResource extends AbstractV4Resource
      * Returns historical log entries as a one-shot list, by consuming the SSE
      * stream and stopping early.
      *
+     * Pass a `since` filter. Without one the endpoint sends only entries
+     * produced from now on, so this method degenerates into a live tail that
+     * returns whatever happened to arrive before the budget expired, which is
+     * almost certainly not what you wanted from a "query".
+     *
      * Two bounds are needed, and both matter. `limit` is sent upstream, and the
      * server does close the connection once that many entries have been sent.
      * But it only ever reaches that point on a chatty application: for a quiet
