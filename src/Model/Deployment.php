@@ -15,8 +15,9 @@ final readonly class Deployment
         public ?string $commit = null,
         public ?string $cause = null,
         public ?int $date = null,
-        public ?string $author = null,
+        public ?DeploymentAuthor $author = null,
         public ?string $instanceId = null,
+        public ?int $instances = null,
     ) {
     }
 }
