@@ -44,7 +44,7 @@
         "symfony/yaml": "8.0.*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
-        "welcomattic/clevercloud-php-sdk": "^1.0"
+        "welcomattic/clevercloud-php-sdk": "^2.0"
     },
     "config": {
         "allow-plugins": {
