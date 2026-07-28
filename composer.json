@@ -40,6 +40,11 @@
     "config": {
         "sort-packages": true
     },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "2.0.x-dev"
+        }
+    },
     "scripts": {
         "phpstan": "phpstan analyse",
         "cs": "php-cs-fixer fix --dry-run --diff",

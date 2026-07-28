@@ -88,6 +88,26 @@ configurer la démo.
 > Autre option : servir la démo en clair (`symfony server:start --no-tls`) pour
 > qu'elle envoie un callback `http://…`.
 
+## Le SDK vient du dépôt, pas de Packagist
+
+Cette démo vit dans le dépôt du SDK et **autocharge `../src` directement** :
+
+```json
+"autoload": { "psr-4": { "CleverCloud\\Sdk\\": "../src/" } }
+```
+
+Une modification du SDK est donc visible ici immédiatement, sans étape Composer.
+En contrepartie, `welcomattic/clevercloud-php-sdk` n'apparaît pas dans
+`require` : ce sont ses dépendances runtime (`jolicode/automapper`, `psr/*`,
+`symfony/clock`) qui y sont déclarées à sa place. Une vraie application fait
+simplement `composer require welcomattic/clevercloud-php-sdk`.
+
+Pourquoi pas un dépôt Composer de type `path` avec symlink, qui serait plus
+propre ? Composer refuse d'installer un package dans un `vendor/` situé sous les
+sources de ce même package, et `demo/vendor/` est bien dans le dépôt du SDK. Il
+faudrait sortir le `vendor-dir` de l'arborescence, ce qui casserait
+`bin/console` et `public/index.php`.
+
 ## Lancer le serveur
 
 ```bash
