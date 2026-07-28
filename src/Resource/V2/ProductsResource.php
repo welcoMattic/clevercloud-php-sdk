@@ -3,7 +3,6 @@
 namespace CleverCloud\Sdk\Resource\V2;
 
 use CleverCloud\Sdk\Model\AddonProvider;
-use CleverCloud\Sdk\Model\Country;
 use CleverCloud\Sdk\Model\InstanceType;
 use CleverCloud\Sdk\Model\Zone;
 use CleverCloud\Sdk\Resource\AbstractV2Resource;
@@ -49,13 +48,23 @@ final readonly class ProductsResource extends AbstractV2Resource
     }
 
     /**
-     * @return list<Country>
+     * Returns the country catalog as an associative array: country name => ISO 3166-1 alpha-2 code.
+     * Keys are upper-case English country names.
+     *
+     * @return array<string, string>
      */
     public function countries(): array
     {
-        /** @var list<array<string, mixed>> $payload */
+        /** @var array<string, mixed> $payload */
         $payload = $this->httpGet('/products/countries');
 
-        return $this->mapCollection(Country::class, $payload);
+        $map = [];
+        foreach ($payload as $name => $code) {
+            if (\is_string($name) && \is_string($code)) {
+                $map[$name] = $code;
+            }
+        }
+
+        return $map;
     }
 }
