@@ -32,4 +32,4 @@ try {
 
 printf("id:    %s\n", $me->id);
 printf("email: %s\n", $me->email ?? '(unknown)');
-printf("name:  %s %s\n", $me->firstname ?? '', $me->lastname ?? '');
+printf("name:  %s\n", $me->name ?? '(not set)');

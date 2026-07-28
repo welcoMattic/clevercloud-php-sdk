@@ -100,7 +100,7 @@ final class OrganisationsResourceTest extends TestCase
     {
         $response = ResourceFactory::jsonResponse(200, [
             [
-                'member' => ['id' => 'user_1', 'email' => 'a@example.com', 'firstname' => 'Alice'],
+                'member' => ['id' => 'user_1', 'email' => 'a@example.com', 'name' => 'Alice Smith'],
                 'role' => 'ADMIN',
                 'job' => 'CTO',
             ],
@@ -114,7 +114,7 @@ final class OrganisationsResourceTest extends TestCase
 
         self::assertCount(2, $members);
         self::assertSame('user_1', $members[0]->member->id);
-        self::assertSame('Alice', $members[0]->member->firstname);
+        self::assertSame('Alice Smith', $members[0]->member->name);
         self::assertSame(MemberRole::Admin, $members[0]->role);
         self::assertSame('CTO', $members[0]->job);
         self::assertSame(MemberRole::Developer, $members[1]->role);
