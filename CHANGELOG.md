@@ -7,21 +7,91 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [2.0.0] - 2026-07-28
 
-- **`docs/`** — full reference documentation. Resource pages with verified
-  signatures + HTTP paths, guides for getting started, authentication,
-  configuration, error handling, live log streaming, and testing patterns.
+This release corrects resources that never worked against the real Clever Cloud
+API. Every path, payload shape and status code below was verified by calling the
+live API, not inferred from documentation.
+
+The major bump is deliberate. 1.0.0 promised that breaking source compatibility
+would trigger one, and this release removes public symbols. Several of them
+described endpoints or fields that do not exist, so code using them was already
+failing at runtime; but `Deployment::$author` and `ProductsResource::countries()`
+compile today and will not after upgrading. Read the breaking changes before
+bumping.
+
+### Breaking changes
+
+- **`Resource\V2\LogsResource` is now `Resource\V4\LogsResource`.** No
+  compatibility alias is provided. The class targeted a V2 path the API does not
+  serve, so every call returned 404 and no working code can be relying on it.
+  `$client->logs` is unchanged.
+- **`Model\Country` is removed.** It described a shape the API never sends. See
+  `countries()` below.
+- **`ProductsResource::countries()` returns `array<string, string>`** instead of
+  `list<Country>`: a map of upper-case English country name to ISO 3166-1
+  alpha-2 code, which is what the endpoint actually answers.
+- **`LogEntry::$stream` is removed**, replaced by `$service`. Constructor
+  parameter order changed, so positional construction of `LogEntry` breaks.
+- **`User::$firstname` and `User::$lastname` are removed.** `/v2/self` returns a
+  single `name` field; those two were always `null`.
+- **`Deployment::$author` is now `?DeploymentAuthor`** instead of `?string`.
+- **`InstancesResource`** is now V2-based and only exposes `list()`. The 1.0.0
+  version targeted V4 routes (`/v4/products/instances*`) that Clever Cloud does
+  not expose, so every method returned 404. The redundant
+  `get(type[, version])`, `flavors(type)`, and `types()` methods are removed;
+  call `list()` and filter client-side on `$instanceType->type` for per-type
+  data. (The catalogue payload is the same as `$client->products->instances()`.)
 
 ### Fixed
 
-- **`InstancesResource`** is now V2-based and only exposes `list()`. The
-  1.0.0 version targeted V4 routes (`/v4/products/instances*`) that Clever
-  Cloud does not expose — every method returned 404. The redundant
-  `get(type[, version])`, `flavors(type)`, and `types()` methods are
-  removed; call `list()` and filter client-side on
-  `$instanceType->type` for per-type data. (The catalogue payload is the
-  same as the existing `$client->products->instances()` returns.)
+- **Log streaming worked for nobody.** `LogsResource` built
+  `/v2/organisations/{org}/applications/{app}/logs`, which answers 404. The real
+  endpoint is `/v4/logs/organisations/{ownerId}/applications/{appId}/logs` and
+  speaks `text/event-stream`. There is no `/self` form, so the personal
+  organisation is addressed by its own `user_<uuid>` id; passing a `null` owner
+  now resolves it through `GET /v2/self`, costing one extra request.
+- **`LogEntry` mapped almost nothing.** Its `#[MapFrom]` attributes asked for
+  `instance_id`, `application_id` and `deployment_id` while the API sends
+  camelCase, so those three were always `null`. Properties now match the wire
+  format, and the previously dropped `id`, `priority`, `commitId`, `region` and
+  `version` are exposed.
+- **`LogsResource::query()` could not work as a plain GET**, since the endpoint
+  only speaks SSE. It now consumes the stream and stops early. It also takes a
+  `$maxDurationSeconds` budget (default 10), which is what actually guarantees
+  the method returns: the endpoint never closes an idle stream, it emits
+  `HEARTBEAT` forever, and no combination of `since`, `until` and `limit` makes
+  it hang up. Pass a `since` filter, or the call degenerates into a live tail.
+- **`AddonsResource::plans()`** requested `/v2/products/addonproviders/{id}/plans`
+  (404). Plans are nested in the provider payload; it now reads them from there.
+- **`ProductsResource::countries()`** threw a `TypeError` because it hydrated a
+  JSON object as a list of models.
+- **`DeploymentsResource`** listings always threw a `TypeError`: the API sends
+  `author` as an object, not a string.
+- **`ApiTokensResource` paths and documented auth mode were both wrong.** The
+  routes are `/api-tokens`, not `/v2/api-tokens` (404). And the gateway requires
+  OAuth 1.0a, answering `400 must start with "OAuth "` for a Bearer header, the
+  opposite of what the docs claimed. Minting a Bearer token is what these
+  endpoints are for, so a token-authenticated client cannot manage tokens.
+- **`User` mapping** had the same snake_case defect as `LogEntry`, leaving
+  `preferredMfa`, `hasPassword`, `canPay`, `emailValidated` and `creationDate`
+  null on every response.
+- **Documentation claimed logs required OAuth 1.0a** and that API tokens always
+  got a 404. That was a misdiagnosis of the broken path: Bearer tokens stream
+  and query logs correctly through `api-bridge.clever-cloud.com`.
+
+### Added
+
+- **`docs/`** - full reference documentation. Resource pages with verified
+  signatures + HTTP paths, guides for getting started, authentication,
+  configuration, error handling, live log streaming, and testing patterns.
+- **`Model\DeploymentAuthor`** DTO (`id`, `name`).
+- **`Deployment::$instances`**, which the payload carries and the model dropped.
+- **`LogStream`** accepts an optional `$maxDurationSeconds` to bound iteration,
+  checked on every chunk so heartbeat-only traffic still honours the budget.
+- Regression tests pinning the live shapes: heartbeat-only streams must not trap
+  `query()`, `LogEntry` camelCase fields must populate, and the country catalog
+  must stay a map.
 
 ## [1.0.0] — 2026-05-21
 
@@ -208,6 +278,7 @@ typed DTOs via `jolicode/automapper`, no middleware in the HTTP pipeline.
 - **Pagination skeleton** — `PageIterator` for cursor-based v4 endpoints.
 - **Smoke examples** — `examples/smoke-self.php` and `examples/stream-logs.php`.
 
-[Unreleased]: https://github.com/welcoMattic/clevercloud-php-sdk/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/welcoMattic/clevercloud-php-sdk/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/welcoMattic/clevercloud-php-sdk/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/welcoMattic/clevercloud-php-sdk/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/welcoMattic/clevercloud-php-sdk/releases/tag/v0.1.0
