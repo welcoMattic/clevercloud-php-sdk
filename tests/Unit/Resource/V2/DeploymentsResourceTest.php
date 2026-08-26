@@ -45,6 +45,35 @@ final class DeploymentsResourceTest extends TestCase
         );
     }
 
+    public function testListMapsAuthorAndInstances(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, [
+            [
+                'id' => '37',
+                'uuid' => 'deployment_791e2337',
+                'action' => 'UNDEPLOY',
+                'state' => 'OK',
+                'commit' => null,
+                'date' => 1780606152629,
+                'instances' => 0,
+                'author' => [
+                    'id' => 'user_b05c182b-cfec-4509-81f0-6b6bd3f85c49',
+                    'name' => 'Mathieu Santostefano',
+                ],
+                'cause' => 'Console - Clever Cloud',
+            ],
+        ]);
+
+        $deps = $this->resource($response)->list('app_1');
+
+        self::assertCount(1, $deps);
+        self::assertSame(0, $deps[0]->instances);
+        self::assertNotNull($deps[0]->author);
+        self::assertSame('user_b05c182b-cfec-4509-81f0-6b6bd3f85c49', $deps[0]->author->id);
+        self::assertSame('Mathieu Santostefano', $deps[0]->author->name);
+        self::assertSame('Console - Clever Cloud', $deps[0]->cause);
+    }
+
     public function testCancelHitsDelete(): void
     {
         $response = ResourceFactory::jsonResponse(204, []);

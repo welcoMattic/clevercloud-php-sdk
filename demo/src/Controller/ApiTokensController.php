@@ -14,9 +14,11 @@ use Symfony\Component\Routing\Attribute\Route;
 /**
  * Manage personal API tokens via the `api-bridge.clever-cloud.com` gateway.
  *
- * Only works when the session is authenticated with a Bearer token — the
- * gateway returns 401 for OAuth1 callers. The list page surfaces a notice
- * when the user is OAuth1-authed.
+ * Only works when the session is authenticated with OAuth 1.0a. The gateway
+ * validates the header shape and answers `400 must start with "OAuth "` for a
+ * Bearer caller, since signing with consumer credentials is what mints a Bearer
+ * token in the first place. The list page surfaces a notice for token-authed
+ * users, who cannot manage tokens.
  */
 final class ApiTokensController extends AbstractController
 {
@@ -29,8 +31,8 @@ final class ApiTokensController extends AbstractController
     #[Route('/api-tokens', name: 'api_tokens_list', methods: ['GET'])]
     public function list(): Response
     {
-        if ('api-token' !== $this->factory->authMode()) {
-            return $this->render('api_tokens/oauth_blocked.html.twig');
+        if ('api-token' === $this->factory->authMode()) {
+            return $this->render('api_tokens/token_auth_blocked.html.twig');
         }
 
         try {
@@ -48,8 +50,8 @@ final class ApiTokensController extends AbstractController
     #[Route('/api-tokens', name: 'api_tokens_create', methods: ['POST'])]
     public function create(Request $request): Response
     {
-        if ('api-token' !== $this->factory->authMode()) {
-            return $this->render('api_tokens/oauth_blocked.html.twig');
+        if ('api-token' === $this->factory->authMode()) {
+            return $this->render('api_tokens/token_auth_blocked.html.twig');
         }
 
         $name = $request->request->get('name');
@@ -96,7 +98,7 @@ final class ApiTokensController extends AbstractController
     #[Route('/api-tokens/{id}', name: 'api_tokens_delete', methods: ['POST'])]
     public function delete(string $id): RedirectResponse
     {
-        if ('api-token' !== $this->factory->authMode()) {
+        if ('api-token' === $this->factory->authMode()) {
             return $this->redirectToRoute('api_tokens_list');
         }
 

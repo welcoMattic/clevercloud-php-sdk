@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Accueil — Clever Cloud Dashboard{% endblock %}
-{% block page_title %}Bonjour {{ me.firstname ?? me.email }}{% endblock %}
+{% block page_title %}Bonjour {{ me.name ?? me.email }}{% endblock %}
 {% block page_subtitle %}
     <p class="topbar__subtitle">
         <span class="table__id">{{ me.id }}</span>

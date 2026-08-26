@@ -70,6 +70,27 @@ final class AddonsResourceTest extends TestCase
         self::assertSame('https://api.clever-cloud.com/v2/products/addonproviders', $response->getRequestUrl());
     }
 
+    public function testPlansReturnsPlansFromProviderPayload(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, [
+            'id' => 'postgresql-addon',
+            'name' => 'PostgreSQL',
+            'plans' => [
+                ['id' => 'plan_dev', 'slug' => 'dev', 'name' => 'Dev', 'price' => 0.0, 'price_id' => 'price_1', 'features' => [], 'zones' => ['par', 'mtl']],
+                ['id' => 'plan_prod', 'slug' => 'prod', 'name' => 'Production', 'price' => 25.0, 'price_id' => 'price_2', 'features' => [], 'zones' => ['par', 'mtl']],
+            ],
+        ]);
+
+        $plans = $this->resource($response)->plans('postgresql-addon');
+
+        self::assertCount(2, $plans);
+        self::assertSame('plan_dev', $plans[0]['id']);
+        self::assertSame('dev', $plans[0]['slug']);
+        self::assertSame('plan_prod', $plans[1]['id']);
+        self::assertSame('prod', $plans[1]['slug']);
+        self::assertSame('https://api.clever-cloud.com/v2/products/addonproviders/postgresql-addon', $response->getRequestUrl());
+    }
+
     public function testCreatePostsBody(): void
     {
         $response = ResourceFactory::jsonResponse(201, ['id' => 'addon_new', 'name' => 'pg', 'realId' => 'postgresql_new']);

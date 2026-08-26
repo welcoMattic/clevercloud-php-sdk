@@ -18,12 +18,25 @@ final class LogStreamingTest extends IntegrationTestCase
 
         // Look back over the last 24h with a small limit so we do not pull
         // megabytes of log lines into the test process.
-        $logs = $this->client->logs->query($applicationId, $organisationId, [
-            'since' => gmdate('Y-m-d\TH:i:s\Z', time() - 86400),
-            'limit' => 10,
-        ]);
+        //
+        // The short duration budget is not an optimisation, it is required: the
+        // endpoint never closes an idle stream, so without it this test hangs
+        // forever on any application that logged fewer than `limit` lines in
+        // the window.
+        $logs = $this->client->logs->query(
+            $applicationId,
+            $organisationId,
+            [
+                'since' => gmdate('Y-m-d\TH:i:s\Z', time() - 86400),
+                'limit' => 10,
+            ],
+            maxDurationSeconds: 8,
+        );
 
         self::assertIsList($logs);
         self::assertLessThanOrEqual(10, \count($logs));
+        foreach ($logs as $entry) {
+            self::assertNotSame('', $entry->message);
+        }
     }
 }

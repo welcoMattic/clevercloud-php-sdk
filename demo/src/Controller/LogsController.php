@@ -89,7 +89,7 @@ final class LogsController extends AbstractController
                         'severity' => $entry->severity,
                         'date' => $entry->date,
                         'instanceId' => $entry->instanceId,
-                        'stream' => $entry->stream,
+                        'service' => $entry->service,
                     ], JSON_THROW_ON_ERROR);
 
                     echo 'data: '.$frame."\n\n";

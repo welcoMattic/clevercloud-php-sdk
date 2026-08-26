@@ -64,6 +64,9 @@ foreach ($client->logs->stream('app_xxx') as $entry) {
 }
 ```
 
+Note: when `$organisationId` is omitted (null), the SDK triggers a `/v2/self` lookup
+to resolve the personal organisation id, costing one extra request.
+
 Every resource page in [the reference](index.md#resource-reference) lists
 the full method surface with verified signatures.
 

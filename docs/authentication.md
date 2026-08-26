@@ -110,8 +110,23 @@ $access = $flow->accessToken(
 $creds = Credentials::oauth1($consumerKey, $consumerSecret, $access['token'], $access['tokenSecret']);
 ```
 
+### Callback URL constraints
+
+The `$callbackUrl` passed to `requestToken()` is mandatory and validated
+server-side against the **scheme and host** of your OAuth consumer's *Base URL*
+(the port and the path are not checked). A mismatch answers
+`HTTP 400 {"id":13502,"message":"OAuth callback is invalid"}`, so
+`https://app.example/cb` fails against a consumer registered as
+`http://app.example`. Check the registered value with
+`clever oauth-consumers get <consumer-key>`.
+
+The out-of-band value `oob` is **not** supported: Clever Cloud answers
+`HTTP 500`. A CLI has to send a real URL and read `oauth_verifier` back from the
+browser's address bar; see
+[`examples/stream-logs-oauth.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/examples/stream-logs-oauth.php).
+
 The helper speaks `application/x-www-form-urlencoded` (per RFC 5849) and
-bypasses the regular `HttpClient` stack — see
+bypasses the regular `HttpClient` stack, see
 [`src/Auth/OAuthFlow.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Auth/OAuthFlow.php).
 
 It raises:

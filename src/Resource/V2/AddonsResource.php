@@ -80,16 +80,20 @@ final readonly class AddonsResource extends AbstractV2Resource
     }
 
     /**
-     * Plans available for a given add-on provider.
+     * Plans available for a given add-on provider. Plans are nested inside
+     * the provider payload.
      *
      * @return list<array<string, mixed>>
      */
     public function plans(string $providerId): array
     {
-        /** @var list<array<string, mixed>> $payload */
-        $payload = $this->httpGet('/products/addonproviders/'.rawurlencode($providerId).'/plans');
+        /** @var array<string, mixed> $payload */
+        $payload = $this->httpGet('/products/addonproviders/'.rawurlencode($providerId));
 
-        return $payload;
+        /** @var list<array<string, mixed>> $plans */
+        $plans = $payload['plans'] ?? [];
+
+        return array_values($plans);
     }
 
     /**

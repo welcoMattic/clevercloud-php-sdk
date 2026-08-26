@@ -67,7 +67,7 @@ All under `CleverCloud\Sdk\Model\Enum\`:
 | --- | --- | --- |
 | `$client->products->instances()` | `GET /v2/products/instances` | `list<InstanceType>` |
 | `$client->products->zones()` | `GET /v2/products/zones` | `list<Zone>` |
-| `$client->products->countries()` | `GET /v2/products/countries` | `list<Country>` |
+| `$client->products->countries()` | `GET /v2/products/countries` | `array<string, string>` |
 | `$client->addons->providers()` | `GET /v2/products/addonproviders` | `list<AddonProvider>` |
 | `$client->addons->provider($id)` | `GET /v2/products/addonproviders/{id}` | `AddonProvider` |
 | `$client->applications->branches($appId)` | `GET /v2/.../applications/{id}/branches` | `list<string>` |

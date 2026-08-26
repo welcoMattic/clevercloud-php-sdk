@@ -30,17 +30,39 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as SfHttpException
  */
 final readonly class LogStream implements IteratorAggregate
 {
+    /**
+     * @param int|null $maxDurationSeconds stop iterating after this many seconds, even if the
+     *                                     upstream keeps the connection open. Null (the default)
+     *                                     tails forever, which is what live streaming wants.
+     *                                     Bounded consumers need it: the Clever Cloud endpoint
+     *                                     never closes an idle stream, it just emits HEARTBEAT
+     *                                     events indefinitely.
+     */
     public function __construct(
         private SseStreamHandle $handle,
         private AutoMapperInterface $mapper,
+        private ?int $maxDurationSeconds = null,
     ) {
     }
 
+    /**
+     * @return Generator<int, LogEntry, mixed, void>
+     */
     public function getIterator(): Generator
     {
+        $deadline = null !== $this->maxDurationSeconds
+            ? microtime(true) + $this->maxDurationSeconds
+            : null;
+
         try {
             $first = true;
             foreach ($this->handle->client->stream($this->handle->response) as $chunk) {
+                // Checked on every chunk, not just on decoded entries, so that a
+                // stream carrying nothing but HEARTBEAT still honours the budget.
+                if (null !== $deadline && microtime(true) >= $deadline) {
+                    return;
+                }
+
                 // Surface a non-2xx response as a typed SDK exception rather
                 // than silently ending the iteration. EventSourceHttpClient
                 // does not throw on its own when the upstream returns 4xx/5xx.

@@ -66,9 +66,18 @@ final class ProductsTest extends IntegrationTestCase
     {
         $countries = $this->client->products->countries();
 
-        self::assertIsList($countries);
+        // This endpoint is the odd one out in the catalog: it answers a JSON
+        // object, not a list, mapping an upper-case English country name to its
+        // ISO 3166-1 alpha-2 code. Asserting the map shape here is the
+        // regression gate, since the SDK used to try to hydrate it as a list of
+        // models and blew up with a TypeError.
         self::assertNotEmpty($countries);
-        // The fact that the mapping succeeded validates the schema —
-        // Country has only nullable fields beyond the discriminator.
+        self::assertArrayHasKey('FRANCE', $countries);
+        self::assertSame('FR', $countries['FRANCE']);
+
+        foreach ($countries as $name => $code) {
+            self::assertIsString($name);
+            self::assertMatchesRegularExpression('/^[A-Z]{2}$/', $code);
+        }
     }
 }

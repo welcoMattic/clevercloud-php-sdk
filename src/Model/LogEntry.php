@@ -2,8 +2,6 @@
 
 namespace CleverCloud\Sdk\Model;
 
-use AutoMapper\Attribute\MapFrom;
-
 /**
  * A single log line emitted by an application instance.
  */
@@ -14,16 +12,18 @@ final readonly class LogEntry
      */
     public function __construct(
         public string $message,
-        #[MapFrom(property: 'instance_id')]
-        public ?string $instanceId = null,
-        #[MapFrom(property: 'application_id')]
-        public ?string $applicationId = null,
-        public ?string $stream = null,
+        public ?string $id = null,
         public ?string $severity = null,
-        public ?string $zone = null,
-        #[MapFrom(property: 'deployment_id')]
-        public ?string $deploymentId = null,
+        public ?int $priority = null,
         public ?string $date = null,
+        public ?string $instanceId = null,
+        public ?string $applicationId = null,
+        public ?string $deploymentId = null,
+        public ?string $commitId = null,
+        public ?string $service = null,
+        public ?string $region = null,
+        public ?string $zone = null,
+        public ?string $version = null,
         public array $raw = [],
     ) {
     }

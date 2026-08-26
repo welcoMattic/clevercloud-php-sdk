@@ -53,19 +53,21 @@ final class ProductsResourceTest extends TestCase
         self::assertSame('FR', $zones[0]->countryCode);
     }
 
-    public function testCountriesHydratesCountries(): void
+    public function testCountriesReturnsCountryNameToCodeMap(): void
     {
         $response = ResourceFactory::jsonResponse(200, [
-            ['code' => 'FR', 'name' => 'France', 'eu' => true],
-            ['code' => 'US', 'name' => 'United States', 'eu' => false],
+            'FRANCE' => 'FR',
+            'UNITED STATES' => 'US',
+            'CZECHIA' => 'CZ',
         ]);
 
         $countries = $this->resource($response)->countries();
 
-        self::assertCount(2, $countries);
-        self::assertSame('FR', $countries[0]->code);
-        self::assertTrue($countries[0]->eu);
-        self::assertFalse($countries[1]->eu);
+        self::assertCount(3, $countries);
+        self::assertSame('FR', $countries['FRANCE']);
+        self::assertSame('US', $countries['UNITED STATES']);
+        self::assertSame('CZ', $countries['CZECHIA']);
+        self::assertSame('https://api.clever-cloud.com/v2/products/countries', $response->getRequestUrl());
     }
 
     private function resource(MockResponse $response): ProductsResource

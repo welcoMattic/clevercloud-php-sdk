@@ -42,7 +42,7 @@ final readonly class OAuth1Credentials extends Credentials
      * OAuth 1.0a endpoints use api.clever-cloud.com for all requests including logs.
      * No URI rewriting is needed as the default base URL is already correct.
      */
-    public function rewriteUri(\Psr\Http\Message\UriInterface $uri, ApiVersion $version, Configuration $configuration): \Psr\Http\Message\UriInterface
+    public function rewriteUri(UriInterface $uri, ApiVersion $version, Configuration $configuration): UriInterface
     {
         return $uri;
     }

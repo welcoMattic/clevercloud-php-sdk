@@ -1,4 +1,4 @@
-# Logs (`/v2/logs/...`)
+# Logs (`/v4/logs/...`)
 
 Source: [`src/Resource/V4/LogsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/LogsResource.php)
 
@@ -16,20 +16,23 @@ $client->logs
 
 ```php
 public function stream(string $applicationId, ?string $organisationId = null, array $filters = []): LogStream
-public function query(string $applicationId, ?string $organisationId = null, array $filters = []): list<LogEntry>
+public function query(string $applicationId, ?string $organisationId = null, array $filters = [], int $maxDurationSeconds = 10): list<LogEntry>
 ```
 
 | Method | HTTP | Path | Returns |
 | --- | --- | --- | --- |
-| `stream()` | GET (SSE) | `/v2/{owner}/applications/{appId}/logs` | Iterable `LogStream<LogEntry>` |
-| `query()` | GET | `/v2/{owner}/applications/{appId}/logs` | One-shot `list<LogEntry>` |
+| `stream()` | GET (SSE) | `/v4/logs/organisations/{ownerId}/applications/{appId}/logs` | Iterable `LogStream<LogEntry>` |
+| `query()` | GET (SSE) | `/v4/logs/organisations/{ownerId}/applications/{appId}/logs` | One-shot `list<LogEntry>` |
 
 `stream()` opens a Server-Sent Events connection via Symfony's
 `EventSourceHttpClient`. The returned `LogStream` implements
-`IteratorAggregate<int, LogEntry>` — `foreach` over it as logs arrive.
+`IteratorAggregate<int, LogEntry>` - `foreach` over it as logs arrive.
+`LogStream` accepts an optional `$maxDurationSeconds` parameter to bound iteration.
 
-`query()` is a regular HTTP GET — same URL, different content negotiation;
-the server returns a JSON list instead of an event stream.
+`query()` consumes the SSE stream and stops early, returning a one-shot list.
+It requires a `since` filter to be historical; without one it degenerates into a
+live tail. The `$maxDurationSeconds` parameter is mandatory in practice because
+the endpoint never closes an idle stream - it emits HEARTBEAT events forever.
 
 ## Filter shape
 

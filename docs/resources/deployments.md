@@ -28,7 +28,9 @@ public function cancel(string $applicationId, string $deploymentId, ?string $org
 
 See [`src/Model/Deployment.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Deployment.php). Notable
 fields include `id`, `action` (`DeploymentAction` enum), `state`
-(`DeploymentState` enum), `commit`, `cause`, `date`.
+(`DeploymentState` enum), `commit`, `cause`, `date`. The `author` field is now a
+`?DeploymentAuthor` object with `id` and `name` properties, not a `?string`.
+`Deployment` also gained a `?int $instances` property.
 
 To trigger a new deployment, use
 [`$client->applications->deploy()`](applications.md#lifecycle) instead — the

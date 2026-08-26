@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "765917e5d366d544ec7364915022f5f1",
+    "content-hash": "2d17b7d8af3bf4673075757ddd1cab2b",
     "packages": [
         {
             "name": "composer/semver",
@@ -4124,16 +4124,16 @@
         },
         {
             "name": "symfony/http-client-contracts",
-            "version": "v3.7.0",
+            "version": "v3.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client-contracts.git",
-                "reference": "4a2d00c37651c0bdc2b9e1c773487a8bf4edb12d"
+                "reference": "41fc42d276aeff21192465331ebbab7d83a743c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client-contracts/zipball/4a2d00c37651c0bdc2b9e1c773487a8bf4edb12d",
-                "reference": "4a2d00c37651c0bdc2b9e1c773487a8bf4edb12d",
+                "url": "https://api.github.com/repos/symfony/http-client-contracts/zipball/41fc42d276aeff21192465331ebbab7d83a743c0",
+                "reference": "41fc42d276aeff21192465331ebbab7d83a743c0",
                 "shasum": ""
             },
             "require": {
@@ -4182,7 +4182,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/http-client-contracts/tree/v3.7.0"
+                "source": "https://github.com/symfony/http-client-contracts/tree/v3.7.1"
             },
             "funding": [
                 {
@@ -4202,7 +4202,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-06T13:17:50+00:00"
+            "time": "2026-06-05T06:23:12+00:00"
         },
         {
             "name": "symfony/http-foundation",
@@ -8044,67 +8044,6 @@
                 "source": "https://github.com/webmozarts/assert/tree/2.3.0"
             },
             "time": "2026-04-11T10:33:05+00:00"
-        },
-        {
-            "name": "welcomattic/clevercloud-php-sdk",
-            "version": "v1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/welcoMattic/clevercloud-php-sdk.git",
-                "reference": "dbd0920dcc270d84a4ee676b66dcc8eb65271ae7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/welcoMattic/clevercloud-php-sdk/zipball/dbd0920dcc270d84a4ee676b66dcc8eb65271ae7",
-                "reference": "dbd0920dcc270d84a4ee676b66dcc8eb65271ae7",
-                "shasum": ""
-            },
-            "require": {
-                "ext-hash": "*",
-                "ext-json": "*",
-                "jolicode/automapper": "^10.0",
-                "nyholm/psr7": "^1.8",
-                "php": ">=8.5",
-                "psr/clock": "^1.0",
-                "psr/http-client": "^1.0",
-                "psr/http-factory": "^1.0",
-                "psr/http-message": "^2.0",
-                "psr/log": "^3.0",
-                "symfony/clock": "^8.0",
-                "symfony/http-client": "^8.0",
-                "symfony/http-client-contracts": "^3.7"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.65",
-                "phpstan/phpstan": "^2.1",
-                "phpstan/phpstan-phpunit": "^2.0",
-                "phpstan/phpstan-strict-rules": "^2.0",
-                "phpunit/phpunit": "^11.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "CleverCloud\\Sdk\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "PHP SDK for the Clever Cloud REST API (v2 + v4).",
-            "homepage": "https://github.com/welcoMattic/clevercloud-php-sdk",
-            "keywords": [
-                "api",
-                "clever-cloud",
-                "oauth1",
-                "paas",
-                "sdk"
-            ],
-            "support": {
-                "issues": "https://github.com/welcoMattic/clevercloud-php-sdk/issues",
-                "source": "https://github.com/welcoMattic/clevercloud-php-sdk/tree/v1.0.0"
-            },
-            "time": "2026-05-21T11:59:13+00:00"
         }
     ],
     "packages-dev": [
@@ -10377,7 +10316,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.4",
+        "php": ">=8.5",
         "ext-ctype": "*",
         "ext-iconv": "*"
     },

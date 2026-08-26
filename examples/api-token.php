@@ -28,14 +28,16 @@ $client = new ClientBuilder()
 
 $me = $client->self->get();
 printf("Logged in as %s (id=%s)\n", $me->email, $me->id);
+printf("Name:      %s\n", $me->name ?? '(not set)');
 
-// Bearer creds authorise the api-bridge endpoints — token CRUD lives there.
-echo "\nExisting tokens:\n";
-foreach ($client->apiTokens->list() as $apiToken) {
-    printf(
-        "  - %s — %s (created %s)\n",
-        $apiToken->name,
-        $apiToken->id,
-        $apiToken->createdAt ?? 'unknown',
-    );
+printf("\nOrganisations reachable with this token: %d\n", \count($client->organisations->list()));
+foreach ($client->organisations->list() as $organisation) {
+    printf("  - %s (%s)\n", $organisation->name, $organisation->id);
 }
+
+// Deliberately NOT calling $client->apiTokens here. Token CRUD lives on
+// api-bridge.clever-cloud.com, and that gateway only accepts OAuth 1.0a
+// signatures: it rejects a Bearer header outright with
+// `400 must start with "OAuth "`. Minting a token is what you use OAuth1 FOR,
+// so a token-authenticated client cannot manage tokens. Use OAuth 1.0a
+// credentials for that; see examples/stream-logs-oauth.php.
