@@ -10,13 +10,15 @@
 A modern PHP SDK for the [Clever Cloud](https://www.clever-cloud.com) REST API
 (v2 + v4 + api-bridge).
 
-> Status: **v1.0**. Public API surface is stable; changes that break
+> Status: **v2.0**. Public API surface is stable; changes that break
 > source compatibility will trigger a major bump per
 > [semver](https://semver.org).
 
 ## Requirements
 
-- PHP **8.5+** (property hooks, asymmetric visibility, readonly classes, typed enums)
+- PHP **8.5+**. Deliberate support floor, not a technical one: the typed
+  surface itself relies on enums (8.1), readonly classes (8.2), property hooks
+  and asymmetric visibility (8.4).
 - `symfony/http-client` (hard runtime dep — used as PSR-18 transport **and**
   Symfony's `EventSourceHttpClient` for SSE log streaming)
 - `nyholm/psr7` (PSR-7/17 implementation; no discovery, embedded as a default)
@@ -59,10 +61,9 @@ The SDK also supports OAuth 1.0a for legacy consumers and 3-legged authorisation
 
 ## Coverage matrix
 
-The SDK exposes Clever Cloud's full v2 + v4 surface plus the new api-bridge
-gateway used for API tokens. Below is the actual coverage shipped for v1.0;
-gaps are listed in the "Roadmap" section so you know what's deliberately out
-of scope at this stage.
+The SDK covers most of Clever Cloud's v2 + v4 surface, plus the api-bridge
+gateway used for API tokens. Below is the actual coverage shipped in v2.0; what
+is deliberately out of scope at this stage is listed in the "Roadmap" section.
 
 ### V2 — application platform
 
@@ -162,7 +163,7 @@ $client->addons->providers();      // -> list<AddonProvider> (postgresql-addon, 
 $client->addons->provider($id);    // -> AddonProvider       (with its plans)
 ```
 
-### Roadmap (not in v1.0)
+### Roadmap (not in v2.0)
 
 - AI, Materia KV / TS, Cellar, Cumulocity, DNS, IPAM, Kubernetes, Function,
   Container Registry — V4 endpoints unique to the Go SDK

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `README` no longer credits PHP 8.5 with features that landed earlier: enums
+  (8.1), readonly classes (8.2), property hooks and asymmetric visibility (8.4).
+  The 8.5 floor is a support choice, not a technical requirement.
+- `README` no longer claims Clever Cloud's *full* v2 + v4 surface, which its own
+  Roadmap section contradicts, and its status block now reflects 2.0.
+
+### Changed
+
+- `composer phpstan` now runs with `--memory-limit=1G`: PHPStan crashed on the
+  default 128M CLI limit.
+
 ## [2.0.0] - 2026-07-28
 
 This release corrects resources that never worked against the real Clever Cloud
