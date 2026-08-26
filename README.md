@@ -16,9 +16,7 @@ A modern PHP SDK for the [Clever Cloud](https://www.clever-cloud.com) REST API
 
 ## Requirements
 
-- PHP **8.5+**. Deliberate support floor, not a technical one: the typed
-  surface itself relies on enums (8.1), readonly classes (8.2), property hooks
-  and asymmetric visibility (8.4).
+- PHP **8.5+**
 - `symfony/http-client` (hard runtime dep — used as PSR-18 transport **and**
   Symfony's `EventSourceHttpClient` for SSE log streaming)
 - `nyholm/psr7` (PSR-7/17 implementation; no discovery, embedded as a default)
