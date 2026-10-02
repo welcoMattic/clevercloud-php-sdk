@@ -296,6 +296,10 @@ self::assertSame('hello', $app->name);
 
 See `examples/mocking.php` for a runnable example.
 
+## Sponsors
+
+If this project is useful to you, you can support my open source work on [GitHub Sponsors](https://github.com/sponsors/welcoMattic). Tiers and what they fund: [blog.welcomattic.com/sponsors/en](https://blog.welcomattic.com/sponsors/en/). From the Company tier ($100 a month), your logo and a link appear here.
+
 ## License
 
 [MIT](LICENSE)
