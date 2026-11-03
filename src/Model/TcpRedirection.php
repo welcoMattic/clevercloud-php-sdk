@@ -5,7 +5,7 @@ namespace CleverCloud\Sdk\Model;
 /**
  * TCP port redirection bound to a Clever Cloud application.
  *
- * Returned by `/organisations/{ownerId}/applications/{appId}/tcp-redirs`. The
+ * Returned by `/v2/organisations/{ownerId}/applications/{appId}/tcpRedirs`. The
  * `namespace` identifies the routing layer that exposes the port (e.g.
  * `default`, `cleverapps`, `customer-X`).
  */

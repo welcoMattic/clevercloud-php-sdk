@@ -124,7 +124,7 @@ Ouvre **[https://localhost:8765](https://localhost:8765)**.
 | `src/Service/ClevercloudClientFactory.php`       | Construit le `Client` à partir des creds session (Bearer OU OAuth1) |
 | `src/Controller/SecurityController.php`          | Login UI + OAuth1 flow + API token form                          |
 | `src/Controller/ApplicationController.php`       | List + show (vhosts/branches/TCP) + deploy/restart/stop          |
-| `src/Controller/AddonController.php`             | List + show (migrations/backups) + restore/cancel                |
+| `src/Controller/AddonController.php`             | List + show (migrations/backups) + cancel                        |
 | `src/Controller/ApiTokensController.php`         | CRUD tokens via api-bridge                                       |
 | `src/Exception/NotAuthenticatedException.php`    | Levée si pas de creds en session                                 |
 | `src/EventListener/NotAuthenticatedListener.php` | Catche et redirige vers `/login`                                 |
@@ -150,7 +150,6 @@ Ouvre **[https://localhost:8765](https://localhost:8765)**.
 | `/applications/{id}/tcp-redirs/{port}`                | POST     | Fermeture d'un port TCP                             |
 | `/addons`                                             | GET      | Add-ons de l'owner sélectionné                      |
 | `/addons/{id}`                                        | GET      | Détail d'add-on (migrations + backups)              |
-| `/addons/{id}/backups/{backupId}/restore`             | POST     | Restauration d'un backup                            |
 | `/addons/{id}/migrations/{migrationId}/cancel`        | POST     | Annulation d'une migration en cours                 |
 | `/api-tokens`                                         | GET      | Liste des tokens (api-bridge, Bearer requis)        |
 | `/api-tokens`                                         | POST     | Création d'un nouveau token                         |

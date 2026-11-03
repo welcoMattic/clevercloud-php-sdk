@@ -68,7 +68,7 @@ is deliberately out of scope at this stage is listed in the "Roadmap" section.
 | Family          | Methods on `$client->...`                                                                                                                                                                |
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `self`          | `get / update / sshKeys / addSshKey / removeSshKey / emailAddresses / addEmailAddress / removeEmailAddress / consumers / getConsumer / createConsumer / updateConsumer / deleteConsumer / startMfa / confirmMfa / disableMfa / regenerateMfaBackupCodes / changePassword` |
-| `users`         | `get / update / delete / applications / addons`                                                                                                                                          |
+| `users` | `get / applications` |
 | `organisations` | `list / get / create / update / delete / members / addMember / updateMember / removeMember / consumers / getConsumer / createConsumer / updateConsumer / deleteConsumer / namespaces`    |
 | `applications`  | `list / get / create / update / delete / restart / stop / deploy / branches / setBranch / instances / dependencies / addDependency / removeDependency / tags / addTag / removeTag / exposedEnv / setExposedEnv / addons / linkAddon / unlinkAddon` |
 | `addons`        | `list / get / create / update / delete / providers / provider / plans / linkedApplications / env / sso / tags / addTag / removeTag / migrate / listMigrations / getMigration / cancelMigration / preorderMigration` |
@@ -76,6 +76,9 @@ is deliberately out of scope at this stage is listed in the "Roadmap" section.
 | `environment`   | `list / get / set / setMany / remove`                                                                                                                                                    |
 | `domains`       | `list / add / remove / favourite / setFavourite / unsetFavourite`                                                                                                                        |
 | `tcpRedirections` | `list / namespaces / add / remove`                                                                                                                                                     |
+| `notifications` | `list / create / delete` (email hooks) |
+| `webhooks` | `list / create / delete` |
+| `backups` | `list` |
 
 ### V4 — platform extensions
 
@@ -90,11 +93,8 @@ is deliberately out of scope at this stage is listed in the "Roadmap" section.
 | `logs`            | `stream` (SSE → `LogStream<LogEntry>`) / `query` (historical)                                                            |
 | `operators`       | `.keycloak / .matomo / .metabase / .otoroshi` (each: `get / reboot / rebuild`; `.keycloak / .otoroshi`: `linkNetworkGroup / unlinkNetworkGroup`) |
 | `drains`          | `list / get / create / update / delete / enable / disable / restart`                                                     |
-| `notifications`   | `list / create / delete` (email hooks)                                                                                   |
-| `webhooks`        | `list / create / delete`                                                                                                 |
 | `networkGroups`   | `list / get / create / delete / addMember / removeMember / wireguardConfiguration`                                       |
 | `orchestration`   | `instances / deployments`                                                                                                |
-| `backups`         | `list / get / restore`                                                                                                   |
 
 ### Bridge — `api-bridge.clever-cloud.com`
 

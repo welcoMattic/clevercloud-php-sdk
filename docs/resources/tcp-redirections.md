@@ -1,4 +1,4 @@
-# TCP redirections (`/v2/.../applications/{id}/tcp-redirs`)
+# TCP redirections (`/v2/organisations/{ownerId}/applications/{id}/tcpRedirs`)
 
 Source: [`src/Resource/V2/TcpRedirectionsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V2/TcpRedirectionsResource.php)
 
@@ -11,6 +11,10 @@ non-HTTP protocols (PostgreSQL replication, custom binary protocols, …).
 $client->tcpRedirections
 ```
 
+The routes take the owner id and have no `/self` alias: with a `null`
+`$organisationId` the SDK first reads the personal organisation id
+(`user_xxx`) from `GET /v2/self`, so each call costs two requests.
+
 ## Methods
 
 ```php
@@ -22,10 +26,10 @@ public function remove(string $applicationId, int $port, string $namespace, ?str
 
 | Method | HTTP | Path | Body |
 | --- | --- | --- | --- |
-| `list()` | GET | `/v2/.../applications/{id}/tcp-redirs` | — |
-| `namespaces()` | GET | `/v2/.../tcp-redirs/namespaces` | — |
-| `add()` | POST | `/v2/.../applications/{id}/tcp-redirs` | `{"namespace": "..."}` |
-| `remove()` | DELETE | `/v2/.../applications/{id}/tcp-redirs/{port}?namespace=...` | — |
+| `list()` | GET | `/v2/organisations/{ownerId}/applications/{id}/tcpRedirs` | - |
+| `namespaces()` | GET | `/v2/organisations/{ownerId}/namespaces` | - |
+| `add()` | POST | `/v2/organisations/{ownerId}/applications/{id}/tcpRedirs` | `{"namespace": "..."}` |
+| `remove()` | DELETE | `/v2/organisations/{ownerId}/applications/{id}/tcpRedirs/{port}?namespace=...` | - |
 
 `add()` doesn't take a port — the API picks one and returns it on the
 resulting `TcpRedirection`. `remove()` requires both the port number and

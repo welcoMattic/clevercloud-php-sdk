@@ -25,8 +25,23 @@ final class TcpRedirectionsResourceTest extends TestCase
         self::assertSame(5040, $redirs[0]->port);
         self::assertSame('default', $redirs[0]->namespace);
         self::assertSame(5041, $redirs[1]->port);
+        self::assertSame('GET', $response->getRequestMethod());
         self::assertSame(
-            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/tcp-redirs',
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/tcpRedirs',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testListResolvesPersonalOrganisationForSelf(): void
+    {
+        $self = ResourceFactory::jsonResponse(200, ['id' => 'user_1']);
+        $response = ResourceFactory::jsonResponse(200, []);
+
+        $this->resource($self, $response)->list('app_1');
+
+        self::assertSame('https://api.clever-cloud.com/v2/self', $self->getRequestUrl());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/user_1/applications/app_1/tcpRedirs',
             $response->getRequestUrl(),
         );
     }
@@ -41,8 +56,21 @@ final class TcpRedirectionsResourceTest extends TestCase
         $names = $this->resource($response)->namespaces('orga_1');
 
         self::assertSame(['default', 'cleverapps'], $names);
+        self::assertSame('GET', $response->getRequestMethod());
         self::assertSame(
-            'https://api.clever-cloud.com/v2/organisations/orga_1/tcp-redirs/namespaces',
+            'https://api.clever-cloud.com/v2/organisations/orga_1/namespaces',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testNamespacesResolvesPersonalOrganisationForSelf(): void
+    {
+        $self = ResourceFactory::jsonResponse(200, ['id' => 'user_1']);
+        $response = ResourceFactory::jsonResponse(200, [['namespace' => 'default']]);
+
+        self::assertSame(['default'], $this->resource($self, $response)->namespaces());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/user_1/namespaces',
             $response->getRequestUrl(),
         );
     }
@@ -56,6 +84,10 @@ final class TcpRedirectionsResourceTest extends TestCase
         self::assertSame(5042, $redir->port);
         self::assertSame('default', $redir->namespace);
         self::assertSame('POST', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/tcpRedirs',
+            $response->getRequestUrl(),
+        );
         self::assertSame('{"namespace":"default"}', $response->getRequestOptions()['body']);
     }
 
@@ -67,15 +99,15 @@ final class TcpRedirectionsResourceTest extends TestCase
 
         self::assertSame('DELETE', $response->getRequestMethod());
         self::assertSame(
-            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/tcp-redirs/5040?namespace=default',
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/tcpRedirs/5040?namespace=default',
             $response->getRequestUrl(),
         );
     }
 
-    private function resource(MockResponse $response): TcpRedirectionsResource
+    private function resource(MockResponse ...$responses): TcpRedirectionsResource
     {
         return new TcpRedirectionsResource(
-            ResourceFactory::http(new MockHttpClient([$response])),
+            ResourceFactory::http(new MockHttpClient($responses)),
             ResourceFactory::mapper(),
         );
     }
