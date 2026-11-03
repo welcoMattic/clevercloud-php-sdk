@@ -33,7 +33,9 @@ signature and the underlying HTTP route.
 - [Instances](resources/instances.md)
 - [Load balancers](resources/load-balancers.md)
 - [Zones](resources/zones.md)
-- [Logs](resources/logs.md)
+- [Logs](resources/logs.md): runtime logs and access logs
+- [Log exports](resources/log-exports.md): unversioned, at the API root
+- [Platform events](resources/events.md): `/v2/events`
 - [Operators](resources/operators.md) — Keycloak / Matomo / Metabase / Otoroshi
 - [Drains](resources/drains.md)
 - [Notifications](resources/notifications.md)
