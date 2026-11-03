@@ -1,6 +1,6 @@
-# Email notifications (`/v4/notifications/emailhooks/...`)
+# Email notifications (`/v2/notifications/emailhooks/...`)
 
-Source: [`src/Resource/V4/NotificationsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/NotificationsResource.php)
+Source: [`src/Resource/V2/NotificationsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V2/NotificationsResource.php)
 
 ## Access
 
@@ -8,7 +8,9 @@ Source: [`src/Resource/V4/NotificationsResource.php`](https://github.com/welcoMa
 $client->notifications
 ```
 
-`?string $organisationId = null` → routes to `/v4/notifications/emailhooks/self`.
+The route takes the owner id and has no `/self` alias: with a `null`
+`$organisationId` the SDK first reads the personal organisation id
+(`user_xxx`) from `GET /v2/self`, so each call costs two requests.
 
 ## Methods
 
@@ -16,9 +18,9 @@ $client->notifications
 public function list(?string $organisationId = null): list<EmailNotification>
 public function create(
     string $name,
-    array $events,         // list<string> — e.g. ['*'] or specific event codes
-    array $targets,        // list<string> — recipient emails or user IDs
-    array $scope = [],     // list<string> — app/addon IDs (empty = all)
+    array $events, // list<string>, e.g. ['DEPLOYMENT_FAIL', 'META_CREDITS'] (empty = all)
+    array $targets, // list<string>: e-mail addresses, user ids or 'organisation'
+    array $scope = [], // list<string>: app/add-on ids (empty = all)
     ?string $organisationId = null,
 ): EmailNotification
 public function delete(string $notificationId, ?string $organisationId = null): void
@@ -26,13 +28,19 @@ public function delete(string $notificationId, ?string $organisationId = null): 
 
 | Method | HTTP | Path | Body |
 | --- | --- | --- | --- |
-| `list()` | GET | `/v4/notifications/emailhooks/{owner}` | — |
-| `create()` | POST | `/v4/notifications/emailhooks/{owner}` | `{"name", "events", "notified", "scope"}` |
-| `delete()` | DELETE | `/v4/notifications/emailhooks/{owner}/{id}` | — |
+| `list()` | GET | `/v2/notifications/emailhooks/{ownerId}` | - |
+| `create()` | POST | `/v2/notifications/emailhooks/{ownerId}` | `{"name", "notified", "events", "scope"}` |
+| `delete()` | DELETE | `/v2/notifications/emailhooks/{ownerId}/{id}` | - |
 
-Note the API field name is `notified` for recipients; the SDK takes
-`$targets` and renames the field internally.
+The API names the recipients `notified`, each one typed. The SDK maps every
+`$targets` entry: an address containing `@` becomes
+`{"type": "email", "target": "..."}`, a `user_` id becomes
+`{"type": "userid", "target": "..."}` and `organisation` becomes
+`{"type": "organisation"}` (every member of the owner). Empty `$events` or
+`$scope` are left out of the body.
 
 ## `EmailNotification` DTO
 
 See [`src/Model/EmailNotification.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/EmailNotification.php).
+Fields: `id`, `ownerId`, `name`, `events`, `scope`, `targets`
+(`list<EmailNotificationTarget>` with `type` and `target`).

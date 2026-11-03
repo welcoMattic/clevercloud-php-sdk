@@ -63,6 +63,9 @@ nav:
       - Environment: resources/environment.md
       - Domains: resources/domains.md
       - TCP redirections: resources/tcp-redirections.md
+      - Notifications: resources/notifications.md
+      - Webhooks: resources/webhooks.md
+      - Backups: resources/backups.md
       - Products: resources/products.md
       - Instances: resources/instances.md
   - V4 resources:
@@ -75,8 +78,6 @@ nav:
       - Platform events: resources/events.md
       - Operators: resources/operators.md
       - Drains: resources/drains.md
-      - Notifications: resources/notifications.md
-      - Webhooks: resources/webhooks.md
       - Network groups: resources/network-groups.md
       - Orchestration: resources/orchestration.md
       - Pulsar policies: resources/pulsar-policies.md
@@ -84,7 +85,6 @@ nav:
       - Configuration providers: resources/config-providers.md
       - Materia KV: resources/materia-kv.md
       - Add-on providers: resources/addon-providers.md
-      - Backups: resources/backups.md
   - Bridge:
       - API tokens: resources/api-tokens.md
 

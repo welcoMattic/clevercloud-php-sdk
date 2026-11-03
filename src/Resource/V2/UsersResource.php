@@ -28,18 +28,4 @@ final readonly class UsersResource extends AbstractV2Resource
 
         return $payload;
     }
-
-    /**
-     * Returns the raw add-on payloads for a user. Phase 3 typed-maps these
-     * into Addon DTOs.
-     *
-     * @return list<array<string, mixed>>
-     */
-    public function addons(string $userId): array
-    {
-        /** @var list<array<string, mixed>> $payload */
-        $payload = $this->httpGet('/users/'.rawurlencode($userId).'/addons');
-
-        return $payload;
-    }
 }

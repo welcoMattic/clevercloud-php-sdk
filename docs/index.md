@@ -25,6 +25,9 @@ signature and the underlying HTTP route.
 - [Environment variables](resources/environment.md)
 - [Domains](resources/domains.md)
 - [TCP redirections](resources/tcp-redirections.md)
+- [Notifications](resources/notifications.md)
+- [Webhooks](resources/webhooks.md)
+- [Backups](resources/backups.md)
 - [Products](resources/products.md) — catalog of instance types, zones, countries, add-on providers
 
 ### V4
@@ -38,8 +41,6 @@ signature and the underlying HTTP route.
 - [Platform events](resources/events.md): `/v2/events`
 - [Operators](resources/operators.md) — Keycloak / Matomo / Metabase / Otoroshi
 - [Drains](resources/drains.md)
-- [Notifications](resources/notifications.md)
-- [Webhooks](resources/webhooks.md)
 - [Network groups](resources/network-groups.md)
 - [Orchestration](resources/orchestration.md)
 - [Pulsar policies](resources/pulsar-policies.md)
@@ -47,7 +48,6 @@ signature and the underlying HTTP route.
 - [Configuration providers](resources/config-providers.md)
 - [Materia KV](resources/materia-kv.md)
 - [Add-on providers](resources/addon-providers.md)
-- [Backups](resources/backups.md)
 
 ### Bridge (`api-bridge.clever-cloud.com`)
 
@@ -77,7 +77,7 @@ All under `CleverCloud\Sdk\Model\Enum\`:
 | `$client->addons->providers()` | `GET /v2/products/addonproviders` | `list<AddonProvider>` |
 | `$client->addons->provider($id)` | `GET /v2/products/addonproviders/{id}` | `AddonProvider` |
 | `$client->applications->branches($appId)` | `GET /v2/.../applications/{id}/branches` | `list<string>` |
-| `$client->tcpRedirections->namespaces($orgId)` | `GET /v2/.../tcp-redirs/namespaces` | `list<string>` |
+| `$client->tcpRedirections->namespaces($orgId)` | `GET /v2/organisations/{ownerId}/namespaces` | `list<string>` |
 
 ## See also
 

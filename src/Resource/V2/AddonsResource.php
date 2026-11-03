@@ -359,27 +359,6 @@ final readonly class AddonsResource extends AbstractV2Resource
     }
 
     /**
-     * Returns `$organisationId` unchanged, or the personal organisation id
-     * (`user_<uuid>`) read from `GET /v2/self` when it is null.
-     *
-     * @throws ApiException when the personal organisation id cannot be resolved
-     */
-    private function resolveOwnerId(?string $organisationId): string
-    {
-        if (null !== $organisationId) {
-            return $organisationId;
-        }
-
-        $payload = $this->httpGet('/self');
-
-        if (!isset($payload['id']) || !\is_string($payload['id']) || '' === $payload['id']) {
-            throw new ApiException('Could not resolve personal organisation id from /v2/self response', 0);
-        }
-
-        return $payload['id'];
-    }
-
-    /**
      * @throws ApiException when the add-on payload carries no region
      */
     private function currentRegion(string $addonId, ?string $organisationId): string

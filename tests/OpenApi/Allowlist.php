@@ -27,20 +27,18 @@ final class Allowlist
             ['method' => '*', 'pattern' => '/v2/products*', 'reason' => 'v2 products catalog not in the spec'],
             // Other users' public profile, apps and add-ons.
             ['method' => '*', 'pattern' => '/v2/users/*', 'reason' => 'v2 users not in the spec'],
-            // TCP redirections, per application and their namespaces, both owners.
-            ['method' => '*', 'pattern' => '/v2/*/tcp-redirs*', 'reason' => 'v2 tcp-redirs not in the spec'],
             // Invoices, payment methods, consumptions, credits.
             ['method' => '*', 'pattern' => '/v4/billing/*', 'reason' => 'v4 billing not in the spec'],
             // Log drains.
             ['method' => '*', 'pattern' => '/v4/drains/*', 'reason' => 'v4 drains not in the spec'],
             // E-mail hooks and webhooks.
-            ['method' => '*', 'pattern' => '/v4/notifications/*', 'reason' => 'v4 notifications not in the spec'],
+            ['method' => '*', 'pattern' => '/v2/notifications/*', 'reason' => 'v2 notifications live-verified, absent from the spec'],
             // Application load balancers and their DNS info.
             ['method' => '*', 'pattern' => '/v4/load-balancers/*', 'reason' => 'v4 load-balancers not in the spec'],
             // Orchestration view of instances and deployments.
             ['method' => '*', 'pattern' => '/v4/orchestration/*', 'reason' => 'v4 orchestration not in the spec'],
-            // Add-on backups (any provider).
-            ['method' => '*', 'pattern' => '/v4/addon-providers/*/addons/*/backups*', 'reason' => 'v4 add-on backups not in the spec'],
+            // Add-on backups (any provider), listed by owner and real add-on id.
+            ['method' => 'GET', 'pattern' => '/v2/backups/{}/{}', 'reason' => 'v2 add-on backups live-verified, absent from the spec'],
             // Network groups owned by the current user: the spec only documents the organisation owner.
             ['method' => '*', 'pattern' => '/v4/networkgroups/self/*', 'reason' => 'networkgroups /self owner variant not in the spec'],
             // API tokens live on the api-bridge host, outside the spec.

@@ -107,15 +107,14 @@ final class AddonController extends AbstractController
 
         $backups = [];
         $backupsError = null;
-        $providerId = $addon->provider?->id;
-        if (null !== $providerId && null !== $addon->realId) {
+        if (null !== $addon->realId) {
             try {
-                $backups = $this->cc->backups->list($providerId, $addon->realId);
+                $backups = $this->cc->backups->list($addon->realId, $owner);
             } catch (CleverCloudException $e) {
                 $backupsError = $e->getMessage();
             }
         } else {
-            $backupsError = 'Cet add-on ne fournit pas de provider/realId exploitable.';
+            $backupsError = 'Cet add-on ne fournit pas de realId exploitable.';
         }
 
         return $this->render('addon/show.html.twig', [
@@ -126,32 +125,6 @@ final class AddonController extends AbstractController
             'backupsError' => $backupsError,
             'owner' => $owner,
         ]);
-    }
-
-    #[Route('/addons/{id}/backups/{backupId}/restore', name: 'addon_backup_restore', methods: ['POST'])]
-    public function restoreBackup(Request $request, string $id, string $backupId): RedirectResponse
-    {
-        $owner = $this->normaliseOwner($request->request->get('owner'));
-
-        try {
-            $addon = $this->cc->addons->get($id, $owner);
-            $providerId = $addon->provider?->id;
-            $realId = $addon->realId;
-
-            if (null === $providerId || null === $realId) {
-                $this->addFlash('error', "Add-on sans provider/realId — impossible de restaurer.");
-            } else {
-                $this->cc->backups->restore($providerId, $realId, $backupId);
-                $this->addFlash('success', \sprintf('Restauration du backup %s lancée.', $backupId));
-            }
-        } catch (CleverCloudException $e) {
-            $this->addFlash('error', \sprintf('Échec de la restauration : %s', $e->getMessage()));
-        }
-
-        return $this->redirectToRoute(
-            'addon_show',
-            null === $owner ? ['id' => $id] : ['id' => $id, 'owner' => $owner],
-        );
     }
 
     #[Route('/addons/{id}/migrations/{migrationId}/cancel', name: 'addon_migration_cancel', methods: ['POST'])]
