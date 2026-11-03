@@ -8,7 +8,9 @@ Source: [`src/Resource/V4/BillingResource.php`](https://github.com/welcoMattic/c
 $client->billing
 ```
 
-`?string $organisationId = null` → scopes to `/self` when null.
+Paths are scoped to `/organisations/{id}`. A null `?string $organisationId`
+targets your personal space, whose `user_...` id is read from `GET /v2/self`
+first (V4 has no `/self` variant). Paths below write that prefix as `...`.
 
 ## Methods
 
@@ -20,21 +22,17 @@ public function downloadInvoicePdf(string $invoiceNumber, ?string $organisationI
 public function paymentMethods(?string $organisationId = null): list<PaymentMethod>
 public function addPaymentMethod(array $data, ?string $organisationId = null): PaymentMethod
 public function removePaymentMethod(string $methodId, ?string $organisationId = null): void
-public function consumptions(?string $organisationId = null, ?int $from = null, ?int $to = null): list<Consumption>
-public function recurrent(?string $organisationId = null): array<string, mixed>
 ```
 
 | Method | HTTP | Path |
 | --- | --- | --- |
-| `getBalance()` | GET | `/v4/billing/{self|organisations/{id}}/credits/balance` |
+| `getBalance()` | GET | `/v4/billing/.../credits/summary` (`prepaidCredit`, `freeCredit`, `currency`) |
 | `listInvoices()` | GET | `/v4/billing/.../invoices` |
 | `getInvoice()` | GET | `/v4/billing/.../invoices/{invoiceNumber}` |
 | `downloadInvoicePdf()` | GET | `/v4/billing/.../invoices/{invoiceNumber}.pdf` (returns raw PSR-7 `ResponseInterface` with `Accept: application/pdf`) |
 | `paymentMethods()` | GET | `/v4/billing/.../payments/methods` |
 | `addPaymentMethod()` | POST | `/v4/billing/.../payments/methods` (JSON body) |
 | `removePaymentMethod()` | DELETE | `/v4/billing/.../payments/methods/{id}` |
-| `consumptions()` | GET | `/v4/billing/.../consumptions` (query: `?from&to` ms since epoch) |
-| `recurrent()` | GET | `/v4/billing/.../recurrent-payments` |
 
 `downloadInvoicePdf()` returns a `Psr\Http\Message\ResponseInterface`
 straight from the PSR-18 client — no JSON decoding. Stream `getBody()` to
@@ -44,4 +42,3 @@ disk.
 
 - `Invoice` — [`src/Model/Invoice.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Invoice.php)
 - `PaymentMethod` — [`src/Model/PaymentMethod.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/PaymentMethod.php)
-- `Consumption` — [`src/Model/Consumption.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Consumption.php)

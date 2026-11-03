@@ -2,7 +2,9 @@
 
 namespace CleverCloud\Sdk\Resource\V4;
 
+use CleverCloud\Sdk\Exception\ApiException;
 use CleverCloud\Sdk\Model\Drain;
+use CleverCloud\Sdk\Model\Enum\DrainKind;
 use CleverCloud\Sdk\Model\Enum\DrainType;
 use CleverCloud\Sdk\Resource\AbstractV4Resource;
 
@@ -10,14 +12,17 @@ use CleverCloud\Sdk\Resource\AbstractV4Resource;
  * Manages log drains under
  * `/v4/drains/organisations/{ownerId}/resources/{resourceId}/drains`.
  *
- * `$resourceId` is an application id (`app_…`) or an add-on real id
- * (`postgresql_…`, `cellar_…`, …) — the API treats anything that produces
- * logs as a drainable "resource".
+ * `$resourceId` is an application id (`app_...`) or an add-on real id
+ * (`postgresql_...`, `cellar_...`, ...): the API treats anything that
+ * produces logs as a drainable "resource". A null `$organisationId` targets
+ * the personal space, resolved through `GET /v2/self`.
  */
 final readonly class DrainsResource extends AbstractV4Resource
 {
     /**
      * @return list<Drain>
+     *
+     * @throws ApiException when `$organisationId` is null and the personal organisation id cannot be resolved
      */
     public function list(string $resourceId, ?string $organisationId = null): array
     {
@@ -27,78 +32,96 @@ final readonly class DrainsResource extends AbstractV4Resource
         return $this->mapCollection(Drain::class, $payload);
     }
 
+    /**
+     * @throws ApiException when `$organisationId` is null and the personal organisation id cannot be resolved
+     */
     public function get(string $resourceId, string $drainId, ?string $organisationId = null): Drain
     {
         /** @var array<string, mixed> $payload */
-        $payload = $this->httpGet(
-            $this->basePath($resourceId, $organisationId).'/'.rawurlencode($drainId),
-        );
+        $payload = $this->httpGet($this->drainPath($resourceId, $drainId, $organisationId));
 
         return $this->mapTo(Drain::class, $payload);
     }
 
     /**
-     * @param array<string, mixed> $credentials extra fields per drain kind (API key for Datadog/NewRelic, basic auth, etc.)
+     * Creates a log drain. The drain is enabled asynchronously: poll
+     * {@see self::get()} until its `status.status` is `ENABLED`.
+     *
+     * @param array<string, mixed> $recipient extra recipient fields of the protocol: `username` / `password` (raw HTTP, ElasticSearch), `apiKey` (NewRelic), `sourceToken` (Better Stack), `token` (OVH TCP, Splunk), `index`, `sourcetype`, `tlsVerification`, `rfc5424StructuredDataParameters`
+     * @param bool                 $skipCheck create the drain without probing the target first; by default the API refuses a target it cannot reach
+     *
+     * @throws ApiException when `$organisationId` is null and the personal organisation id cannot be resolved
      */
     public function create(
         string $resourceId,
-        DrainType $kind,
+        DrainType $type,
         string $url,
-        array $credentials = [],
+        array $recipient = [],
         ?string $organisationId = null,
+        DrainKind $kind = DrainKind::Log,
+        bool $skipCheck = false,
     ): Drain {
-        $body = ['kind' => $kind->value, 'url' => $url];
-        if ([] !== $credentials) {
-            $body['credentials'] = $credentials;
+        $options = ['json' => [
+            'kind' => $kind->value,
+            'recipient' => ['type' => $type->value, 'url' => $url] + $recipient,
+        ]];
+        if ($skipCheck) {
+            $options['query'] = ['skipCheck' => 'true'];
         }
 
         /** @var array<string, mixed> $payload */
-        $payload = $this->httpPost(
-            $this->basePath($resourceId, $organisationId),
-            ['json' => $body],
-        );
+        $payload = $this->httpPost($this->basePath($resourceId, $organisationId), $options);
 
         return $this->mapTo(Drain::class, $payload);
     }
 
+    /**
+     * @throws ApiException when `$organisationId` is null and the personal organisation id cannot be resolved
+     */
     public function delete(string $resourceId, string $drainId, ?string $organisationId = null): void
     {
-        $this->httpDelete(
-            $this->basePath($resourceId, $organisationId).'/'.rawurlencode($drainId),
-        );
-    }
-
-    public function enable(string $resourceId, string $drainId, ?string $organisationId = null): void
-    {
-        $this->httpPut(
-            $this->basePath($resourceId, $organisationId).'/'.rawurlencode($drainId).'/state',
-            ['json' => ['enabled' => true]],
-        );
-    }
-
-    public function disable(string $resourceId, string $drainId, ?string $organisationId = null): void
-    {
-        $this->httpPut(
-            $this->basePath($resourceId, $organisationId).'/'.rawurlencode($drainId).'/state',
-            ['json' => ['enabled' => false]],
-        );
+        $this->httpDelete($this->drainPath($resourceId, $drainId, $organisationId));
     }
 
     /**
-     * Restarts log forwarding from the latest position. Useful after a drain
-     * has fallen behind and you want to skip the backlog.
+     * Requests the enabling of a disabled drain, applied asynchronously.
+     *
+     * @throws ApiException when `$organisationId` is null and the personal organisation id cannot be resolved
+     */
+    public function enable(string $resourceId, string $drainId, ?string $organisationId = null): void
+    {
+        $this->httpPut($this->drainPath($resourceId, $drainId, $organisationId).'/enable');
+    }
+
+    /**
+     * Requests the disabling of a drain, applied asynchronously.
+     *
+     * @throws ApiException when `$organisationId` is null and the personal organisation id cannot be resolved
+     */
+    public function disable(string $resourceId, string $drainId, ?string $organisationId = null): void
+    {
+        $this->httpPut($this->drainPath($resourceId, $drainId, $organisationId).'/disable');
+    }
+
+    /**
+     * Moves the shipping cursor of a drain to now, so it skips its backlog and
+     * only ships the logs produced from this point on.
+     *
+     * @throws ApiException when `$organisationId` is null and the personal organisation id cannot be resolved
      */
     public function restart(string $resourceId, string $drainId, ?string $organisationId = null): void
     {
-        $this->httpPatch(
-            $this->basePath($resourceId, $organisationId).'/'.rawurlencode($drainId),
-            ['json' => ['action' => 'restart']],
-        );
+        $this->httpPatch($this->drainPath($resourceId, $drainId, $organisationId).'/reset-cursor');
     }
 
     private function basePath(string $resourceId, ?string $organisationId): string
     {
         return '/drains'.$this->ownerPath($organisationId)
             .'/resources/'.rawurlencode($resourceId).'/drains';
+    }
+
+    private function drainPath(string $resourceId, string $drainId, ?string $organisationId): string
+    {
+        return $this->basePath($resourceId, $organisationId).'/'.rawurlencode($drainId);
     }
 }

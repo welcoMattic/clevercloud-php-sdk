@@ -2,7 +2,6 @@
 
 namespace CleverCloud\Sdk\Resource\V4;
 
-use CleverCloud\Sdk\ApiVersion;
 use CleverCloud\Sdk\Exception\ApiException;
 use CleverCloud\Sdk\Model\LogEntry;
 use CleverCloud\Sdk\Model\StreamEvent;
@@ -253,28 +252,6 @@ final readonly class LogsResource extends AbstractV4Resource
         $handle = $this->httpEventStream($path, ['query' => self::normaliseFilters($filters)]);
 
         return self::collect(new EventStream($handle, $maxDurationSeconds), $filters['limit']);
-    }
-
-    /**
-     * Resolves the organisation id to use for the request.
-     * When null, fetches the personal organisation id via GET /v2/self.
-     *
-     * @throws ApiException when the personal organisation id cannot be resolved
-     */
-    private function resolveOwnerId(?string $organisationId): string
-    {
-        if (null !== $organisationId) {
-            return $organisationId;
-        }
-
-        // Fetch personal organisation id via V2 API
-        $payload = $this->http->request('GET', ApiVersion::V2, '/self');
-
-        if (!isset($payload['id']) || !\is_string($payload['id']) || '' === $payload['id']) {
-            throw new ApiException('Could not resolve personal organisation id from /v2/self response', 0);
-        }
-
-        return $payload['id'];
     }
 
     /**

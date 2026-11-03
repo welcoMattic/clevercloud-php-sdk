@@ -2,27 +2,27 @@
 
 namespace CleverCloud\Sdk\Model;
 
-use AutoMapper\Attribute\MapFrom;
-
 /**
- * A log drain — forwards application or add-on logs to an external sink
+ * A log drain: forwards application or add-on logs to an external sink
  * (Datadog, ElasticSearch, NewRelic, syslog, raw HTTP, etc.).
  */
 final readonly class Drain
 {
     /**
-     * @param array<string, mixed> $credentials
+     * @param string|null          $kind      stream shipped: `LOG` or `ACCESSLOG`
+     * @param array<string, mixed> $status    `status` (`CREATED`, `ENABLING`, `ENABLED`, `DISABLING`, `DISABLED`, `DELETED`), `date`, and `authorId` / `errorReason` when set
+     * @param array<string, mixed> $recipient `type` (a {@see Enum\DrainType} value), `url` and the protocol fields (`username`, `password`, `apiKey`, `index`, `token`, ...)
+     * @param array<string, mixed> $execution `status` (`RUNNING`, `RETRYING`, `NOT_RUNNING`) and the retry details of the shipping worker
+     * @param array<string, mixed> $backlog   `msgRateOut`, `msgThroughputOut` and `msgBacklog` when reported
      */
     public function __construct(
         public string $id,
-        #[MapFrom(property: 'state')]
-        public ?string $state = null,
-        public ?string $kind = null,
-        public ?string $url = null,
-        public ?string $name = null,
         public ?string $resourceId = null,
-        public ?bool $enabled = null,
-        public array $credentials = [],
+        public ?string $kind = null,
+        public array $status = [],
+        public array $recipient = [],
+        public array $execution = [],
+        public array $backlog = [],
     ) {
     }
 }

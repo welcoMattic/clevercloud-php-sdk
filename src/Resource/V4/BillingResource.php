@@ -2,7 +2,6 @@
 
 namespace CleverCloud\Sdk\Resource\V4;
 
-use CleverCloud\Sdk\Model\Consumption;
 use CleverCloud\Sdk\Model\Invoice;
 use CleverCloud\Sdk\Model\PaymentMethod;
 use CleverCloud\Sdk\Resource\AbstractV4Resource;
@@ -11,12 +10,15 @@ use Psr\Http\Message\ResponseInterface;
 final readonly class BillingResource extends AbstractV4Resource
 {
     /**
+     * Returns how much prepaid and free credit the owner has left, as
+     * `prepaidCredit`, `freeCredit` and `currency`.
+     *
      * @return array<string, mixed>
      */
     public function getBalance(?string $organisationId = null): array
     {
         /** @var array<string, mixed> $payload */
-        $payload = $this->httpGet($this->billingPath($organisationId).'/credits/balance');
+        $payload = $this->httpGet($this->billingPath($organisationId).'/credits/summary');
 
         return $payload;
     }
@@ -85,39 +87,6 @@ final readonly class BillingResource extends AbstractV4Resource
         $this->httpDelete(
             $this->billingPath($organisationId).'/payments/methods/'.rawurlencode($methodId),
         );
-    }
-
-    /**
-     * @return list<Consumption>
-     */
-    public function consumptions(?string $organisationId = null, ?int $from = null, ?int $to = null): array
-    {
-        $query = [];
-        if (null !== $from) {
-            $query['from'] = $from;
-        }
-        if (null !== $to) {
-            $query['to'] = $to;
-        }
-
-        /** @var list<array<string, mixed>> $payload */
-        $payload = $this->httpGet(
-            $this->billingPath($organisationId).'/consumptions',
-            ['query' => $query],
-        );
-
-        return $this->mapCollection(Consumption::class, $payload);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function recurrent(?string $organisationId = null): array
-    {
-        /** @var array<string, mixed> $payload */
-        $payload = $this->httpGet($this->billingPath($organisationId).'/recurrent-payments');
-
-        return $payload;
     }
 
     private function billingPath(?string $organisationId): string
