@@ -1,0 +1,2568 @@
+{
+    "source": "https://api.clever-cloud.com/openapi.json",
+    "sha256": "0c8472558e6d5b6a39ea21d994371fa732415f8425a4e2f7eb1fcad6f36697d9",
+    "fetchedAt": "2026-11-03",
+    "operations": [
+        {"method":"GET","path":"/networkgroup/configuration","operationId":"get_networkgroups_configuration","tags":["NetworkGroups"],"security":[]},
+        {"method":"GET","path":"/organisations/{orgId}/logs/exports","operationId":"listLogsExports","tags":["Logs"],"security":["oauth1"]},
+        {"method":"POST","path":"/organisations/{orgId}/logs/exports","operationId":"createLogsExport","tags":["Logs"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/organisations/{orgId}/logs/exports/{exportId}","operationId":"deleteLogsExport","tags":["Logs"],"security":["oauth1"]},
+        {"method":"GET","path":"/organisations/{orgId}/logs/exports/{exportId}","operationId":"getLogsExport","tags":["Logs"],"security":["oauth1"]},
+        {"method":"GET","path":"/organisations/{orgId}/logs/exports/{exportId}/download","operationId":"downloadLogsExport","tags":["Logs"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/events","operationId":"get_events_stream","tags":["Events"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/events/event-socket","operationId":"get_event_socket","tags":["Events"],"security":[]},
+        {"method":"GET","path":"/v2/organisations","operationId":"listOrganisations","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/organisations","operationId":"createOrganisation","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}","operationId":"deleteOrganisation","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}","operationId":"getOrganisation","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/organisations/{id}","operationId":"updateOrganisation","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addonproviders","operationId":"getProvidersInfo","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/organisations/{id}/addonproviders","operationId":"createProvider","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/addonproviders/{providerId}","operationId":"deleteProvider","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addonproviders/{providerId}","operationId":"getProviderInfo","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/addonproviders/{providerId}","operationId":"updateProviderInfos","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addonproviders/{providerId}/features","operationId":"getProviderFeatures","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/organisations/{id}/addonproviders/{providerId}/features","operationId":"addProviderFeature","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/addonproviders/{providerId}/features/{featureId}","operationId":"deleteProviderFeature","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addonproviders/{providerId}/plans","operationId":"getProviderPlans","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/organisations/{id}/addonproviders/{providerId}/plans","operationId":"addProviderPlan","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/addonproviders/{providerId}/plans/{planId}","operationId":"deleteProviderPlan","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addonproviders/{providerId}/plans/{planId}","operationId":"getProviderPlan","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/addonproviders/{providerId}/plans/{planId}","operationId":"editProviderPlan","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/addonproviders/{providerId}/plans/{planId}/features/{featureName}","operationId":"deleteProviderPlanFeature","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/addonproviders/{providerId}/plans/{planId}/features/{featureName}","operationId":"editProviderPlanFeature","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addonproviders/{providerId}/sso","operationId":"getSSODataForOrga","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addonproviders/{providerId}/tags","operationId":"getProviderTags","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/organisations/{id}/addonproviders/{providerId}/testers","operationId":"addBetaTester","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addons","operationId":"getAddonsByOrgaId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/organisations/{id}/addons","operationId":"provisionAddonByOrgaId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/organisations/{id}/addons/preorders","operationId":"preorderAddonByOrgaId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/addons/{addonId}","operationId":"deprovisionAddonByOrgaAndAddonId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addons/{addonId}","operationId":"getAddonByOrgaAndAddonId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/addons/{addonId}","operationId":"updateAddonInfo","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addons/{addonId}/applications","operationId":"getApplicationsLinkedToAddonByOrgaAndAddonId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addons/{addonId}/env","operationId":"getAddonEnvByOrgaAndAddonId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addons/{addonId}/instances","operationId":"getAddonInstances","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addons/{addonId}/instances/{instanceId}","operationId":"getAddonInstance","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addons/{addonId}/migrations","operationId":"getAddonMigrations","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/organisations/{id}/addons/{addonId}/migrations","operationId":"changePlanByOrgaAndAddonId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addons/{addonId}/migrations/preorders","operationId":"preorderMigration","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/addons/{addonId}/migrations/{migrationId}","operationId":"abortAddonMigration","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addons/{addonId}/migrations/{migrationId}","operationId":"getAddonMigration","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addons/{addonId}/sso","operationId":"getAddonSSODataForOrga","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/addons/{addonId}/tags","operationId":"getAddonTagsByOrgaIdAndAddonId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/addons/{addonId}/tags","operationId":"replaceAddonTags","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/addons/{addonId}/tags/{tag}","operationId":"deleteAddonTagByOrgaAndAddonId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/addons/{addonId}/tags/{tag}","operationId":"addAddonTagByOrgaAndAddonId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/organisations/{id}/addons/{addon_id}/migration","operationId":"migrate_org_addon","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/organisations/{id}/addons/{addon_id}/sso","operationId":"sso_org_addon","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications","operationId":"listOrganisationApplications","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"POST","path":"/v2/organisations/{id}/applications","operationId":"createOrganisationApplication","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/applications/{appId}","operationId":"deleteOrganisationApplication","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}","operationId":"getOrganisationApplication","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/applications/{appId}","operationId":"updateOrganisationApplication","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/addons","operationId":"listOrganisationApplicationAddons","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"POST","path":"/v2/organisations/{id}/applications/{appId}/addons","operationId":"linkOrganisationApplicationAddon","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/addons/env","operationId":"listOrganisationApplicationAddonsEnvironmentVariables","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/applications/{appId}/addons/{addonId}","operationId":"unlinkOrganisationApplicationAddon","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/applications/{appId}/branch","operationId":"updateOrganisationApplicationBranch","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/branches","operationId":"listOrganisationApplicationBranches","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/applications/{appId}/buildflavor","operationId":"updateOrganisationApplicationBuildInstanceFlavor","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/dependencies","operationId":"getApplicationDependenciesByOrgaAndAppId","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/dependencies/env","operationId":"getApplicationDependenciesEnvByOrgaAndAppId","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/applications/{appId}/dependencies/{dependencyId}","operationId":"deleteApplicationDependencyByOrgaAndAppId","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/applications/{appId}/dependencies/{dependencyId}","operationId":"addApplicationDependencyByOrgaAndAppId","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/dependents","operationId":"getApplicationDependentsByOrgaAndAppId","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/deployments","operationId":"getApplicationDeploymentsForOrga","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/deployments/{deploymentId}","operationId":"getApplicationDeploymentForOrga","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/applications/{appId}/deployments/{deploymentId}/instances","operationId":"cancelApplicationDeploymentForOrga","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/env","operationId":"listOrganisationApplicationEnvironmentVariables","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/applications/{appId}/env","operationId":"updateOrganisationApplicationEnvironmentVariables","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/applications/{appId}/env/{envName}","operationId":"deleteOrganisationApplicationEnvironmentVariable","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/applications/{appId}/env/{envName}","operationId":"updateOrganisationApplicationEnvironmentVariable","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/exposed_env","operationId":"listOrganisationAppplicationExposedEnvironmentVariables","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/applications/{appId}/exposed_env","operationId":"updateOrganisationApplicationExposedEnvironmentVariables","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/applications/{appId}/instances","operationId":"stopOrganisationApplication","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/instances","operationId":"listOrganisationApplicationInstances","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"POST","path":"/v2/organisations/{id}/applications/{appId}/instances","operationId":"redeployOrganisationApplication","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/tags","operationId":"listOrganisationApplicationTags","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/applications/{appId}/tags","operationId":"updateOrganisationApplicationTags","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/applications/{appId}/tags/{tag}","operationId":"removeOrganisationApplicationTag","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/applications/{appId}/tags/{tag}","operationId":"addOrganisationApplicationTag","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/tcpRedirs","operationId":"listOrganisationApplicationTCPRedirections","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"POST","path":"/v2/organisations/{id}/applications/{appId}/tcpRedirs","operationId":"createOrganisationApplicationTCPRedirection","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/applications/{appId}/tcpRedirs/{sourcePort}","operationId":"deleteOrganisationApplicationTCPRedirection","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/udpRedirs","operationId":"listOrganisationApplicationUDPRedirections","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"POST","path":"/v2/organisations/{id}/applications/{appId}/udpRedirs","operationId":"createOrganisationApplicationUDPRedirection","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/applications/{appId}/udpRedirs/{sourcePort}","operationId":"deleteOrganisationApplicationUDPRedirection","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/vhosts","operationId":"listOrganisationApplicationVirtualHosts","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/applications/{appId}/vhosts/favourite","operationId":"removeOrganisationApplicationFavouriteVirtualHost","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/applications/{appId}/vhosts/favourite","operationId":"getOrganisationApplicationFavouriteVirtualHost","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/applications/{appId}/vhosts/favourite","operationId":"updateOrganisationApplicationFavouriteVirtualHost","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/applications/{appId}/vhosts/{domain}","operationId":"removeOrganisationApplicationVirtualhost","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/applications/{appId}/vhosts/{domain}","operationId":"addOrganisationApplicationVirtualHost","tags":["Applications"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/organisations/{id}/applications/{app_id}/github-webhook/secret","operationId":"rotate_org_application_github_webhook_secret","tags":["Applications"],"security":["oauth1","biscuit"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/avatar","operationId":"updateOrganisationAvatar","tags":["Organisations"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v2/organisations/{id}/consumers","operationId":"listOrganisationConsumers","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/organisations/{id}/consumers","operationId":"createOrganisationConsumer","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/consumers/{key}","operationId":"deleteOrganisationConsumer","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/consumers/{key}","operationId":"getOrganisationConsumer","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/consumers/{key}","operationId":"updateOrganisationConsumer","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/consumers/{key}/secret","operationId":"getOrganisationConsumerSecret","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/deployments","operationId":"listOrganisationDeployments","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/drain-policy","operationId":"getOrganisationDrainPolicy","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/instances","operationId":"listOrganisationInstances","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/members","operationId":"listOrganisationMembers","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/organisations/{id}/members","operationId":"addOrganisationMember","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/members/invitations","operationId":"listOrganisationInvitations","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/members/invitations/{invitationId}","operationId":"cancelOrganisationInvitation","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/members/{userId}","operationId":"removeOrganisationMember","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/organisations/{id}/members/{userId}","operationId":"updateOrganisationMember","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/namespaces","operationId":"listOrganisationNamespaces","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/payment-info","operationId":"getOrganisationPaymentInfo","tags":["Payments"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/service-tokens","operationId":"listServiceTokens","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/organisations/{id}/service-tokens","operationId":"createServiceToken","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/organisations/{id}/service-tokens/{tokenId}","operationId":"deleteServiceToken","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/organisations/{id}/service-tokens/{tokenId}","operationId":"getServiceToken","tags":["Organisations"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self","operationId":"delete_self","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self","operationId":"getUser_1","tags":["Self"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self","operationId":"editUser","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/addons","operationId":"getSelfAddons","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/self/addons","operationId":"provisionSelfAddon","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/self/addons/preorders","operationId":"preorderSelfAddon","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/addons/{addonId}","operationId":"deprovisionSelfAddonById","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/addons/{addonId}","operationId":"getSelfAddonById","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/addons/{addonId}","operationId":"renameAddon","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/addons/{addonId}/applications","operationId":"getSelfApplicationsLinkedToAddonByAddonId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/addons/{addonId}/env","operationId":"getSelfAddonEnvByAddonId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/addons/{addonId}/plan","operationId":"changeSelfAddonPlanByAddonId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/addons/{addonId}/sso","operationId":"getAddonSSOData","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/addons/{addonId}/tags","operationId":"getSelfAddonTagsByAddonId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/addons/{addonId}/tags/{tag}","operationId":"deleteSelfAddonTagByAddonId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/addons/{addonId}/tags/{tag}","operationId":"addSelfAddonTagByAddonId","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/self/addons/{addon_id}/migration","operationId":"migrate_self_addon","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/self/addons/{addon_id}/sso","operationId":"sso_self_addon","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications","operationId":"getSelfApplications","tags":["Applications"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/self/applications","operationId":"addSelfApplication","tags":["Applications"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/applications/{appId}","operationId":"deleteSelfApplicationByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}","operationId":"getSelfApplicationByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/applications/{appId}","operationId":"editSelfApplicationByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}/addons","operationId":"getSelfAddonsLinkedToApplicationByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/self/applications/{appId}/addons","operationId":"linkSelfAddonToApplicationByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}/addons/env","operationId":"getSelfEnvOfAddonsLinkedToApplicationByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/applications/{appId}/addons/{addonId}","operationId":"unlinkSelfddonFromApplicationByAppAndAddonId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/applications/{appId}/branch","operationId":"setSelfApplicationBranchByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}/branches","operationId":"getSelfApplicationBranchesByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/applications/{appId}/buildflavor","operationId":"setSelfBuildInstanceFlavorByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}/dependencies","operationId":"getSelfApplicationDependenciesByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}/dependencies/env","operationId":"getSelfApplicationDependenciesEnvByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/applications/{appId}/dependencies/{dependencyId}","operationId":"deleteSelfApplicationDependencyByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/applications/{appId}/dependencies/{dependencyId}","operationId":"addSelfApplicationDependencyByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}/dependents","operationId":"getSelfApplicationDependents","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}/deployments","operationId":"getApplicationDeployments","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}/deployments/{deploymentId}","operationId":"getApplicationDeployment","tags":["Applications"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/applications/{appId}/deployments/{deploymentId}/instances","operationId":"cancelDeploy","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}/env","operationId":"getSelfApplicationEnvByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/applications/{appId}/env","operationId":"editSelfApplicationEnvByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/applications/{appId}/env/{envName}","operationId":"removeSelfApplicationEnvByAppIdAndEnvName","tags":["Applications"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/applications/{appId}/env/{envName}","operationId":"editSelfApplicationEnvByAppIdAndEnvName","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}/exposed_env","operationId":"getSelfExposedEnvByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/applications/{appId}/exposed_env","operationId":"updateSelfExposedEnvByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/applications/{appId}/instances","operationId":"undeploySelfApplicationByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}/instances","operationId":"getSelfApplicationInstancesByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/self/applications/{appId}/instances","operationId":"redeploySelfApplicationByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}/tags","operationId":"getSelfApplicationTagsByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/applications/{appId}/tags/{tag}","operationId":"deleteSelfApplicationTagAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/applications/{appId}/tags/{tag}","operationId":"addSelfApplicationTagByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}/vhosts","operationId":"getSelfVhostByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/applications/{appId}/vhosts/favourite","operationId":"unmarkSelfFavouriteVhostByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/applications/{appId}/vhosts/favourite","operationId":"getSelfFavouriteVhostByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/applications/{appId}/vhosts/favourite","operationId":"markSelfFavouriteVhostByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/applications/{appId}/vhosts/{domain}","operationId":"removeSelfVhostByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/applications/{appId}/vhosts/{domain}","operationId":"addSelfVhostByAppId","tags":["Applications"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/avatar","operationId":"setUserAvatarFromString","tags":["Self"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/change_password","operationId":"changeUserPassword","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/cli_tokens","operationId":"getSelfCliTokens","tags":["Self"],"security":[]},
+        {"method":"GET","path":"/v2/self/confirmation_email","operationId":"getConfirmationEmail","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/consumers","operationId":"getSelfConsumers","tags":["Self"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/self/consumers","operationId":"createSelfConsumer","tags":["Self"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/consumers/{key}","operationId":"deleteSelfConsumer","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/consumers/{key}","operationId":"getSelfConsumer","tags":["Self"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/consumers/{key}","operationId":"updateSelfConsumer","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/consumers/{key}/secret","operationId":"getSelfConsumerSecret","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/consumers/{key}/tokens","operationId":"get_consumer_tokens","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/emails","operationId":"getEmailAddresses","tags":["Self"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/emails/{email}","operationId":"removeEmailAddress","tags":["Self"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/emails/{email}","operationId":"addEmailAddress","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/id","operationId":"getId","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/instances","operationId":"getSelfInstancesForAllApps","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/keys","operationId":"getSshKeys","tags":["Self"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/keys/{key}","operationId":"removeSshKey","tags":["Self"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/keys/{key}","operationId":"addSshKey","tags":["Self"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/mfa/{kind}","operationId":"deleteSelfMFA","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/mfa/{kind}","operationId":"get_mfa","tags":["Self"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/self/mfa/{kind}","operationId":"createSelfMFA","tags":["Self"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v2/self/mfa/{kind}","operationId":"setSelfFavouriteMFA","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/mfa/{kind}/backupcodes","operationId":"getSelfBackupCodes","tags":["Self"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/self/mfa/{kind}/backupcodes","operationId":"regenerateSelfBackupCodes","tags":["Self"],"security":["oauth1"]},
+        {"method":"POST","path":"/v2/self/mfa/{kind}/confirmation","operationId":"validateSelfMFA","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/organisations","operationId":"get_self_organisations","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/payment-info","operationId":"getSelfPaymentInfo","tags":["Payments"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/tokens","operationId":"revokeSelfTokens","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/tokens","operationId":"listSelfTokens","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/tokens/current","operationId":"getCurrentTokenInfo","tags":["Self"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v2/self/tokens/{token}","operationId":"revokeSelfToken","tags":["Self"],"security":["oauth1"]},
+        {"method":"GET","path":"/v2/self/validate_email","operationId":"validateEmail","tags":["Self"],"security":[]},
+        {"method":"GET","path":"/v4/accesslogs/organisations/{orgId}/applications/{resourceId}/accesslogs","operationId":"v4_get_org_app_accesslogs","tags":["Logs"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/accesslogs/organisations/{orgId}/resources/{resourceId}/accesslogs","operationId":"v4_get_org_resource_accesslogs","tags":["Logs"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/addon-keycloak/addons/{addonKeycloakId}","operationId":"getKeycloakWithoutOwnerId","tags":["Keycloak"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v4/addon-providers/addon-keycloak/addons/{addonKeycloakId}/networkgroup","operationId":"deleteNGKeycloakApplication","tags":["Keycloak"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-keycloak/addons/{addonKeycloakId}/networkgroup","operationId":"createNGKeycloakApplication","tags":["Keycloak"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-keycloak/addons/{addonKeycloakId}/reboot","operationId":"rebootKeycloakApplication","tags":["Keycloak"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-keycloak/addons/{addonKeycloakId}/rebuild","operationId":"rebuildKeycloakApplication","tags":["Keycloak"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/addon-keycloak/addons/{addonKeycloakId}/version/check","operationId":"getCheckVersionKeycloakApplication","tags":["Keycloak"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-keycloak/addons/{addonKeycloakId}/version/update","operationId":"createVersionUpdateKeycloak","tags":["Keycloak"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/addon-matomo","operationId":"getMatomoProviderInformation","tags":["Matomo"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/addon-matomo/addons/{addonMatomoId}","operationId":"getMatomo","tags":["Matomo"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-matomo/addons/{addonMatomoId}/reboot","operationId":"rebootMatomo","tags":["Matomo"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-matomo/addons/{addonMatomoId}/rebuild","operationId":"rebuildMatomo","tags":["Matomo"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/addon-metabase/addons/{addonMetabaseId}","operationId":"getMetabase","tags":["Metabase"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-metabase/addons/{addonMetabaseId}/reboot","operationId":"rebootMetabaseApplication","tags":["Metabase"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-metabase/addons/{addonMetabaseId}/rebuild","operationId":"rebuildMetabaseApplication","tags":["Metabase"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/addon-metabase/addons/{addonMetabaseId}/version/check","operationId":"getCheckVersionMetabaseApplication","tags":["Metabase"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-metabase/addons/{addonMetabaseId}/version/update","operationId":"createVersionUpdateMetabase","tags":["Metabase"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/addon-otoroshi/addons/{OtoroshiId}","operationId":"getOtoroshi","tags":["Otoroshi"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/addon-otoroshi/addons/{OtoroshiId}/config.yaml","operationId":"getOtoroshiConfigFile","tags":["Otoroshi"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v4/addon-providers/addon-otoroshi/addons/{OtoroshiId}/networkgroup","operationId":"deleteNGOtoroshiApplication","tags":["Otoroshi"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-otoroshi/addons/{OtoroshiId}/networkgroup","operationId":"createNGOtoroshiApplication","tags":["Otoroshi"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-otoroshi/addons/{OtoroshiId}/reboot","operationId":"rebootApplication","tags":["Otoroshi"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-otoroshi/addons/{OtoroshiId}/rebuild","operationId":"rebuildApplication","tags":["Otoroshi"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/addon-otoroshi/addons/{OtoroshiId}/version/check","operationId":"getCheckVersionOtoroshiApplication","tags":["Otoroshi"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-otoroshi/addons/{OtoroshiId}/version/update","operationId":"createVersionUpdateOtoroshi","tags":["Otoroshi"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/addon-pulsar/addons/{pulsarId}/non-persistent-topics","operationId":"listPulsarNonPersistentTopics","tags":["Pulsar"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v4/addon-providers/addon-pulsar/addons/{pulsarId}/non-persistent-topics/{topic}","operationId":"deletePulsarNonPersistentTopic","tags":["Pulsar"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-pulsar/addons/{pulsarId}/non-persistent-topics/{topic}","operationId":"createPulsarNonPersistentTopic","tags":["Pulsar"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-pulsar/addons/{pulsarId}/non-persistent-topics/{topic}/token","operationId":"createPulsarNonPersistentTopicToken","tags":["Pulsar"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v4/addon-providers/addon-pulsar/addons/{pulsarId}/non-persistent-topics/{topic}/unload","operationId":"triggerPulsarNonPersistentTopicUnload","tags":["Pulsar"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/addon-pulsar/addons/{pulsarId}/storage-policies","operationId":"getPulsarStoragePolicies","tags":["Pulsar"],"security":["oauth1"]},
+        {"method":"PATCH","path":"/v4/addon-providers/addon-pulsar/addons/{pulsarId}/storage-policies","operationId":"updatePulsarStoragePolicies","tags":["Pulsar"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/addon-pulsar/addons/{pulsarId}/topics","operationId":"listPulsarPersistentTopics","tags":["Pulsar"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v4/addon-providers/addon-pulsar/addons/{pulsarId}/topics/{topic}","operationId":"deletePulsarPersistentTopic","tags":["Pulsar"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-pulsar/addons/{pulsarId}/topics/{topic}","operationId":"createPulsarPersistentTopic","tags":["Pulsar"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/addon-providers/addon-pulsar/addons/{pulsarId}/topics/{topic}/token","operationId":"createPulsarPersistentTopicToken","tags":["Pulsar"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v4/addon-providers/addon-pulsar/addons/{pulsarId}/topics/{topic}/unload","operationId":"triggerPulsarPersistentTopicUnload","tags":["Pulsar"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/addon-pulsar/clusters/{clusterId}","operationId":"getPulsarCluster","tags":["Pulsar"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v4/addon-providers/config-provider/addons/{addonId}","operationId":"getConfigurationProvider","tags":["ConfigProvider"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/config-provider/addons/{addonId}/env","operationId":"listConfigurationProviderEnv","tags":["ConfigProvider"],"security":["oauth1"]},
+        {"method":"PUT","path":"/v4/addon-providers/config-provider/addons/{addonId}/env","operationId":"replaceConfigurationProviderEnv","tags":["ConfigProvider"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/keycloak","operationId":"getKeycloakProviderInformation","tags":["Keycloak"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/kv","operationId":"getMateriaKvProvider","tags":["Materia"],"security":[]},
+        {"method":"GET","path":"/v4/addon-providers/metabase","operationId":"getMetabaseProviderInformation","tags":["Metabase"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/otoroshi","operationId":"getOtoroshiProviderInformation","tags":["Otoroshi"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/addon-providers/{provider_id}/addons/{real_id}","operationId":"v4_get_addon_from_provider","tags":["Add-ons"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/kubernetes-product","operationId":"getKubernetesServiceConfig","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/kubernetes/organisations/{ownerId}/clusters","operationId":"listKubernetesClusters","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/kubernetes/organisations/{ownerId}/clusters","operationId":"createKubernetesCluster","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}","operationId":"deleteKubernetesCluster","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}","operationId":"getKubernetesCluster","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"PATCH","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}","operationId":"updateKubernetesCluster","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/csi/ceph","operationId":"assignKubernetesCephCSIPlugin","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/deployment-events","operationId":"listClusterDeploymentEvents","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/events","operationId":"listClusterEvents","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/kubeconfig.yaml","operationId":"getKubeConfig","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/kubeconfig/presigned-url","operationId":"getKubeConfigPresignedURL","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/node-groups","operationId":"listKubernetesNodeGroups","tags":["Kubernetes"],"security":["oauth1","biscuit"]},
+        {"method":"POST","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/node-groups","operationId":"createKubernetesNodeGroup","tags":["Kubernetes"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/node-groups/{nodeGroupId}","operationId":"deleteKubernetesNodeGroup","tags":["Kubernetes"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/node-groups/{nodeGroupId}","operationId":"getKubernetesNodeGroup","tags":["Kubernetes"],"security":["oauth1","biscuit"]},
+        {"method":"PATCH","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/node-groups/{nodeGroupId}","operationId":"updateKubernetesNodeGroup","tags":["Kubernetes"],"security":["oauth1","biscuit"]},
+        {"method":"POST","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/node-groups/{nodeGroupId}/resume","operationId":"triggerKubernetesNodeGroupResume","tags":["Kubernetes"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/nodes","operationId":"listKubernetesNodes","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/nodes","operationId":"createKubernetesNode","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"DELETE","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/nodes/{nodeId}","operationId":"deleteKubernetesNode","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/nodes/{nodeId}","operationId":"getKubernetesNode","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/plugins/reconcile","operationId":"triggerKubernetesClusterPluginsReconcile","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/redeploy","operationId":"triggerKubernetesClusterRedeploy","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/resume","operationId":"triggerKubernetesClusterResume","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/sni-migration","operationId":"triggerKubernetesClusterSniMigration","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/version/check","operationId":"getKubernetesClusterVersionCheck","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"POST","path":"/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/version/update","operationId":"updateKubernetesClusterVersion","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/kubernetes/organisations/{ownerId}/quota","operationId":"getKubernetesQuota","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/kubernetes/organisations/{ownerId}/usage","operationId":"listKubernetesCurrentUsage","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/kubernetes/organisations/{ownerId}/zones","operationId":"listKubernetesOwnerZones","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/kubernetes/plugins/catalog","operationId":"getKubernetesPluginCatalog","tags":["Kubernetes"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/logs/organisations/{orgId}/applications/{appId}/logs","operationId":"v4_get_org_app_logs","tags":["Logs"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/logs/organisations/{orgId}/resources/{resourceId}/logs","operationId":"v4_get_org_resource_logs","tags":["Logs"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/materia/organisations/{ownerId}/materia/databases/{kvId}","operationId":"getMateriaKv","tags":["Materia"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups","operationId":"listNetworkGroups","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"POST","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups","operationId":"createNetworkGroup","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/search","operationId":"listNetworkGroupComponents","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}","operationId":"deleteNetworkGroup","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}","operationId":"getNetworkGroup","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"POST","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/external-peers","operationId":"createNetworkGroupExternalPeer","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/external-peers/{peerId}","operationId":"deleteNetworkGroupExternalPeer","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/external-peers/{peerId}","operationId":"get_external_peer","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/members","operationId":"listNetworkGroupMembers","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"POST","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/members","operationId":"createNetworkGroupMember","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/members/{memberId}","operationId":"deleteNetworkGroupMember","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/members/{memberId}","operationId":"getNetworkGroupMember","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/peers","operationId":"listNetworkGroupPeers","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"POST","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/peers","operationId":"createNetworkGroupPeer","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"DELETE","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/peers/{peerId}","operationId":"deleteNetworkGroupPeer","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/peers/{peerId}","operationId":"getNetworkGroupPeer","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/peers/{peerId}/wireguard/configuration","operationId":"getWireguardConfiguration","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/peers/{peerId}/wireguard/configuration/presigned-url","operationId":"getWireguardConfigPresignedURL","tags":["NetworkGroups"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/peers/{peerId}/wireguard/configuration/stream","operationId":"getWireguardConfigurationStream","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v4/networkgroups/organisations/{ownerId}/networkgroups/{networkGroupId}/stream","operationId":"getNetworkGroupStream","tags":["NetworkGroups"],"security":["oauth1","biscuit"]},
+        {"method":"GET","path":"/v4/products/zones","operationId":"listRegions","tags":["Zones"],"security":["oauth1"]},
+        {"method":"GET","path":"/v4/products/zones/{zoneName}","operationId":"getRegion","tags":["Zones"],"security":["oauth1"]}
+    ],
+    "schemas": {
+        "AddonEnvironmentView": {
+            "type": "object",
+            "properties": {
+                "name": "string",
+                "value": "string"
+            }
+        },
+        "AddonFeatureInstanceView": {
+            "type": "object",
+            "properties": {
+                "computable_value": "string|null",
+                "name": "string",
+                "name_code": "string|null",
+                "type": "string",
+                "value": "string|null"
+            }
+        },
+        "AddonFeatureView": {
+            "type": "object",
+            "properties": {
+                "name": "string",
+                "name_code": "string|null",
+                "type": "string"
+            }
+        },
+        "AddonPlanView": {
+            "type": "object",
+            "properties": {
+                "features": "#AddonFeatureInstanceView[]",
+                "id": "string",
+                "name": "string|null",
+                "price": "number",
+                "price_id": "string|null",
+                "slug": "string|null",
+                "zones": "string[]"
+            }
+        },
+        "AddonProviderEmbeddedView": {
+            "type": "object",
+            "properties": {
+                "analyticsId": "string|null",
+                "canUpgrade": "boolean",
+                "googlePlusName": "string|null",
+                "id": "string",
+                "logoUrl": "string|null",
+                "longDesc": "string|null",
+                "name": "string|null",
+                "openInNewTab": "boolean",
+                "regions": "string[]",
+                "shortDesc": "string|null",
+                "status": "string",
+                "supportEmail": "string|null",
+                "twitterName": "string|null",
+                "website": "string|null"
+            }
+        },
+        "AddonProviderFeatureView": {
+            "type": "object",
+            "properties": {
+                "name": "string",
+                "name_code": "string|null",
+                "type": "string"
+            }
+        },
+        "AddonProviderInfoFullView": {
+            "type": "object",
+            "properties": {
+                "analyticsId": "string|null",
+                "canUpgrade": "boolean",
+                "features": "#AddonFeatureView[]",
+                "googlePlusName": "string|null",
+                "id": "string",
+                "logoUrl": "string|null",
+                "longDesc": "string|null",
+                "name": "string|null",
+                "openInNewTab": "boolean",
+                "plans": "#AddonPlanView[]",
+                "regions": "string[]",
+                "shortDesc": "string|null",
+                "status": "string",
+                "supportEmail": "string|null",
+                "twitterName": "string|null",
+                "website": "string|null"
+            }
+        },
+        "AddonSSOData": {
+            "type": "object",
+            "properties": {
+                "email": "string",
+                "id": "string",
+                "name": "string|null",
+                "nav-data": "string",
+                "signature": "string",
+                "timestamp": "integer",
+                "token": "string",
+                "url": "string|null",
+                "user_id": "string",
+                "userinfo_signature": "string|null"
+            }
+        },
+        "AddonView": {
+            "type": "object",
+            "properties": {
+                "configKeys": "string[]",
+                "creationDate": "integer|null",
+                "id": "string",
+                "name": "string|null",
+                "plan": "#AddonPlanView",
+                "provider": "#AddonProviderEmbeddedView",
+                "realId": "string|null",
+                "region": "string",
+                "tags": "#SemanticTag[]",
+                "zoneId": "string|null"
+            }
+        },
+        "ApplicationView": {
+            "type": "object",
+            "properties": {
+                "appliance": "string|null",
+                "archived": "boolean",
+                "branch": "string|null",
+                "buildFlavor": "null|#Flavor",
+                "cancelOnPush": "boolean",
+                "commitId": "string|null",
+                "creationDate": "integer",
+                "deployUrl": "string|null",
+                "deployment": "#DeploymentInfoView",
+                "description": "string",
+                "env": "#AddonEnvironmentView[]",
+                "favourite": "boolean",
+                "forceHttps": "string",
+                "homogeneous": "boolean",
+                "id": "string",
+                "instance": "#InstanceView",
+                "last_deploy": "integer",
+                "name": "string",
+                "ownerId": "string",
+                "separateBuild": "boolean",
+                "state": "string",
+                "stickySessions": "boolean",
+                "vhosts": "#VhostView[]",
+                "webhookSecret": "string|null",
+                "webhookUrl": "string|null",
+                "zone": "string",
+                "zoneId": "string|null"
+            }
+        },
+        "Author": {
+            "type": "object",
+            "properties": {
+                "id": "string|null",
+                "name": "string|null"
+            }
+        },
+        "AvatarInput": {
+            "type": "object",
+            "properties": {
+                "source": "string|null"
+            }
+        },
+        "BasicCredentials": {
+            "type": "object",
+            "properties": {
+                "password": "string",
+                "user": "string"
+            }
+        },
+        "BundledComponentView": {
+            "type": "object|object|object|object|object|object",
+            "properties": {
+                "name": "string",
+                "port": "integer|null",
+                "type": "string"
+            }
+        },
+        "CephCsiConfigView": {
+            "type": "object",
+            "properties": {
+                "cephCSIVersion": "string",
+                "cephNamespace": "#CephRbdNamespace",
+                "cephPool": "#CephPool",
+                "clusterId": "string",
+                "kubernetesNamespace": "string",
+                "provisionerReplicas": "integer"
+            }
+        },
+        "CephPool": {
+            "type": "object",
+            "properties": {
+                "name": "string"
+            }
+        },
+        "CephRbdNamespace": {
+            "type": "object",
+            "properties": {
+                "id": "string"
+            }
+        },
+        "ClusterConsoleView": {
+            "type": "object",
+            "properties": {
+                "features": "string[]",
+                "id": "string",
+                "label": "string",
+                "version": "string",
+                "zone": "string"
+            }
+        },
+        "ClusterCreationPayload": {
+            "type": "object",
+            "properties": {
+                "deploymentProfileId": "string|null",
+                "description": "string|null",
+                "features": "null|#ClusterFeatures",
+                "name": "string",
+                "networkGroupId": "string|null",
+                "nodeGroups": "#NodeGroupCreationPayload[]|null",
+                "tags": "#SemanticTag[]|null",
+                "topologyConfig": "null|#TopologyConfig",
+                "version": "null|#Version",
+                "zone": "string|null",
+                "zoneId": "string|null"
+            }
+        },
+        "ClusterDeploymentEvent": {
+            "type": "object|object|object",
+            "properties": {
+                "data": "null|#ClusterItemDataView",
+                "date": "string",
+                "event": "string",
+                "failure": "null|#FailureCause",
+                "flavor": "#NodeFlavor",
+                "id": "string",
+                "itemType": "#ClusterItemType",
+                "nodeGroupId": "string",
+                "nodeId": "string",
+                "nodeName": "string",
+                "status": "#ClusterStatusType"
+            }
+        },
+        "ClusterFeatures": {
+            "type": "object",
+            "properties": {
+                "autoscalingEnabled": "boolean|null",
+                "csi": "boolean|null",
+                "nodeAutoprovisioning": "boolean|null",
+                "registries": "null|#RegistriesConfig"
+            }
+        },
+        "ClusterFeaturesPatch": {
+            "type": "object",
+            "properties": {
+                "autoscalingEnabled": "boolean|null",
+                "csi": "boolean|null",
+                "nodeAutoprovisioning": "boolean|null",
+                "registries": "null|#RegistriesConfig"
+            }
+        },
+        "ClusterItemDataView": {
+            "type": "object|object|object|object|object|object|object|object|object|object|object",
+            "properties": {
+                "addonId": "string",
+                "components": "#BundledComponentView[]",
+                "containerStorageInterface": "#CephCsiConfigView",
+                "domain": "string",
+                "domainName": "string",
+                "id": "string",
+                "layerName": "string",
+                "lbClusterId": "string",
+                "logsEndpoint": "string",
+                "metricsEndpoint": "string",
+                "name": "#PluginName",
+                "networkGroupId": "string",
+                "networkGroupOrigin": "#NetworkGroupOrigin",
+                "networkId": "string",
+                "orgId": "string",
+                "ownerId": "string",
+                "port": "integer",
+                "quotaBytes": "integer",
+                "regionId": "string",
+                "target": "string",
+                "tenantId": "string",
+                "topologyType": "#TopologyType",
+                "tracesEndpoint": "string",
+                "type": "string",
+                "version": "string",
+                "vmData": "#VmDataView"
+            }
+        },
+        "ClusterItemStatusType": {
+            "type": "string",
+            "properties": []
+        },
+        "ClusterItemType": {
+            "type": "string",
+            "properties": []
+        },
+        "ClusterItemUsage": {
+            "type": "object",
+            "properties": {
+                "clusterId": "string",
+                "cpuMillicores": "integer",
+                "createdAt": "string|null",
+                "deactivatedAt": "string|null",
+                "id": "string",
+                "itemType": "string",
+                "ownerId": "string",
+                "ramBytes": "integer"
+            }
+        },
+        "ClusterLoadBalancer": {
+            "type": "object",
+            "properties": {
+                "domainName": "string",
+                "flavor": "string",
+                "id": "string",
+                "ips": "string[]"
+            }
+        },
+        "ClusterNode": {
+            "type": "object",
+            "properties": {
+                "id": "string",
+                "name": "string",
+                "ramBytes": "integer",
+                "status": "#NodeStatusType",
+                "vCpus": "integer"
+            }
+        },
+        "ClusterNodeGroup": {
+            "type": "object",
+            "properties": {
+                "currentNodeCount": "integer",
+                "failure": "null|#NodeGroupFailureView",
+                "flavor": "#NodeFlavor",
+                "id": "string",
+                "name": "#NodeGroupName",
+                "nodes": "#ClusterNode[]",
+                "status": "#NodeGroupStatusType",
+                "targetNodeCount": "#NodeGroupNodeCount"
+            }
+        },
+        "ClusterPatchPayload": {
+            "type": "object",
+            "properties": {
+                "description": "string|null",
+                "features": "null|#ClusterFeaturesPatch",
+                "name": "string|null",
+                "tags": "#SemanticTag[]|null"
+            }
+        },
+        "ClusterReplicationFactor": {
+            "type": "integer",
+            "properties": []
+        },
+        "ClusterStandaloneNodeGroup": {
+            "type": "object",
+            "properties": {
+                "currentNodeCount": "integer",
+                "flavor": "#NodeFlavor",
+                "id": "string",
+                "name": "#NodeGroupName",
+                "status": "#NodeGroupStatusType",
+                "targetNodeCount": "#NodeGroupNodeCount"
+            }
+        },
+        "ClusterStatusType": {
+            "type": "string",
+            "properties": []
+        },
+        "ClusterVersionCheck": {
+            "type": "object",
+            "properties": {
+                "available": "#Version[]",
+                "installed": "#Version",
+                "latest": "#Version",
+                "needUpdate": "boolean",
+                "workerVersions": "map<integer>|null",
+                "workersInSync": "boolean|null"
+            }
+        },
+        "ClusterWaitingView": {
+            "type": "object",
+            "properties": {
+                "attempts": "integer",
+                "dependency": "string",
+                "nextAttemptAt": "string|null",
+                "since": "string",
+                "step": "string|null"
+            }
+        },
+        "ComponentConfig": {
+            "type": "object",
+            "properties": {
+                "flavor": "#NodeFlavor",
+                "replicationFactor": "#ClusterReplicationFactor"
+            }
+        },
+        "ConfigProvider": {
+            "type": "object",
+            "properties": {
+                "creation_date": "string",
+                "env": "#WannabeEnvVar[]",
+                "id": "string",
+                "owner_id": "string|null"
+            }
+        },
+        "CreatedServiceToken": {
+            "type": "object",
+            "properties": {
+                "metadata": "#ServiceTokenMetadata",
+                "refreshToken": "string|null",
+                "token": "string"
+            }
+        },
+        "DedicatedView": {
+            "type": "object",
+            "properties": {
+                "features": "#Feature[]"
+            }
+        },
+        "DependencyEnvView": {
+            "type": "object",
+            "properties": {
+                "app_id": "string",
+                "app_name": "string|null",
+                "env": "#AddonEnvironmentView[]"
+            }
+        },
+        "DeploySuccessMessage": {
+            "type": "object",
+            "properties": {
+                "deploymentId": "string",
+                "id": "integer",
+                "message": "string",
+                "type": "string"
+            }
+        },
+        "DeploymentEvent": {
+            "type": "object",
+            "properties": {
+                "createdAt": "string",
+                "detail": "string|null",
+                "nodeGroupId": "string|null",
+                "operation": "#DeploymentEventOperation",
+                "status": "#DeploymentEventStatus",
+                "stepName": "string|null"
+            }
+        },
+        "DeploymentEventOperation": {
+            "type": "string",
+            "properties": []
+        },
+        "DeploymentEventStatus": {
+            "type": "string",
+            "properties": []
+        },
+        "DeploymentInfoView": {
+            "type": "object",
+            "properties": {
+                "httpUrl": "string|null",
+                "repoState": "string",
+                "shutdownable": "boolean",
+                "type": "string",
+                "url": "string|null"
+            }
+        },
+        "DeploymentView": {
+            "type": "object",
+            "properties": {
+                "action": "string",
+                "author": "#Author",
+                "cause": "string|null",
+                "commit": "string|null",
+                "date": "integer|null",
+                "id": "integer",
+                "instances": "integer",
+                "state": "string",
+                "uuid": "string"
+            }
+        },
+        "DistributedComponentsConfig": {
+            "type": "object",
+            "properties": {
+                "apiserver": "#ComponentConfig",
+                "cloudControllerManager": "#ComponentConfig",
+                "controllerManager": "#ComponentConfig",
+                "nodeGroupOperator": "#ComponentConfig",
+                "scheduler": "#ComponentConfig"
+            }
+        },
+        "DrainOutcome": {
+            "type": "object|object|object|object|object|object",
+            "properties": {
+                "attachments": "string[]",
+                "detail": "string",
+                "outcome": "string",
+                "pods": "string[]",
+                "reason": "string"
+            }
+        },
+        "DrainPolicy": {
+            "type": "string",
+            "properties": []
+        },
+        "DrainPolicyEnforcement": {
+            "type": "string",
+            "properties": []
+        },
+        "DrainTemplateView": {
+            "type": "object",
+            "properties": {
+                "id": "string",
+                "recipient": "mixed"
+            }
+        },
+        "EnvVarValidationError": {
+            "type": "object",
+            "properties": {
+                "code": "string",
+                "context": "string",
+                "field": "string",
+                "message": "string"
+            }
+        },
+        "ErrorContext": {
+            "type": "object|object|object|object|object|object|object|object|object|object",
+            "properties": {
+                "error": "#FieldError",
+                "fieldName": "string",
+                "fieldValue": "string",
+                "fields": "map<#FieldError>",
+                "kind": "string",
+                "name": "string",
+                "names": "string[]",
+                "operation": "string",
+                "originalBody": "string",
+                "originalStatus": "integer",
+                "path": "string[]",
+                "type": "string"
+            }
+        },
+        "FailureCause": {
+            "type": "object",
+            "properties": {
+                "message": "string",
+                "occurredAt": "string",
+                "operation": "string",
+                "step": "string|null"
+            }
+        },
+        "Feature": {
+            "type": "object",
+            "properties": {
+                "enabled": "boolean",
+                "name": "string"
+            }
+        },
+        "FieldError": {
+            "type": "object",
+            "properties": {
+                "reason": "string|null",
+                "value": "string"
+            }
+        },
+        "Flavor": {
+            "type": "object",
+            "properties": {
+                "available": "boolean",
+                "cpuFactor": "#ScalingFactor",
+                "cpus": "null|#Vcpus",
+                "disk": "integer|null",
+                "gpus": "#Gpus",
+                "machine_learning": "boolean",
+                "mem": "integer|null",
+                "memFactor": "#ScalingFactor",
+                "memory": "null|#FlavorMemory",
+                "microservice": "boolean",
+                "name": "string|null",
+                "nice": "#NiceValue",
+                "price": "number|null",
+                "price_id": "string|null",
+                "systemOverheadFactor": "#ScalingFactor"
+            }
+        },
+        "FlavorMemory": {
+            "type": "object",
+            "properties": {
+                "formatted": "string|null",
+                "unit": "string",
+                "value": "#Information"
+            }
+        },
+        "Gpus": {
+            "type": "integer",
+            "properties": []
+        },
+        "HTTPErrorBody": {
+            "type": "object",
+            "properties": {
+                "apiRequestId": "string",
+                "code": "string",
+                "context": "#ErrorContext",
+                "error": "string"
+            }
+        },
+        "HTTPErrorBodyOrMessage": {
+            "type": "#HTTPErrorBody|#Message",
+            "properties": {
+                "apiRequestId": "string",
+                "code": "string",
+                "context": "#ErrorContext",
+                "error": "string",
+                "fields": "map<string>",
+                "id": "integer",
+                "message": "string",
+                "type": "string"
+            }
+        },
+        "HumanReadableInformation": {
+            "type": "object",
+            "properties": {
+                "name": "string",
+                "number": "number",
+                "readable": "string",
+                "unit": "string"
+            }
+        },
+        "Information": {
+            "type": "integer",
+            "properties": []
+        },
+        "InstanceCount": {
+            "type": "integer",
+            "properties": []
+        },
+        "InstanceVariantView": {
+            "type": "object",
+            "properties": {
+                "deployType": "string",
+                "id": "string",
+                "logo": "string|null",
+                "name": "string",
+                "slug": "string"
+            }
+        },
+        "InstanceView": {
+            "type": "object",
+            "properties": {
+                "defaultEnv": "map<string>",
+                "flavors": "#Flavor[]",
+                "instanceAndVersion": "string",
+                "kernelName": "string",
+                "lifetime": "string",
+                "maxAllowedInstances": "#InstanceCount",
+                "maxFlavor": "null|#Flavor",
+                "maxInstances": "#InstanceCount",
+                "minFlavor": "null|#Flavor",
+                "minInstances": "#InstanceCount",
+                "type": "string",
+                "variant": "#InstanceVariantView",
+                "version": "string"
+            }
+        },
+        "InvitationView": {
+            "type": "object",
+            "properties": {
+                "acceptedAt": "string|null",
+                "createdAt": "string",
+                "expiresAt": "string",
+                "id": "string",
+                "inviteeEmail": "string",
+                "inviterUserId": "string",
+                "organisationId": "string",
+                "role": "string",
+                "status": "string"
+            }
+        },
+        "InvoiceRendering": {
+            "type": "object",
+            "properties": {
+                "address": "string",
+                "city": "string",
+                "company": "string|null",
+                "country": "string",
+                "countryCode": "string",
+                "customerCostCenter": "string|null",
+                "customerOrderId": "string|null",
+                "emissionDate": "string",
+                "errorCode": "string|null",
+                "errorLongMsg": "string|null",
+                "errorShortMsg": "string|null",
+                "forId": "string|null",
+                "fromSubscription": "boolean",
+                "id": "string|null",
+                "lines": "#PreorderLineView[]",
+                "name": "string",
+                "number": "string|null",
+                "originalTotal": "integer",
+                "payWhen": "string",
+                "payingUser": "mixed",
+                "paymentDate": "string|null",
+                "status": "string",
+                "target": "string|null",
+                "targetId": "string",
+                "token": "string|null",
+                "totalHT": "number",
+                "totalTTC": "number",
+                "totalVAT": "number",
+                "type": "string",
+                "vatNumber": "string|null",
+                "vatRate": "integer",
+                "zipCode": "string"
+            }
+        },
+        "Keycloak": {
+            "type": "object",
+            "properties": {
+                "accessUrl": "string",
+                "addonId": "string",
+                "availableVersions": "string[]",
+                "envVars": "map<string>",
+                "features": "#KeycloakFeatures",
+                "initialCredentials": "#BasicCredentials",
+                "javaVersion": "string",
+                "monthlyActiveUsers": "integer|null",
+                "name": "string",
+                "ownerId": "string",
+                "plan": "#KeycloakPlan",
+                "resourceId": "string",
+                "resources": "#KeycloakResources",
+                "version": "string"
+            }
+        },
+        "KeycloakFeatures": {
+            "type": "object",
+            "properties": {
+                "networkGroup": "null|#NetworkGroupView"
+            }
+        },
+        "KeycloakPatchRequest": {
+            "type": "object",
+            "properties": {
+                "targetVersion": "string"
+            }
+        },
+        "KeycloakPlan": {
+            "type": "string",
+            "properties": []
+        },
+        "KeycloakResources": {
+            "type": "object",
+            "properties": {
+                "entrypoint": "string",
+                "fsbucketId": "string|null",
+                "pgsqlId": "string|null"
+            }
+        },
+        "KeycloakVersionChecker": {
+            "type": "object",
+            "properties": {
+                "available": "string[]",
+                "installed": "string",
+                "latest": "string",
+                "needUpdate": "boolean"
+            }
+        },
+        "KnownQuotaItem": {
+            "type": "object|object",
+            "properties": {
+                "information": "#HumanReadableInformation",
+                "maximum": "integer",
+                "type": "string"
+            }
+        },
+        "KubeConfigType": {
+            "type": "string",
+            "properties": []
+        },
+        "KubernetesBadRequest": {
+            "type": "#KubernetesError|#Message",
+            "properties": {
+                "code": "string",
+                "fields": "map<string>",
+                "id": "integer",
+                "message": "string",
+                "type": "string"
+            }
+        },
+        "KubernetesCluster": {
+            "type": "object",
+            "properties": {
+                "apiServerUrl": "string|null",
+                "creationDate": "string",
+                "deploymentProfileId": "string|null",
+                "description": "string|null",
+                "failure": "null|#FailureCause",
+                "features": "null|#ClusterFeatures",
+                "id": "string",
+                "loadBalancers": "#ClusterLoadBalancer[]",
+                "locationId": "string|null",
+                "name": "string",
+                "nodeGroups": "#ClusterNodeGroup[]",
+                "standaloneNodeGroups": "#ClusterStandaloneNodeGroup[]",
+                "status": "#ClusterStatusType",
+                "storageUsageBytes": "integer|null",
+                "tags": "#SemanticTag[]",
+                "tenantId": "string",
+                "topologyConfig": "#TopologyConfig",
+                "version": "#Version",
+                "waiting": "null|#ClusterWaitingView",
+                "zoneId": "string|null"
+            }
+        },
+        "KubernetesError": {
+            "type": "object",
+            "properties": {
+                "code": "string",
+                "message": "string"
+            }
+        },
+        "KubernetesOwnerZone": {
+            "type": "object",
+            "properties": {
+                "deploymentProfiles": "#KubernetesOwnerZoneDeploymentProfile[]",
+                "id": "string",
+                "name": "string"
+            }
+        },
+        "KubernetesOwnerZoneDeploymentProfile": {
+            "type": "object",
+            "properties": {
+                "id": "string",
+                "prodDefault": "boolean"
+            }
+        },
+        "KubernetesServiceConfig": {
+            "type": "object",
+            "properties": {
+                "topologies": "#TopologyConstraints[]",
+                "versions": "#VersionsConfig"
+            }
+        },
+        "KubernetesTaint": {
+            "type": "object",
+            "properties": {
+                "effect": "#TaintEffect",
+                "key": "string",
+                "value": "string|null"
+            }
+        },
+        "KvId": {
+            "type": "string",
+            "properties": []
+        },
+        "LinkedAddonEnvironmentView": {
+            "type": "object",
+            "properties": {
+                "addon_id": "string",
+                "addon_name": "string",
+                "env": "#AddonEnvironmentView[]",
+                "provider_id": "string"
+            }
+        },
+        "ListResponse_ServiceToken": {
+            "type": "#ServiceTokenMetadata&object[]|#Page_ServiceToken",
+            "properties": {
+                "items": "#ServiceTokenMetadata&object[]",
+                "nextCursor": "string|null"
+            }
+        },
+        "LogExport": {
+            "type": "object",
+            "properties": {
+                "accesslogs": "boolean",
+                "archive": "null|#LogExportArchive",
+                "archiveSize": "integer|null",
+                "createdAt": "string|null",
+                "error": "string|null",
+                "expiresAt": "string|null",
+                "fileFormat": "null|#LogExportFileFormat",
+                "fileName": "string|null",
+                "finishedAt": "string|null",
+                "id": "string",
+                "items": "#LogExportItem[]",
+                "logs": "boolean",
+                "ownerId": "string",
+                "progress": "#LogExportProgress",
+                "requestedBy": "string",
+                "resourceIds": "string[]|null",
+                "since": "string|null",
+                "startedAt": "string|null",
+                "status": "#LogExportStatus",
+                "until": "string|null"
+            }
+        },
+        "LogExportArchive": {
+            "type": "string",
+            "properties": []
+        },
+        "LogExportFileFormat": {
+            "type": "string",
+            "properties": []
+        },
+        "LogExportItem": {
+            "type": "object",
+            "properties": {
+                "kind": "#LogExportKind",
+                "lineCount": "integer",
+                "readBytes": "integer",
+                "reason": "string|null",
+                "resourceId": "string",
+                "status": "#LogExportItemStatus"
+            }
+        },
+        "LogExportItemStatus": {
+            "type": "string",
+            "properties": []
+        },
+        "LogExportKind": {
+            "type": "string",
+            "properties": []
+        },
+        "LogExportPage": {
+            "type": "object",
+            "properties": {
+                "items": "#LogExport[]",
+                "nextCursor": "string|null"
+            }
+        },
+        "LogExportProgress": {
+            "type": "object",
+            "properties": {
+                "itemsDone": "integer",
+                "itemsFailed": "integer",
+                "itemsSkipped": "integer",
+                "itemsTotal": "integer",
+                "lineCount": "integer",
+                "readBytes": "integer"
+            }
+        },
+        "LogExportStatus": {
+            "type": "string",
+            "properties": []
+        },
+        "MFABackupCodes": {
+            "type": "object",
+            "properties": {
+                "backupCodes": "string[]"
+            }
+        },
+        "MFABackupCodesState": {
+            "type": "object",
+            "properties": {
+                "generatedAt": "string",
+                "remaining": "integer",
+                "total": "integer"
+            }
+        },
+        "MFARecoveryCode": {
+            "type": "object",
+            "properties": {
+                "code": "string"
+            }
+        },
+        "MateriaDB": {
+            "type": "object",
+            "properties": {
+                "clusterId": "string",
+                "host": "string",
+                "id": "string",
+                "kind": "string",
+                "ownerId": "string",
+                "plan": "string",
+                "port": "integer",
+                "status": "string",
+                "token": "string",
+                "tokenId": "string"
+            }
+        },
+        "Matomo": {
+            "type": "object",
+            "properties": {
+                "accessUrl": "string",
+                "addonId": "string",
+                "availableVersions": "string[]",
+                "envVars": "map<string>",
+                "name": "string",
+                "ownerId": "#userId",
+                "phpVersion": "string",
+                "plan": "#MatomoPlanIdentifier",
+                "resourceId": "#matomoId",
+                "resources": "#MatomoResources",
+                "version": "string"
+            }
+        },
+        "MatomoPlanIdentifier": {
+            "type": "string",
+            "properties": []
+        },
+        "MatomoResources": {
+            "type": "object",
+            "properties": {
+                "entrypoint": "null|#appId",
+                "kvId": "null|#KvId",
+                "mysqlId": "null|#mysqlId",
+                "redisId": "null|#redisId"
+            }
+        },
+        "Member": {
+            "type": "object",
+            "properties": {
+                "domainName": "string",
+                "id": "string",
+                "kind": "#MemberKind",
+                "label": "string"
+            }
+        },
+        "MemberKind": {
+            "type": "string",
+            "properties": []
+        },
+        "MemberView": {
+            "type": "object",
+            "properties": {
+                "job": "string|null",
+                "member": "#OrganisationMemberUserView",
+                "role": "string"
+            }
+        },
+        "Message": {
+            "type": "object",
+            "properties": {
+                "fields": "map<string>",
+                "id": "integer",
+                "message": "string",
+                "type": "string"
+            }
+        },
+        "Metabase": {
+            "type": "object",
+            "properties": {
+                "accessUrl": "string",
+                "addonId": "#addonId",
+                "availableVersions": "string[]",
+                "envVars": "map<string>",
+                "javaVersion": "string",
+                "name": "string",
+                "ownerId": "#userId",
+                "plan": "#MetabasePlanIdentifier",
+                "resourceId": "#metabaseId",
+                "resources": "#MetabaseResources",
+                "version": "string"
+            }
+        },
+        "MetabasePatchRequest": {
+            "type": "object",
+            "properties": {
+                "targetVersion": "string"
+            }
+        },
+        "MetabasePlanIdentifier": {
+            "type": "string",
+            "properties": []
+        },
+        "MetabaseResources": {
+            "type": "object",
+            "properties": {
+                "entrypoint": "null|#appId",
+                "pgsqlId": "null|#postgresqlId"
+            }
+        },
+        "MetabaseVersionCheck": {
+            "type": "object",
+            "properties": {
+                "available": "string[]",
+                "installed": "string",
+                "latest": "string",
+                "needUpdate": "boolean",
+                "requiresApplicationUpdate": "boolean"
+            }
+        },
+        "MfaEnrollmentResponse": {
+            "type": "object",
+            "properties": {
+                "url": "string"
+            }
+        },
+        "MfaStatusView": {
+            "type": "object",
+            "properties": {
+                "backupCodesState": "null|#MFABackupCodesState",
+                "configured": "boolean",
+                "kind": "string"
+            }
+        },
+        "MigrationStrategyTag": {
+            "type": "string",
+            "properties": []
+        },
+        "NamespaceView": {
+            "type": "object",
+            "properties": {
+                "namespace": "string"
+            }
+        },
+        "NetworkGroup": {
+            "type": "object",
+            "properties": {
+                "description": "string|null",
+                "dnsSanitizedLabel": "string|null",
+                "id": "string",
+                "label": "string",
+                "lastAllocatedIp": "string",
+                "members": "#Member[]",
+                "networkIp": "string",
+                "ownerId": "string",
+                "ownership": "null|#Ownership",
+                "peers": "#Peer[]",
+                "tags": "string[]",
+                "version": "integer"
+            }
+        },
+        "NetworkGroupComponent": {
+            "type": "#NetworkGroup&object|#Member&object|#Peer",
+            "properties": {
+                "description": "string|null",
+                "dnsSanitizedLabel": "string|null",
+                "domainName": "string",
+                "endpoint": "#WireguardEndpoint",
+                "hostname": "string",
+                "hv": "string",
+                "id": "string",
+                "kind": "#MemberKind",
+                "label": "string",
+                "lastAllocatedIp": "string",
+                "members": "#Member[]",
+                "networkIp": "string",
+                "ownerId": "string",
+                "ownership": "null|#Ownership",
+                "parentEvent": "string|null",
+                "parentMember": "string",
+                "peers": "#Peer[]",
+                "publicKey": "string",
+                "routedPrefixes": "string[]",
+                "tags": "string[]",
+                "type": "string",
+                "version": "integer"
+            }
+        },
+        "NetworkGroupDomainName": {
+            "type": "string",
+            "properties": []
+        },
+        "NetworkGroupOrigin": {
+            "type": "string",
+            "properties": []
+        },
+        "NetworkGroupView": {
+            "type": "object",
+            "properties": {
+                "id": "string"
+            }
+        },
+        "NetworkGroupsConfiguration": {
+            "type": "object",
+            "properties": {
+                "dnsSuffixes": "string[]"
+            }
+        },
+        "NiceValue": {
+            "type": "integer",
+            "properties": []
+        },
+        "NodeFlavor": {
+            "type": "string",
+            "properties": []
+        },
+        "NodeGroup": {
+            "type": "object",
+            "properties": {
+                "autoscalingEnabled": "boolean",
+                "clusterId": "string",
+                "createdAt": "string",
+                "currentNodeCount": "integer",
+                "description": "string|null",
+                "failure": "null|#NodeGroupFailureView",
+                "flavor": "#NodeFlavor",
+                "id": "string",
+                "labels": "map<string>",
+                "maxNodeCount": "#NodeGroupNodeCount",
+                "minNodeCount": "#NodeGroupNodeCount",
+                "name": "#NodeGroupName",
+                "status": "#NodeGroupStatusType",
+                "tag": "string|null",
+                "taints": "#KubernetesTaint[]",
+                "targetNodeCount": "#NodeGroupNodeCount",
+                "updatedAt": "string|null"
+            }
+        },
+        "NodeGroupCreationPayload": {
+            "type": "object",
+            "properties": {
+                "autoscalingEnabled": "boolean|null",
+                "description": "string|null",
+                "flavor": "#NodeFlavor",
+                "labels": "map<string>|null",
+                "maxNodeCount": "null|#NodeGroupNodeCount",
+                "minNodeCount": "null|#NodeGroupNodeCount",
+                "name": "#NodeGroupName",
+                "tag": "string|null",
+                "taints": "#KubernetesTaint[]|null",
+                "targetNodeCount": "#NodeGroupNodeCount"
+            }
+        },
+        "NodeGroupFailureView": {
+            "type": "object",
+            "properties": {
+                "message": "string",
+                "occurredAt": "string",
+                "operation": "string",
+                "step": "string|null",
+                "undrainedNodes": "#UndrainedNode[]"
+            }
+        },
+        "NodeGroupName": {
+            "type": "string",
+            "properties": []
+        },
+        "NodeGroupNodeCount": {
+            "type": "integer",
+            "properties": []
+        },
+        "NodeGroupPatchPayload": {
+            "type": "object",
+            "properties": {
+                "autoscalingEnabled": "boolean|null",
+                "description": "string|null",
+                "drainPolicy": "null|#DrainPolicy",
+                "maxNodeCount": "null|#NodeGroupNodeCount",
+                "minNodeCount": "null|#NodeGroupNodeCount",
+                "name": "#NodeGroupName",
+                "tag": "string|null",
+                "targetNodeCount": "#NodeGroupNodeCount"
+            }
+        },
+        "NodeGroupStatusType": {
+            "type": "string",
+            "properties": []
+        },
+        "NodeStatusType": {
+            "type": "string",
+            "properties": []
+        },
+        "OAuth1AccessTokenView": {
+            "type": "object",
+            "properties": {
+                "consumer": "#OAuth1ConsumerView",
+                "creationDate": "integer|null",
+                "employeeId": "string|null",
+                "expirationDate": "integer|null",
+                "lastUtilisation": "integer|null",
+                "rights": "#OAuthRightsView",
+                "token": "string"
+            }
+        },
+        "OAuth1ConsumerView": {
+            "type": "object",
+            "properties": {
+                "baseUrl": "string|null",
+                "description": "string|null",
+                "key": "string",
+                "name": "string|null",
+                "picture": "string|null",
+                "rights": "#OAuthRightsView",
+                "url": "string|null"
+            }
+        },
+        "OAuthRightsView": {
+            "type": "object",
+            "properties": {
+                "access_organisations": "boolean",
+                "access_organisations_bills": "boolean",
+                "access_organisations_consumption_statistics": "boolean",
+                "access_organisations_credit_count": "boolean",
+                "access_personal_information": "boolean",
+                "almighty": "boolean",
+                "manage_organisations": "boolean",
+                "manage_organisations_applications": "boolean",
+                "manage_organisations_members": "boolean",
+                "manage_organisations_services": "boolean",
+                "manage_personal_information": "boolean",
+                "manage_ssh_keys": "boolean"
+            }
+        },
+        "OperationScope": {
+            "type": "string",
+            "properties": []
+        },
+        "OrganisationDrainPolicyView": {
+            "type": "object",
+            "properties": {
+                "drainTemplates": "#DrainTemplateView[]",
+                "enforcement": "map<#DrainPolicyEnforcement>"
+            }
+        },
+        "OrganisationMemberUserView": {
+            "type": "object",
+            "properties": {
+                "avatar": "string|null",
+                "email": "string|null",
+                "id": "string",
+                "name": "string|null",
+                "preferredMFA": "string"
+            }
+        },
+        "OrganisationView": {
+            "type": "object",
+            "properties": {
+                "VAT": "string|null",
+                "address": "string|null",
+                "avatar": "string|null",
+                "billingEmail": "string|null",
+                "canPay": "boolean",
+                "canSEPA": "boolean",
+                "city": "string|null",
+                "cleverEnterprise": "boolean",
+                "company": "string|null",
+                "contextFlags": "#PartnerFlag[]",
+                "country": "string|null",
+                "customerFullName": "string|null",
+                "description": "string",
+                "emergencyNumber": "string|null",
+                "id": "string",
+                "isTrusted": "boolean",
+                "name": "string",
+                "vatState": "string",
+                "zipcode": "string|null"
+            }
+        },
+        "Otoroshi": {
+            "type": "object",
+            "properties": {
+                "accessUrl": "string",
+                "addonId": "string",
+                "api": "#OtoroshiApi",
+                "availableVersions": "string[]",
+                "features": "#OtoroshiFeatures",
+                "initialCredentials": "#OtoroshiBasicCredentials",
+                "javaVersion": "string",
+                "name": "string",
+                "ownerId": "#userId",
+                "plan": "#OtoroshiPlanIdentifier",
+                "resourceId": "#otoroshiId",
+                "resources": "#OtoroshiResources",
+                "version": "string"
+            }
+        },
+        "OtoroshiApi": {
+            "type": "object",
+            "properties": {
+                "openapi": "string",
+                "secret": "string",
+                "swaggerUrl": "string",
+                "url": "string",
+                "user": "string"
+            }
+        },
+        "OtoroshiBasicCredentials": {
+            "type": "object",
+            "properties": {
+                "password": "string",
+                "user": "string"
+            }
+        },
+        "OtoroshiFeatures": {
+            "type": "object",
+            "properties": {
+                "networkGroup": "null|#OtoroshiNetworkGroupView"
+            }
+        },
+        "OtoroshiNetworkGroupView": {
+            "type": "object",
+            "properties": {
+                "id": "#ngId"
+            }
+        },
+        "OtoroshiPatchRequest": {
+            "type": "object",
+            "properties": {
+                "targetVersion": "string"
+            }
+        },
+        "OtoroshiPlanIdentifier": {
+            "type": "string",
+            "properties": []
+        },
+        "OtoroshiResources": {
+            "type": "object",
+            "properties": {
+                "cellarId": "null|#cellarId",
+                "elasticId": "null|#elasticsearchId",
+                "entrypoint": "#appId",
+                "pulsarId": "null|#pulsarId",
+                "redisId": "#redisId"
+            }
+        },
+        "OtoroshiVersionChecker": {
+            "type": "object",
+            "properties": {
+                "available": "string[]",
+                "installed": "string",
+                "latest": "string",
+                "needUpdate": "boolean"
+            }
+        },
+        "OwnerIdView": {
+            "type": "object",
+            "properties": {
+                "ownerId": "string"
+            }
+        },
+        "Ownership": {
+            "type": "string",
+            "properties": []
+        },
+        "Page_ServiceToken": {
+            "type": "object",
+            "properties": {
+                "items": "#ServiceTokenMetadata&object[]",
+                "nextCursor": "string|null"
+            }
+        },
+        "PartnerFlag": {
+            "type": "string",
+            "properties": []
+        },
+        "PatchClusterVersion": {
+            "type": "object",
+            "properties": {
+                "drainPolicy": "#DrainPolicy",
+                "scope": "#OperationScope",
+                "targetVersion": "#Version"
+            }
+        },
+        "PaymentInfoView": {
+            "type": "object",
+            "properties": {
+                "address": "string|null",
+                "city": "string|null",
+                "company": "string|null",
+                "country": "string|null",
+                "errors": "map<string>",
+                "fromOrga": "boolean",
+                "name": "string|null",
+                "vatNumber": "string|null",
+                "zipCode": "string|null"
+            }
+        },
+        "Peer": {
+            "type": "object|object",
+            "properties": {
+                "endpoint": "#WireguardEndpoint",
+                "hostname": "string",
+                "hv": "string",
+                "id": "string",
+                "label": "string|null",
+                "parentEvent": "string|null",
+                "parentMember": "string",
+                "publicKey": "string",
+                "routedPrefixes": "string[]",
+                "type": "string"
+            }
+        },
+        "PeerCreated": {
+            "type": "object",
+            "properties": {
+                "peerId": "string"
+            }
+        },
+        "PluginName": {
+            "type": "string",
+            "properties": []
+        },
+        "PreorderLineView": {
+            "type": "object",
+            "properties": {
+                "VAT": "integer",
+                "description": "string",
+                "pack": "string|null",
+                "price": "number",
+                "subDescription": "string|null"
+            }
+        },
+        "PresignedURL": {
+            "type": "object",
+            "properties": {
+                "url": "string"
+            }
+        },
+        "PresignedUrl": {
+            "type": "object",
+            "properties": {
+                "url": "string"
+            }
+        },
+        "ProviderConsoleView": {
+            "type": "object",
+            "properties": {
+                "clusters": "#ClusterConsoleView[]",
+                "dedicated": "map<#DedicatedView>",
+                "defaultDedicatedVersion": "string",
+                "providerId": "string"
+            }
+        },
+        "ProviderError": {
+            "type": "object",
+            "properties": {
+                "error": "string"
+            }
+        },
+        "PublicBaseEntry": {
+            "type": "object",
+            "properties": {
+                "installOrder": "integer",
+                "k8sVersion": "string",
+                "plugin": "#PluginName",
+                "pluginVersion": "string"
+            }
+        },
+        "PublicMigrationEntry": {
+            "type": "object",
+            "properties": {
+                "fromK8s": "string",
+                "plugin": "#PluginName",
+                "strategy": "#MigrationStrategyTag",
+                "toK8s": "string"
+            }
+        },
+        "PublicPluginCatalog": {
+            "type": "object",
+            "properties": {
+                "bases": "#PublicBaseEntry[]",
+                "migrations": "#PublicMigrationEntry[]"
+            }
+        },
+        "PulsarCluster": {
+            "type": "object",
+            "properties": {
+                "admin_host": "string|null",
+                "available": "boolean",
+                "id": "string",
+                "pulsar_port": "integer",
+                "pulsar_tls_port": "integer|null",
+                "support_cold_storage": "boolean",
+                "supported_plans": "string[]",
+                "url": "string",
+                "version": "string",
+                "web_port": "integer|null",
+                "web_tls_port": "integer|null",
+                "zone": "string"
+            }
+        },
+        "Quota": {
+            "type": "object",
+            "properties": {
+                "id": "string",
+                "quotas": "#KnownQuotaItem[]",
+                "tags": "string[]",
+                "tenantId": "string"
+            }
+        },
+        "RedeployControlPlanePayload": {
+            "type": "object",
+            "properties": {
+                "afterYamls": "string[]",
+                "beforeYamls": "string[]",
+                "drainPolicy": "#DrainPolicy"
+            }
+        },
+        "Region": {
+            "type": "object",
+            "properties": {
+                "city": "string",
+                "country": "string",
+                "countryCode": "string",
+                "displayName": "string|null",
+                "id": "string",
+                "lat": "number",
+                "lon": "number",
+                "name": "string",
+                "outboundIPs": "string[]",
+                "tags": "string[]"
+            }
+        },
+        "RegistriesConfig": {
+            "type": "string",
+            "properties": []
+        },
+        "ReplicationFactorConfig": {
+            "type": "object",
+            "properties": {
+                "max": "integer",
+                "min": "integer"
+            }
+        },
+        "ResourcesSpecView": {
+            "type": "object",
+            "properties": {
+                "cpuMillicores": "integer",
+                "diskBytes": "integer",
+                "memBytes": "integer"
+            }
+        },
+        "ResumeClusterPayload": {
+            "type": "object",
+            "properties": {
+                "drainPolicy": "#DrainPolicy"
+            }
+        },
+        "ScalingFactor": {
+            "type": "number",
+            "properties": []
+        },
+        "SecondaryEmailPayload": {
+            "type": "object",
+            "properties": {
+                "make_primary": "boolean"
+            }
+        },
+        "SecretView": {
+            "type": "object",
+            "properties": {
+                "secret": "string"
+            }
+        },
+        "SemanticTag": {
+            "type": "string",
+            "properties": []
+        },
+        "ServiceToken": {
+            "type": "#ServiceTokenMetadata&object",
+            "properties": {
+                "createdAt": "string",
+                "creatorUserId": "string|null",
+                "description": "string|null",
+                "expiredAt": "string|null",
+                "id": "string",
+                "instigatorId": "string",
+                "locationId": "string",
+                "name": "string|null",
+                "productId": "string",
+                "resourceId": "string|null",
+                "revocationId": "string",
+                "revokedAt": "string|null",
+                "status": "#ServiceTokenStatus",
+                "tags": "string[]",
+                "tenantId": "string",
+                "tokenType": "string"
+            }
+        },
+        "ServiceTokenMetadata": {
+            "type": "object",
+            "properties": {
+                "createdAt": "string",
+                "description": "string|null",
+                "expiredAt": "string|null",
+                "id": "string",
+                "instigatorId": "string",
+                "locationId": "string",
+                "name": "string|null",
+                "productId": "string",
+                "resourceId": "string|null",
+                "revocationId": "string",
+                "revokedAt": "string|null",
+                "status": "#ServiceTokenStatus",
+                "tags": "string[]",
+                "tenantId": "string",
+                "tokenType": "string"
+            }
+        },
+        "ServiceTokenRole": {
+            "type": "string",
+            "properties": []
+        },
+        "ServiceTokenStatus": {
+            "type": "string",
+            "properties": []
+        },
+        "SocketAddress": {
+            "type": "object",
+            "properties": {
+                "host": "string",
+                "port": "integer"
+            }
+        },
+        "SshKeyView": {
+            "type": "object",
+            "properties": {
+                "fingerprint": "string",
+                "key": "string",
+                "name": "string"
+            }
+        },
+        "SsoDataView": {
+            "type": "object",
+            "properties": {
+                "macaroon": "string",
+                "url": "string"
+            }
+        },
+        "StandaloneNode": {
+            "type": "object",
+            "properties": {
+                "clusterId": "string",
+                "description": "string|null",
+                "flavor": "#NodeFlavor",
+                "id": "string",
+                "labels": "map<string>",
+                "name": "#NodeGroupName",
+                "status": "#NodeStatusType",
+                "tag": "string|null",
+                "taints": "#KubernetesTaint[]"
+            }
+        },
+        "StorageConfigurationPolicies": {
+            "type": "object",
+            "properties": {
+                "durationInMinutes": "integer|null",
+                "sizeInBytes": "integer|null"
+            }
+        },
+        "StoragePolicies": {
+            "type": "object",
+            "properties": {
+                "offloadPolicies": "null|#StorageConfigurationPolicies",
+                "retentionPolicies": "null|#StorageConfigurationPolicies"
+            }
+        },
+        "SuperNovaFlavor": {
+            "type": "object",
+            "properties": {
+                "cpus": "#Vcpus",
+                "mem": "integer",
+                "name": "string",
+                "price": "number"
+            }
+        },
+        "SuperNovaInstanceView": {
+            "type": "object",
+            "properties": {
+                "appId": "string",
+                "appPort": "integer|null",
+                "commit": "string|null",
+                "creationDate": "integer|null",
+                "deployId": "string|null",
+                "deployNumber": "integer|null",
+                "displayName": "string|null",
+                "flavor": "null|#SuperNovaFlavor",
+                "id": "string",
+                "instanceNumber": "integer|null",
+                "ip": "string|null",
+                "state": "string"
+            }
+        },
+        "TaintEffect": {
+            "type": "string",
+            "properties": []
+        },
+        "TcpRedirView": {
+            "type": "object",
+            "properties": {
+                "namespace": "string",
+                "port": "integer"
+            }
+        },
+        "TopicView": {
+            "type": "object",
+            "properties": {
+                "name": "string"
+            }
+        },
+        "TopologyConfig": {
+            "type": "object|object|object",
+            "properties": {
+                "components": "#DistributedComponentsConfig",
+                "flavor": "#NodeFlavor",
+                "replicationFactor": "#ClusterReplicationFactor",
+                "topology": "string"
+            }
+        },
+        "TopologyConstraints": {
+            "type": "object",
+            "properties": {
+                "availableFlavors": "#NodeFlavor[]",
+                "replicationFactor": "#ReplicationFactorConfig",
+                "topology": "#TopologyType"
+            }
+        },
+        "TopologyType": {
+            "type": "string",
+            "properties": []
+        },
+        "UndrainedNode": {
+            "type": "#DrainOutcome&object",
+            "properties": {
+                "attachments": "string[]",
+                "detail": "string",
+                "name": "string",
+                "nodeId": "string",
+                "outcome": "string",
+                "pods": "string[]",
+                "reason": "string"
+            }
+        },
+        "UrlView": {
+            "type": "object",
+            "properties": {
+                "url": "string"
+            }
+        },
+        "UserView": {
+            "type": "object",
+            "properties": {
+                "address": "string|null",
+                "admin": "boolean",
+                "avatar": "string|null",
+                "canPay": "boolean",
+                "city": "string|null",
+                "contextFlags": "#PartnerFlag[]",
+                "country": "string|null",
+                "creationDate": "integer|null",
+                "email": "string|null",
+                "emailValidated": "boolean",
+                "hasPassword": "boolean",
+                "id": "string",
+                "lang": "string|null",
+                "name": "string|null",
+                "oauthApps": "string[]",
+                "partnerConsoleUrl": "string|null",
+                "partnerId": "string|null",
+                "partnerName": "string|null",
+                "phone": "string|null",
+                "preferredMFA": "string",
+                "zipcode": "string|null"
+            }
+        },
+        "Vcpus": {
+            "type": "integer",
+            "properties": []
+        },
+        "Version": {
+            "type": "string",
+            "properties": []
+        },
+        "VersionsConfig": {
+            "type": "object",
+            "properties": {
+                "available": "#Version[]",
+                "default": "#Version"
+            }
+        },
+        "VhostView": {
+            "type": "object",
+            "properties": {
+                "fqdn": "string"
+            }
+        },
+        "VmDataView": {
+            "type": "object",
+            "properties": {
+                "id": "string",
+                "name": "string",
+                "resourcesSpec": "#ResourcesSpecView"
+            }
+        },
+        "WannabeAddonFeature": {
+            "type": "object",
+            "properties": {
+                "name": "string",
+                "type": "string"
+            }
+        },
+        "WannabeAddonPlan": {
+            "type": "object",
+            "properties": {
+                "features": "#WannabeAddonPlanFeature[]|null",
+                "name": "string",
+                "price": "number",
+                "slug": "string|null"
+            }
+        },
+        "WannabeAddonPlanFeature": {
+            "type": "object",
+            "properties": {
+                "computableValue": "string|null",
+                "name": "string",
+                "value": "string|null"
+            }
+        },
+        "WannabeAddonProvider": {
+            "type": "object",
+            "properties": {
+                "api": "null|#WannabeAddonProviderApi",
+                "id": "string",
+                "name": "string|null"
+            }
+        },
+        "WannabeAddonProviderApi": {
+            "type": "object",
+            "properties": {
+                "password": "string|null",
+                "production": "null|#WannabeAddonProviderApiUrl",
+                "sso_salt": "string|null",
+                "test": "null|#WannabeAddonProviderApiUrl"
+            }
+        },
+        "WannabeAddonProviderApiUrl": {
+            "type": "object",
+            "properties": {
+                "base_url": "string|null",
+                "sso_url": "string|null"
+            }
+        },
+        "WannabeAddonProviderInfos": {
+            "type": "object",
+            "properties": {
+                "analyticsId": "string|null",
+                "canUpgrade": "boolean|null",
+                "googlePlusName": "string|null",
+                "logoUrl": "string|null",
+                "longDesc": "string|null",
+                "name": "string|null",
+                "openInNewTab": "boolean|null",
+                "shortDesc": "string|null",
+                "status": "string|null",
+                "supportEmail": "string|null",
+                "twitterName": "string|null",
+                "website": "string|null"
+            }
+        },
+        "WannabeAddonProvision": {
+            "type": "object",
+            "properties": {
+                "name": "string",
+                "options": "map<string>",
+                "plan": "string",
+                "providerId": "string",
+                "region": "string"
+            }
+        },
+        "WannabeApplication": {
+            "type": "object",
+            "properties": {
+                "applianceId": "string|null",
+                "archived": "boolean|null",
+                "branch": "string|null",
+                "buildFlavor": "string|null",
+                "cancelOnPush": "boolean|null",
+                "deploy": "string|null",
+                "description": "string|null",
+                "env": "mixed",
+                "favourite": "boolean|null",
+                "forceHttps": "string|null",
+                "homogeneous": "boolean|null",
+                "instanceLifetime": "string|null",
+                "instanceType": "string|null",
+                "instanceVariant": "string|null",
+                "instanceVersion": "string|null",
+                "maxFlavor": "string|null",
+                "maxInstances": "null|#InstanceCount",
+                "minFlavor": "string|null",
+                "minInstances": "null|#InstanceCount",
+                "name": "string",
+                "oauthApp": "null|#WannabeOauthApp",
+                "oauthAppId": "string|null",
+                "oauthService": "string|null",
+                "publicGitRepositoryUrl": "string|null",
+                "separateBuild": "boolean|null",
+                "shutdownable": "boolean|null",
+                "stickySessions": "boolean|null",
+                "tags": "#SemanticTag[]|null",
+                "zone": "string|null"
+            }
+        },
+        "WannabeAvatarSource": {
+            "type": "object",
+            "properties": {
+                "source": "string|null"
+            }
+        },
+        "WannabeBranch": {
+            "type": "object",
+            "properties": {
+                "branch": "string|null"
+            }
+        },
+        "WannabeBuildFlavor": {
+            "type": "object",
+            "properties": {
+                "flavorName": "string|null"
+            }
+        },
+        "WannabeEnvVar": {
+            "type": "object",
+            "properties": {
+                "name": "string",
+                "value": "string"
+            }
+        },
+        "WannabeExposedEnv": {
+            "type": "map<string>",
+            "properties": []
+        },
+        "WannabeExternalPeer": {
+            "type": "object",
+            "properties": {
+                "hostname": "string|null",
+                "ip": "string|null",
+                "label": "string",
+                "parentEvent": "string|null",
+                "parentMember": "string",
+                "peerRole": "string",
+                "port": "integer|null",
+                "publicKey": "string"
+            }
+        },
+        "WannabeLogExport": {
+            "type": "object",
+            "properties": {
+                "accesslogs": "boolean",
+                "archive": "null|#LogExportArchive",
+                "fileFormat": "#LogExportFileFormat",
+                "logs": "boolean",
+                "resourceIds": "string[]|null",
+                "since": "string",
+                "until": "string|null"
+            }
+        },
+        "WannabeMFACreds": {
+            "type": "object",
+            "properties": {
+                "code": "string|null",
+                "revokeTokens": "boolean"
+            }
+        },
+        "WannabeMember": {
+            "type": "object",
+            "properties": {
+                "email": "string|null",
+                "job": "string|null",
+                "role": "string|null"
+            }
+        },
+        "WannabeNamespace": {
+            "type": "object",
+            "properties": {
+                "namespace": "string|null",
+                "sourcePort": "integer|null"
+            }
+        },
+        "WannabeNetworkGroup": {
+            "type": "object",
+            "properties": {
+                "description": "string|null",
+                "id": "string|null",
+                "label": "string|null",
+                "members": "#WannabeNetworkgroupMember[]|null",
+                "ownership": "null|#Ownership",
+                "tags": "string[]|null"
+            }
+        },
+        "WannabeNetworkgroupMember": {
+            "type": "object",
+            "properties": {
+                "domainName": "null|#NetworkGroupDomainName",
+                "id": "string",
+                "kind": "string",
+                "label": "string|null"
+            }
+        },
+        "WannabeOAuth1Consumer": {
+            "type": "object",
+            "properties": {
+                "baseUrl": "string|null",
+                "description": "string|null",
+                "name": "string|null",
+                "picture": "string|null",
+                "rights": "map<boolean>|null",
+                "url": "string|null"
+            }
+        },
+        "WannabeOauthApp": {
+            "type": "object",
+            "properties": {
+                "name": "string|null",
+                "owner": "string|null"
+            }
+        },
+        "WannabeOrganisation": {
+            "type": "object",
+            "properties": {
+                "VAT": "string|null",
+                "address": "string|null",
+                "billingEmail": "string|null",
+                "city": "string|null",
+                "company": "string|null",
+                "country": "string|null",
+                "customerFullName": "string|null",
+                "description": "string",
+                "name": "string",
+                "zipcode": "string|null"
+            }
+        },
+        "WannabePassword": {
+            "type": "object",
+            "properties": {
+                "dropTokens": "boolean|null",
+                "newPassword": "string",
+                "oldPassword": "string|null"
+            }
+        },
+        "WannabePeer": {
+            "type": "object",
+            "properties": {
+                "hostname": "string|null",
+                "hv": "string|null",
+                "id": "string",
+                "ip": "string|null",
+                "label": "string|null",
+                "parentEvent": "string|null",
+                "parentMember": "string",
+                "peerKind": "string",
+                "peerRole": "string",
+                "port": "integer|null",
+                "publicKey": "string|null"
+            }
+        },
+        "WannabePlanChange": {
+            "type": "object",
+            "properties": {
+                "planId": "string",
+                "region": "string",
+                "version": "string|null"
+            }
+        },
+        "WannabeServiceToken": {
+            "type": "object",
+            "properties": {
+                "description": "string|null",
+                "name": "string",
+                "resources": "string[]|null",
+                "role": "#ServiceTokenRole",
+                "ttl_seconds": "integer|null"
+            }
+        },
+        "WannabeStandaloneNode": {
+            "type": "object",
+            "properties": {
+                "description": "string|null",
+                "flavor": "#NodeFlavor",
+                "labels": "map<string>|null",
+                "name": "#NodeGroupName",
+                "tag": "string|null",
+                "taints": "#KubernetesTaint[]|null"
+            }
+        },
+        "WannabeUser": {
+            "type": "object",
+            "properties": {
+                "address": "string|null",
+                "city": "string|null",
+                "country": "string|null",
+                "lang": "string|null",
+                "name": "string|null",
+                "phone": "string|null",
+                "zipcode": "string|null"
+            }
+        },
+        "WannabeValue": {
+            "type": "object",
+            "properties": {
+                "value": "string"
+            }
+        },
+        "WireguardEndpoint": {
+            "type": "object|object",
+            "properties": {
+                "ngIp": "string",
+                "ngTerm": "#SocketAddress",
+                "publicTerm": "#SocketAddress",
+                "type": "string"
+            }
+        },
+        "addonId": {
+            "type": "string",
+            "properties": []
+        },
+        "appId": {
+            "type": "string",
+            "properties": []
+        },
+        "cellarId": {
+            "type": "string",
+            "properties": []
+        },
+        "elasticsearchId": {
+            "type": "string",
+            "properties": []
+        },
+        "matomoId": {
+            "type": "string",
+            "properties": []
+        },
+        "metabaseId": {
+            "type": "string",
+            "properties": []
+        },
+        "mysqlId": {
+            "type": "string",
+            "properties": []
+        },
+        "ngId": {
+            "type": "string",
+            "properties": []
+        },
+        "otoroshiId": {
+            "type": "string",
+            "properties": []
+        },
+        "postgresqlId": {
+            "type": "string",
+            "properties": []
+        },
+        "pulsarId": {
+            "type": "string",
+            "properties": []
+        },
+        "redisId": {
+            "type": "string",
+            "properties": []
+        },
+        "userId": {
+            "type": "string",
+            "properties": []
+        }
+    }
+}

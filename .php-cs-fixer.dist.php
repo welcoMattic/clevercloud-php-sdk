@@ -1,7 +1,7 @@
 <?php
 
 $paths = array_filter(
-    [__DIR__.'/src', __DIR__.'/tests', __DIR__.'/examples'],
+    [__DIR__.'/src', __DIR__.'/tests', __DIR__.'/examples', __DIR__.'/tools'],
     'is_dir',
 );
 

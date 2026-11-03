@@ -29,6 +29,7 @@
 /tests                  export-ignore
 /examples               export-ignore
 /demo                   export-ignore
+/tools export-ignore
 
 # Documentation (kept on the repo, not in the distributed package)
 /docs                   export-ignore

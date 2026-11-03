@@ -50,7 +50,10 @@
         "cs": "php-cs-fixer fix --dry-run --diff",
         "cs-fix": "php-cs-fixer fix",
         "test": "phpunit",
-        "check": ["@cs", "@phpstan", "@test"]
+        "check": ["@cs", "@phpstan", "@test"],
+        "openapi:check": "php tools/openapi.php check",
+        "openapi:refresh": "php tools/openapi.php refresh",
+        "openapi:drift": "php tools/openapi.php drift"
     },
     "minimum-stability": "stable"
 }
