@@ -13,6 +13,7 @@ use SensitiveParameter;
  *
  *   Credentials::oauth1('ck', 'cs', 'tk', 'ts');
  *   Credentials::apiToken('cc_eyJhbGciOi...');
+ *   Credentials::serviceToken('En0KEwoE...');
  *
  * The chosen credential type drives which `Authorization` header the SDK
  * attaches to outgoing requests. Bearer (API token) is the auth mode Clever
@@ -37,6 +38,17 @@ abstract readonly class Credentials
         string $token,
     ): ApiTokenCredentials {
         return new ApiTokenCredentials($token);
+    }
+
+    /**
+     * Organisation service token (biscuit), sent as a Bearer credential
+     * directly to `api.clever-cloud.com`. See {@see ServiceTokenCredentials}.
+     */
+    public static function serviceToken(
+        #[SensitiveParameter]
+        string $token,
+    ): ServiceTokenCredentials {
+        return new ServiceTokenCredentials($token);
     }
 
     /**

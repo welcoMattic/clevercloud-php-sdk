@@ -16,6 +16,7 @@ use CleverCloud\Sdk\Resource\V2\InstancesResource;
 use CleverCloud\Sdk\Resource\V2\OrganisationsResource;
 use CleverCloud\Sdk\Resource\V2\ProductsResource;
 use CleverCloud\Sdk\Resource\V2\SelfResource;
+use CleverCloud\Sdk\Resource\V2\ServiceTokensResource;
 use CleverCloud\Sdk\Resource\V2\TcpRedirectionsResource;
 use CleverCloud\Sdk\Resource\V2\UsersResource;
 use CleverCloud\Sdk\Resource\V4\BackupsResource;
@@ -63,6 +64,7 @@ final class Client
     private ?NetworkGroupsResource $networkGroupsResource = null;
     private ?OrchestrationResource $orchestrationResource = null;
     private ?ApiTokensResource $apiTokensResource = null;
+    private ?ServiceTokensResource $serviceTokensResource = null;
     private ?TcpRedirectionsResource $tcpRedirectionsResource = null;
     private ?BackupsResource $backupsResource = null;
 
@@ -166,6 +168,10 @@ final class Client
 
     public ApiTokensResource $apiTokens {
         get => $this->apiTokensResource ??= new ApiTokensResource($this->http, $this->mapper);
+    }
+
+    public ServiceTokensResource $serviceTokens {
+        get => $this->serviceTokensResource ??= new ServiceTokensResource($this->http, $this->mapper);
     }
 
     public TcpRedirectionsResource $tcpRedirections {

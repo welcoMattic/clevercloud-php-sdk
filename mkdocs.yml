@@ -56,6 +56,7 @@ nav:
       - Self: resources/self.md
       - Users: resources/users.md
       - Organisations: resources/organisations.md
+      - Service tokens: resources/service-tokens.md
       - Applications: resources/applications.md
       - Add-ons: resources/addons.md
       - Deployments: resources/deployments.md
