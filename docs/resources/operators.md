@@ -54,6 +54,70 @@ public function unlinkNetworkGroup(string $id): void
 `linkNetworkGroup()` and `unlinkNetworkGroup()` are only meaningful for
 Keycloak and Otoroshi (per the source's docblock).
 
+## Provider information (all four sub-clients)
+
+```php
+public function providerInformation(): AddonProviderInformation
+```
+
+Returns the provider as the console shows it: the clusters add-ons are
+created on and the dedicated versions on offer. The API paths are not
+consistent across operators:
+
+| Sub-client | HTTP | Path |
+| --- | --- | --- |
+| `keycloak` | GET | `/v4/addon-providers/keycloak` |
+| `matomo` | GET | `/v4/addon-providers/addon-matomo` |
+| `metabase` | GET | `/v4/addon-providers/metabase` |
+| `otoroshi` | GET | `/v4/addon-providers/otoroshi` |
+
+`AddonProviderInformation` exposes `providerId`, `defaultDedicatedVersion`,
+`clusters` (a list of `AddonProviderCluster`: `id`, `label`, `zone`,
+`version`, `features`) and `dedicated` (dedicated versions keyed by version,
+as raw arrays).
+
+## Version management (Keycloak, Metabase, Otoroshi)
+
+Matomo has no version endpoints, so these methods live on the `keycloak`,
+`metabase` and `otoroshi` sub-clients only.
+
+```php
+public function checkVersion(string $id): OperatorVersionCheck
+public function updateVersion(string $id, string $targetVersion): array
+```
+
+| Method | HTTP | Path |
+| --- | --- | --- |
+| `checkVersion()` | GET | `/v4/addon-providers/addon-{slug}/addons/{id}/version/check` |
+| `updateVersion()` | POST | `/v4/addon-providers/addon-{slug}/addons/{id}/version/update` (body: `{"targetVersion": "..."}`) |
+
+`OperatorVersionCheck` exposes `available` (versions on offer), `installed`,
+`latest`, `needUpdate` and, for Metabase only, `requiresApplicationUpdate`
+(whether moving to `latest` also resizes the add-on's application).
+
+`updateVersion()` returns the updated add-on as decoded JSON: its shape is
+specific to each operator.
+
+```php
+$check = $client->operators->keycloak->checkVersion('keycloak_xxx');
+if ($check->needUpdate) {
+    $client->operators->keycloak->updateVersion('keycloak_xxx', $check->latest);
+}
+```
+
+## Otoroshi configuration file
+
+```php
+public function configYaml(string $id): string
+```
+
+| Method | HTTP | Path |
+| --- | --- | --- |
+| `configYaml()` | GET | `/v4/addon-providers/addon-otoroshi/addons/{id}/config.yaml` |
+
+Returns the raw YAML document (`Accept: application/yaml`); parse it with
+`symfony/yaml` or any YAML parser if you need a structure.
+
 ## `Operator` DTO
 
 Shared payload type across the four operators. See

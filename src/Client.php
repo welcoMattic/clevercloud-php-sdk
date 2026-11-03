@@ -16,16 +16,20 @@ use CleverCloud\Sdk\Resource\V2\ProductsResource;
 use CleverCloud\Sdk\Resource\V2\SelfResource;
 use CleverCloud\Sdk\Resource\V2\TcpRedirectionsResource;
 use CleverCloud\Sdk\Resource\V2\UsersResource;
+use CleverCloud\Sdk\Resource\V4\AddonProvidersResource;
 use CleverCloud\Sdk\Resource\V4\BackupsResource;
 use CleverCloud\Sdk\Resource\V4\BillingResource;
+use CleverCloud\Sdk\Resource\V4\ConfigProvidersResource;
 use CleverCloud\Sdk\Resource\V4\DrainsResource;
 use CleverCloud\Sdk\Resource\V4\LoadBalancersResource;
 use CleverCloud\Sdk\Resource\V4\LogsResource;
+use CleverCloud\Sdk\Resource\V4\MateriaKvResource;
 use CleverCloud\Sdk\Resource\V4\NetworkGroupsResource;
 use CleverCloud\Sdk\Resource\V4\NotificationsResource;
 use CleverCloud\Sdk\Resource\V4\OperatorsResource;
 use CleverCloud\Sdk\Resource\V4\OrchestrationResource;
 use CleverCloud\Sdk\Resource\V4\PulsarPoliciesResource;
+use CleverCloud\Sdk\Resource\V4\PulsarResource;
 use CleverCloud\Sdk\Resource\V4\WebhooksResource;
 use CleverCloud\Sdk\Resource\V4\ZonesResource;
 
@@ -51,6 +55,10 @@ final class Client
     private ?ProductsResource $productsResource = null;
     private ?ZonesResource $zonesResource = null;
     private ?PulsarPoliciesResource $pulsarPoliciesResource = null;
+    private ?PulsarResource $pulsarResource = null;
+    private ?ConfigProvidersResource $configProvidersResource = null;
+    private ?MateriaKvResource $materiaKvResource = null;
+    private ?AddonProvidersResource $addonProvidersResource = null;
     private ?LogsResource $logsResource = null;
     private ?OperatorsResource $operatorsResource = null;
     private ?DrainsResource $drainsResource = null;
@@ -122,6 +130,22 @@ final class Client
 
     public PulsarPoliciesResource $pulsarPolicies {
         get => $this->pulsarPoliciesResource ??= new PulsarPoliciesResource($this->http, $this->mapper);
+    }
+
+    public PulsarResource $pulsar {
+        get => $this->pulsarResource ??= new PulsarResource($this->http, $this->mapper);
+    }
+
+    public ConfigProvidersResource $configProviders {
+        get => $this->configProvidersResource ??= new ConfigProvidersResource($this->http, $this->mapper);
+    }
+
+    public MateriaKvResource $materiaKv {
+        get => $this->materiaKvResource ??= new MateriaKvResource($this->http, $this->mapper);
+    }
+
+    public AddonProvidersResource $addonProviders {
+        get => $this->addonProvidersResource ??= new AddonProvidersResource($this->http, $this->mapper);
     }
 
     public LogsResource $logs {

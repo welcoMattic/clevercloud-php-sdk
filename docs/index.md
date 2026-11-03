@@ -41,6 +41,10 @@ signature and the underlying HTTP route.
 - [Network groups](resources/network-groups.md)
 - [Orchestration](resources/orchestration.md)
 - [Pulsar policies](resources/pulsar-policies.md)
+- [Pulsar topics and clusters](resources/pulsar.md)
+- [Configuration providers](resources/config-providers.md)
+- [Materia KV](resources/materia-kv.md)
+- [Add-on providers](resources/addon-providers.md)
 - [Backups](resources/backups.md)
 
 ### Bridge (`api-bridge.clever-cloud.com`)

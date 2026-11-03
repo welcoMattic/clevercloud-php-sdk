@@ -2,7 +2,8 @@
 
 Source: [`src/Resource/V4/PulsarPoliciesResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/PulsarPoliciesResource.php)
 
-Retention, offload, and TTL settings for a Pulsar add-on.
+Retention, offload, and TTL settings for a Pulsar add-on. Topics and
+clusters are covered by [`$client->pulsar`](pulsar.md).
 
 ## Access
 
