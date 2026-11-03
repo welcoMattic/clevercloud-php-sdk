@@ -24,6 +24,7 @@ use CleverCloud\Sdk\Resource\V4\BackupsResource;
 use CleverCloud\Sdk\Resource\V4\BillingResource;
 use CleverCloud\Sdk\Resource\V4\ConfigProvidersResource;
 use CleverCloud\Sdk\Resource\V4\DrainsResource;
+use CleverCloud\Sdk\Resource\V4\KubernetesResource;
 use CleverCloud\Sdk\Resource\V4\LoadBalancersResource;
 use CleverCloud\Sdk\Resource\V4\LogsResource;
 use CleverCloud\Sdk\Resource\V4\MateriaKvResource;
@@ -57,6 +58,7 @@ final class Client
     private ?LoadBalancersResource $loadBalancersResource = null;
     private ?ProductsResource $productsResource = null;
     private ?ZonesResource $zonesResource = null;
+    private ?KubernetesResource $kubernetesResource = null;
     private ?PulsarPoliciesResource $pulsarPoliciesResource = null;
     private ?PulsarResource $pulsarResource = null;
     private ?ConfigProvidersResource $configProvidersResource = null;
@@ -132,6 +134,10 @@ final class Client
 
     public ZonesResource $zones {
         get => $this->zonesResource ??= new ZonesResource($this->http, $this->mapper);
+    }
+
+    public KubernetesResource $kubernetes {
+        get => $this->kubernetesResource ??= new KubernetesResource($this->http, $this->mapper);
     }
 
     public PulsarPoliciesResource $pulsarPolicies {
