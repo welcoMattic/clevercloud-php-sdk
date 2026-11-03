@@ -28,7 +28,13 @@ foreach (\array_slice($arguments, 2) as $option) {
     }
 }
 
-$fetch = static function () use ($from): string {
+/**
+ * Returns the raw document plus its `x-build-ref` header, the commit the
+ * document was built from (null when read from a local file).
+ *
+ * @return array{string, ?string}
+ */
+$fetch = static function () use ($from): array {
     if (null !== $from) {
         $raw = file_get_contents($from);
         if (false === $raw) {
@@ -36,32 +42,42 @@ $fetch = static function () use ($from): string {
             exit(2);
         }
 
-        return $raw;
+        return [$raw, null];
     }
 
-    return HttpClient::create(['timeout' => 30])->request('GET', SpecExtract::SOURCE_URL)->getContent();
+    $response = HttpClient::create(['timeout' => 30])->request('GET', SpecExtract::SOURCE_URL);
+    $headers = $response->getHeaders();
+
+    return [$response->getContent(), $headers['x-build-ref'][0] ?? null];
 };
 
 switch ($command) {
     case 'check':
         $committed = SpecExtract::load();
-        $sha256 = hash('sha256', $fetch());
+        [$raw, $buildRef] = $fetch();
+        $sha256 = hash('sha256', $raw);
         if ($sha256 === $committed->sha256) {
             echo "OpenAPI spec unchanged since {$committed->fetchedAt} (sha256 {$sha256}).\n";
             exit(0);
         }
-        echo "OpenAPI spec changed.\n  committed: {$committed->sha256} (fetched {$committed->fetchedAt})\n  live:      {$sha256}\n";
+        echo "OpenAPI spec changed.\n"
+            ."  committed: {$committed->sha256} (fetched {$committed->fetchedAt}, build ".($committed->buildRef ?? 'unknown').")\n"
+            ."  live:      {$sha256} (build ".($buildRef ?? 'unknown').")\n";
         echo "Run `composer openapi:refresh`, then `composer openapi:drift`, and commit the new extract.\n";
         exit(1);
 
     case 'refresh':
         $path = SpecExtract::defaultPath();
         $previous = is_file($path) ? SpecExtract::load($path) : null;
-        $raw = $fetch();
+        [$raw, $buildRef] = $fetch();
         $sha256 = hash('sha256', $raw);
-        // Keep the previous fetch date when the document did not move, so a no-op refresh leaves no diff.
-        $fetchedAt = $sha256 === $previous?->sha256 ? $previous->fetchedAt : gmdate('Y-m-d');
-        $extract = SpecExtract::fromRawSpec($raw, $fetchedAt);
+        // Keep the previous fetch date and build ref when the document did not move, so a no-op refresh leaves no diff.
+        $unchanged = $sha256 === $previous?->sha256;
+        $extract = SpecExtract::fromRawSpec(
+            $raw,
+            $unchanged ? $previous->fetchedAt : gmdate('Y-m-d'),
+            buildRef: $unchanged ? ($previous->buildRef ?? $buildRef) : $buildRef,
+        );
         file_put_contents($path, $extract->toJson());
         echo $sha256 === $previous?->sha256
             ? "sha256 unchanged ({$sha256}); extract regenerated.\n"
@@ -72,7 +88,7 @@ switch ($command) {
     case 'drift':
         $extract = SpecExtract::load();
         $check = new DriftCheck($extract, SdkCallProbe::forRepository()->calls(), Allowlist::entries());
-        echo "Extract: {$extract->source} sha256 {$extract->sha256} fetched {$extract->fetchedAt}\n\n";
+        echo "Extract: {$extract->source} sha256 {$extract->sha256} fetched {$extract->fetchedAt} build ".($extract->buildRef ?? 'unknown')."\n\n";
         echo $check->report(), "\n", ModelSchemaMap::report($extract);
         exit([] === $check->missing && [] === ModelSchemaMap::unexpectedDrift($extract) ? 0 : 1);
 

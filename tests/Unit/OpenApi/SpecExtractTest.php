@@ -69,4 +69,16 @@ final class SpecExtractTest extends TestCase
             unlink($path);
         }
     }
+
+    public function testBuildRefIsWrittenOnlyWhenKnown(): void
+    {
+        $raw = json_encode(['openapi' => '3.1.0', 'paths' => []], JSON_THROW_ON_ERROR);
+
+        self::assertStringNotContainsString('"buildRef"', SpecExtract::fromRawSpec($raw, '2026-01-01')->toJson());
+        self::assertStringContainsString(
+            '"buildRef": "abc123",',
+            SpecExtract::fromRawSpec($raw, '2026-01-01', buildRef: 'abc123')->toJson(),
+        );
+        self::assertNotNull(SpecExtract::load()->buildRef);
+    }
 }

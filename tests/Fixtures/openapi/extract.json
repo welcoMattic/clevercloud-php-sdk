@@ -2,6 +2,7 @@
     "source": "https://api.clever-cloud.com/openapi.json",
     "sha256": "0c8472558e6d5b6a39ea21d994371fa732415f8425a4e2f7eb1fcad6f36697d9",
     "fetchedAt": "2026-11-03",
+    "buildRef": "3c3c9643fa12d4cbe0861f866fc19fca63bf9805",
     "operations": [
         {"method":"GET","path":"/networkgroup/configuration","operationId":"get_networkgroups_configuration","tags":["NetworkGroups"],"security":[]},
         {"method":"GET","path":"/organisations/{orgId}/logs/exports","operationId":"listLogsExports","tags":["Logs"],"security":["oauth1"]},
