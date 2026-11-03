@@ -19,15 +19,19 @@ Signature (verified against
 public function stream(
     string $applicationId,
     ?string $organisationId = null,
-    array $filters = [], // {since?, until?, filter?, deploymentId?}
+    array $filters = [], // see "Filters" below
 ): LogStream
 ```
 
 - `$organisationId === null` triggers a `/v2/self` lookup to resolve the personal
   organisation id, costing one extra request. There is no `/self` variant of the
   logs endpoint; the personal organisation is addressed by its own `user_<uuid>` id.
-- Filter keys accepted: `since`, `until`, `filter`, `deploymentId`. Everything
-  goes into the query string as-is.
+- Filter keys accepted: `since`, `until`, `limit`, `deploymentId`, `instanceId`,
+  `filter`, `service`, `field`, `maxRetryDurationInSeconds`, `throttleElements`,
+  `throttlePerInMilliseconds`, `color`. Everything goes into the query string;
+  list values (`instanceId`, `service`, `field`) become a repeated parameter
+  and booleans are sent as `true` / `false`. The full table lives in
+  [Logs](resources/logs.md#filters).
 - The returned `LogStream` implements `IteratorAggregate<int, LogEntry>` -
   `foreach` is the only public consumer surface. `LogStream` now accepts an optional
   `$maxDurationSeconds` parameter to bound iteration time.
@@ -80,7 +84,7 @@ Signature:
 public function query(
     string $applicationId,
     ?string $organisationId = null,
-    array $filters = [], // {since?, until?, filter?, deploymentId?, limit?}
+    array $filters = [], // same keys as stream()
     int $maxDurationSeconds = 10,
 ): array
 ```
@@ -93,6 +97,27 @@ sent, but for quiet applications the endpoint holds the connection open and
 emits HEARTBEAT events forever. No combination of `since` / `until` / `limit`
 makes it hang up (verified against the live API), so `$maxDurationSeconds` is
 what actually guarantees this method returns.
+
+## Add-on, Kubernetes and access logs
+
+The same pattern covers the other log streams:
+
+```php
+// Runtime logs of an add-on or a Kubernetes cluster (`RESOURCE_LOG` events)
+foreach ($client->logs->streamResource('kubernetes_xxx', 'orga_xxx', ['severity' => 'warning']) as $entry) {
+    echo $entry->message, "\n";
+}
+
+// HTTP access logs (`ACCESS_LOG` events)
+foreach ($client->logs->streamAccessLogs('app_xxx', 'orga_xxx') as $event) {
+    echo json_encode($event->data), "\n";
+}
+```
+
+`streamResource()` / `queryResource()` return `LogEntry` objects like
+`stream()`. Access logs have no published schema, so `streamAccessLogs()` and
+its siblings yield `StreamEvent` objects (`type`, `data`, `id`) holding the
+decoded JSON. See [Logs](resources/logs.md) for every method and filter.
 
 ## Endpoint and authentication
 
@@ -123,18 +148,25 @@ other call, see [Authentication](authentication.md):
 ## How `LogStream` decodes frames
 
 Verified against
-[`src/Streaming/LogStream.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Streaming/LogStream.php):
+[`src/Streaming/EventStream.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Streaming/EventStream.php)
+and [`src/Streaming/LogStream.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Streaming/LogStream.php).
+`EventStream` does the SSE work shared by every stream; `LogStream` maps its
+events onto `LogEntry` objects:
 
 1. Symfony's `EventSourceHttpClient` yields chunks. The SDK only handles
-   `ServerSentEvent` chunks; first-chunk markers and control frames are
-   skipped.
-2. Each event's `data` field is JSON-decoded. Empty or invalid payloads
+   `ServerSentEvent` chunks; first-chunk markers, control frames and
+   keep-alive comments are skipped.
+2. `HEARTBEAT` events are skipped. An `END_OF_STREAM` event, which the API
+   sends once `limit`, `until` or its own timeout is reached, ends the
+   iteration.
+3. Each event's `data` field is JSON-decoded. Empty or invalid payloads
    are silently dropped.
-3. AutoMapper maps the decoded array onto a `LogEntry`.
-4. Non-2xx upstream responses surface as typed SDK exceptions
+4. `LogStream` maps the decoded array onto a `LogEntry` through AutoMapper;
+   `EventStream` yields it as a `StreamEvent`.
+5. Non-2xx upstream responses surface as typed SDK exceptions
    (`AuthException` / `NotFoundException` / `ServerException` /
    `ApiException`) with the actual status code on the first chunk.
-5. PSR-18 / Symfony transport failures (DNS, TLS, connection reset)
+6. PSR-18 / Symfony transport failures (DNS, TLS, connection reset)
    raise `TransportException`.
 
 ## Resuming after a disconnect

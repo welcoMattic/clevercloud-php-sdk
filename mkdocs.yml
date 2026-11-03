@@ -69,6 +69,8 @@ nav:
       - Load balancers: resources/load-balancers.md
       - Zones: resources/zones.md
       - Logs: resources/logs.md
+      - Log exports: resources/log-exports.md
+      - Platform events: resources/events.md
       - Operators: resources/operators.md
       - Drains: resources/drains.md
       - Notifications: resources/notifications.md

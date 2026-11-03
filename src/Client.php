@@ -5,11 +5,13 @@ namespace CleverCloud\Sdk;
 use AutoMapper\AutoMapperInterface;
 use CleverCloud\Sdk\Http\HttpClient;
 use CleverCloud\Sdk\Resource\Bridge\ApiTokensResource;
+use CleverCloud\Sdk\Resource\Root\LogExportsResource;
 use CleverCloud\Sdk\Resource\V2\AddonsResource;
 use CleverCloud\Sdk\Resource\V2\ApplicationsResource;
 use CleverCloud\Sdk\Resource\V2\DeploymentsResource;
 use CleverCloud\Sdk\Resource\V2\DomainsResource;
 use CleverCloud\Sdk\Resource\V2\EnvironmentResource;
+use CleverCloud\Sdk\Resource\V2\EventsResource;
 use CleverCloud\Sdk\Resource\V2\InstancesResource;
 use CleverCloud\Sdk\Resource\V2\OrganisationsResource;
 use CleverCloud\Sdk\Resource\V2\ProductsResource;
@@ -52,6 +54,8 @@ final class Client
     private ?ZonesResource $zonesResource = null;
     private ?PulsarPoliciesResource $pulsarPoliciesResource = null;
     private ?LogsResource $logsResource = null;
+    private ?LogExportsResource $logExportsResource = null;
+    private ?EventsResource $eventsResource = null;
     private ?OperatorsResource $operatorsResource = null;
     private ?DrainsResource $drainsResource = null;
     private ?NotificationsResource $notificationsResource = null;
@@ -126,6 +130,14 @@ final class Client
 
     public LogsResource $logs {
         get => $this->logsResource ??= new LogsResource($this->http, $this->mapper);
+    }
+
+    public LogExportsResource $logExports {
+        get => $this->logExportsResource ??= new LogExportsResource($this->http, $this->mapper);
+    }
+
+    public EventsResource $events {
+        get => $this->eventsResource ??= new EventsResource($this->http, $this->mapper);
     }
 
     public OperatorsResource $operators {
