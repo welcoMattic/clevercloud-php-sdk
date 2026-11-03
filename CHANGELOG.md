@@ -7,6 +7,106 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Aligns the SDK with the unified OpenAPI spec Clever Cloud now publishes at
+<https://api.clever-cloud.com/openapi.json>, and with the live API. Every
+route below was checked with read-only probes on a real account; the spec is
+a deliberate subset of the API, so routes absent from it were kept when they
+answer live.
+
+### Breaking changes
+
+Everything removed or changed here could not work against the live API
+(missing route, or a payload the model could not map), so it is removed or
+changed without deprecation.
+
+- **Removed, no route on the API**: operators `list()` / `create()` /
+  `update()` / `delete()` (create and delete operators through
+  `$client->addons`), `linkNetworkGroup()` / `unlinkNetworkGroup()` on Matomo
+  and Metabase, `PulsarPoliciesResource::reset()`, `DomainsResource::get()`,
+  `BackupsResource::get()` / `restore()`, `UsersResource::addons()`,
+  `LoadBalancersResource::get()` / `dnsInfo()`,
+  `BillingResource::consumptions()` / `recurrent()` and `Model\Consumption`.
+- **Moved**: `NotificationsResource`, `WebhooksResource` and `BackupsResource`
+  move from `Resource\V4` to `Resource\V2`, with no alias. `$client->...`
+  is unchanged.
+- **Signatures**: `NetworkGroupsResource::create()` returns `void` (the API
+  answers 202 with no body); `BackupsResource::list()` takes the add-on real
+  id (`postgresql_...`); `LoadBalancersResource::list()` gains a `$kind`
+  (`default` or `private`); `DrainsResource::create()` takes a recipient and a
+  `DrainKind`; `OrchestrationResource::deployments()` / `getDeployment()`
+  return `OrchestrationDeployment`.
+- **Models follow the real payloads**:
+  - `Operator::$id` maps from `resourceId`; `region`, `status`, `kind`,
+    `creationDate` are removed; `addonId`, `ownerId`, `version`, `accessUrl`
+    are added.
+  - `PulsarPolicy` keeps `addonId` and gains `retentionPolicies` /
+    `offloadPolicies` (`PulsarStorageLimit`); its legacy fields are removed.
+  - `NetworkGroup` loses `name` / `cidr` (the API sends `label` / `networkIp`)
+    and gains the fields the API sends.
+  - `Invoice` maps the snake_case payload: `emissionDate` / `payDate` are ISO
+    strings, totals are `InvoiceAmount`; `type`, `totalTaxIncluded`,
+    `downloadUrl` are removed.
+  - `LoadBalancer`, `Drain`, `Backup`, `Webhook` (`urls`) and
+    `EmailNotification` (`targets` from `notified`) follow their payloads;
+    `DrainType` uses the V4 values.
+  - `OAuthConsumer::$rights` is `array<string, bool>`; `Flavor::$nice` is an
+    int; `Organisation::$creationDate`, `Deployment::$instanceId` and
+    `OAuthConsumer::$secret` (use `consumerSecret()`) are removed.
+- **Behaviour**: a `null` owner on V4 resources, notifications, webhooks,
+  backups, TCP redirections and add-on migration reads resolves the personal
+  `user_...` id through `GET /v2/self` (one extra request), because these
+  routes do not accept `self`. `LogStream` stops on an `END_OF_STREAM` event.
+
+### Fixed
+
+- Add-ons: `preorderMigration()` is a `GET .../migrations/preorders`;
+  `migrate()` sends `{planId, region, version}` and uses
+  `/self/addons/{id}/migration` for personal add-ons.
+- `SelfResource::regenerateMfaBackupCodes()` targets
+  `/self/mfa/{kind}/backupcodes`; `addSshKey()` and
+  `ApplicationsResource::linkAddon()` send a bare JSON string.
+- `DeploymentsResource::cancel()` deletes `/deployments/{id}/instances`;
+  `DomainsResource::add()` sends a `PUT`.
+- Environment: `setMany()` and `setExposedEnv()` send a name-to-value object,
+  `set()` sends `{value}`, `exposedEnv()` reads the object the API returns.
+- Notifications and webhooks use `/v2/notifications/...`, backups
+  `/v2/backups/{owner}/{realId}`, TCP redirections `/tcpRedirs` and
+  `/organisations/{id}/namespaces`.
+- Load balancers use `.../load-balancers/{kind}`; billing balance reads
+  `credits/summary`; drains use the `enable`, `disable` and `reset-cursor`
+  routes and the `{kind, recipient}` create body.
+- `Application::$lastDeploy`, `Flavor::$machineLearning`, `Organisation::$vat`
+  and `Namespace_::$name` are now filled (`#[MapFrom]`).
+
+### Added
+
+- `ApiVersion::Root` and `Configuration::$rootBaseUrl` for the unversioned
+  paths served at the API root.
+- `Credentials::serviceToken()` (biscuit Bearer sent to `api.clever-cloud.com`
+  without the api-bridge reroute) and `$client->serviceTokens`.
+- `$client->kubernetes`: clusters, node groups, nodes, kubeconfig, events,
+  version check/update, quota, usage, zones, plugin catalog.
+- `$client->logExports`; resource-level logs and access logs on
+  `$client->logs`, plus the missing log filters; `$client->events`
+  (`/v2/events` SSE stream). `EventStream` / `StreamEvent` are the shared SSE
+  reader.
+- Network groups: platform configuration, search, members, peers, external
+  peers, WireGuard configuration (text, presigned URL, stream), network group
+  stream.
+- Operators: `providerInformation()`, `checkVersion()` / `updateVersion()`
+  (Keycloak, Metabase, Otoroshi), Otoroshi `configYaml()`.
+- `$client->pulsar` (topics, topic tokens, unload, clusters),
+  `$client->configProviders`, `$client->materiaKv`, `$client->addonProviders`.
+- Missing V2 routes on `self`, `organisations`, `applications` and `addons`:
+  tokens, CLI tokens, consumer secrets and tokens, MFA status, avatars,
+  invitations, payment info, drain policy, organisation deployments and
+  instances, build flavor, dependents, tags replacement, add-on preorders,
+  SSO, add-on instances.
+- OpenAPI drift check: a committed spec extract pinned by sha256 and
+  `x-build-ref`, a unit test that fails when the SDK calls a route that is
+  neither in the spec nor allowlisted, a model contract test, and a weekly
+  workflow watching the published spec.
+
 ## [2.0.0] - 2026-08-26
 
 This release corrects resources that never worked against the real Clever Cloud

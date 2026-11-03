@@ -8,7 +8,10 @@
 # Clever Cloud PHP SDK
 
 A modern PHP SDK for the [Clever Cloud](https://www.clever-cloud.com) REST API
-(v2 + v4 + api-bridge).
+(v2 + v4 + api-bridge), aligned with the
+[unified OpenAPI spec](https://www.clever.cloud/developers/api/) Clever Cloud
+publishes ([JSON](https://api.clever-cloud.com/openapi.json)) and checked
+against the live API.
 
 > Status: **v2.0**. Public API surface is stable; changes that break
 > source compatibility will trigger a major bump per
@@ -67,11 +70,11 @@ is deliberately out of scope at this stage is listed in the "Roadmap" section.
 
 | Family          | Methods on `$client->...`                                                                                                                                                                |
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `self`          | `get / update / sshKeys / addSshKey / removeSshKey / emailAddresses / addEmailAddress / removeEmailAddress / consumers / getConsumer / createConsumer / updateConsumer / deleteConsumer / startMfa / confirmMfa / disableMfa / regenerateMfaBackupCodes / changePassword` |
+| `self` | `get / update / sshKeys / addSshKey / removeSshKey / emailAddresses / addEmailAddress / removeEmailAddress / consumers / getConsumer / createConsumer / updateConsumer / deleteConsumer / consumerSecret / consumerTokens / startMfa / confirmMfa / disableMfa / mfaStatus / setFavouriteMfa / regenerateMfaBackupCodes / changePassword / id / setAvatar / resendConfirmationEmail / validateEmail / organisations / instances / paymentInfo / tokens / currentToken / revokeToken / revokeAllTokens / cliTokens` |
 | `users` | `get / applications` |
-| `organisations` | `list / get / create / update / delete / members / addMember / updateMember / removeMember / consumers / getConsumer / createConsumer / updateConsumer / deleteConsumer / namespaces`    |
-| `applications`  | `list / get / create / update / delete / restart / stop / deploy / branches / setBranch / instances / dependencies / addDependency / removeDependency / tags / addTag / removeTag / exposedEnv / setExposedEnv / addons / linkAddon / unlinkAddon` |
-| `addons`        | `list / get / create / update / delete / providers / provider / plans / linkedApplications / env / sso / tags / addTag / removeTag / migrate / listMigrations / getMigration / cancelMigration / preorderMigration` |
+| `organisations` | `list / get / create / update / delete / members / addMember / updateMember / removeMember / invitations / cancelInvitation / consumers / getConsumer / createConsumer / updateConsumer / deleteConsumer / consumerSecret / namespaces / setAvatar / paymentInfo / drainPolicy / deployments / instances` |
+| `applications` | `list / get / create / update / delete / restart / stop / deploy / branches / setBranch / setBuildFlavor / instances / dependencies / addDependency / removeDependency / dependents / dependenciesEnv / tags / addTag / removeTag / replaceTags / exposedEnv / setExposedEnv / addons / linkAddon / unlinkAddon / addonsEnv` |
+| `addons` | `list / get / create / update / delete / providers / provider / plans / linkedApplications / env / sso / generateSso / tags / addTag / removeTag / replaceTags / preorder / migrate / listMigrations / getMigration / cancelMigration / preorderMigration / instances / instance` |
 | `deployments`   | `list / get / cancel / instances`                                                                                                                                                        |
 | `environment`   | `list / get / set / setMany / remove`                                                                                                                                                    |
 | `domains`       | `list / add / remove / favourite / setFavourite / unsetFavourite`                                                                                                                        |
@@ -79,21 +82,34 @@ is deliberately out of scope at this stage is listed in the "Roadmap" section.
 | `notifications` | `list / create / delete` (email hooks) |
 | `webhooks` | `list / create / delete` |
 | `backups` | `list` |
+| `instances` | `list` (instance types catalogue) |
+| `serviceTokens` | `list / listPage / create / get / delete` |
+| `events` | `stream` (SSE `/v2/events`) |
+
+### Root (unversioned paths)
+
+| Family | Methods on `$client->...` |
+| --- | --- |
+| `logExports` | `list / create / get / delete / download` |
 
 ### V4 — platform extensions
 
 | Family            | Methods on `$client->...`                                                                                                |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `billing` | `getBalance / listInvoices / getInvoice / downloadInvoicePdf / paymentMethods / addPaymentMethod / removePaymentMethod` |
-| `instances`       | `list / get / flavors / types`                                                                                           |
 | `loadBalancers` | `list` |
 | `products`        | `instances / addonProviders / zones / countries`                                                                         |
 | `zones`           | `list / get`                                                                                                             |
 | `pulsarPolicies`  | `get / update`                                                                                                           |
-| `logs`            | `stream` (SSE → `LogStream<LogEntry>`) / `query` (historical)                                                            |
-| `operators`       | `.keycloak / .matomo / .metabase / .otoroshi` (each: `get / reboot / rebuild`; `.keycloak / .otoroshi`: `linkNetworkGroup / unlinkNetworkGroup`) |
+| `logs` | `stream` (SSE → `LogStream<LogEntry>`) / `query` (historical) / `streamResource / queryResource / streamAccessLogs / queryAccessLogs / streamResourceAccessLogs / queryResourceAccessLogs` |
+| `kubernetes` | `listClusters / getCluster / createCluster / updateCluster / deleteCluster / redeploy / resume / reconcilePlugins / migrateSni / checkVersion / updateVersion / kubeconfig / kubeconfigPresignedUrl / events / deploymentEvents / listNodeGroups / getNodeGroup / createNodeGroup / updateNodeGroup / deleteNodeGroup / resumeNodeGroup / listNodes / getNode / createNode / deleteNode / quota / usage / zones / pluginCatalog / serviceConfig / enableCephCsi` |
+| `pulsar` | `topics / createTopic / deleteTopic / createTopicToken / unloadTopic / cluster` |
+| `configProviders` | `get / env / replaceEnv` |
+| `materiaKv` | `providerInformation / get` |
+| `addonProviders` | `getAddon` |
+| `operators` | `.keycloak / .matomo / .metabase / .otoroshi` (each: `providerInformation / get / reboot / rebuild`; Keycloak, Metabase, Otoroshi: `checkVersion / updateVersion`; Keycloak, Otoroshi: `linkNetworkGroup / unlinkNetworkGroup`; Otoroshi: `configYaml`). Create and delete operators through `addons` |
 | `drains` | `list / get / create / delete / enable / disable / restart` |
-| `networkGroups`   | `list / get / create / delete / addMember / removeMember / wireguardConfiguration`                                       |
+| `networkGroups` | `configuration / list / search / get / create / delete / stream / members / member / addMember / removeMember / peers / peer / addPeer / removePeer / externalPeer / addExternalPeer / removeExternalPeer / wireguardConfiguration / wireguardConfigurationPresignedUrl / streamWireguardConfiguration` |
 | `orchestration` | `instances / deployments / getDeployment` |
 
 ### Bridge — `api-bridge.clever-cloud.com`
@@ -119,6 +135,10 @@ form selects without hardcoding string literals.
 | `DeploymentState`          | (see source)                                                                               | Deployment outcome                      |
 | `DrainType` | BetterStack / Datadog / ElasticSearch / NewRelic / OvhTcp / RawHttp / Splunk / SyslogTcp / SyslogUdp | Log drain recipient protocol |
 | `DrainKind` | Log / AccessLog | Log stream a drain ships |
+| `ServiceTokenRole` | `Admin Manager Developer Accounting` | Service token role |
+| `ServiceTokenStatus` | `Active Expired Revoked` | Service token lifecycle |
+| `LogExportStatus` | (see source, + `isTerminal()`) | Log export lifecycle |
+| `KubernetesClusterStatus` | (see source) | Kubernetes cluster lifecycle |
 | `WebhookFormat`            | Raw / Slack / Gitter / Flowdock                                                            | Webhook payload format                  |
 
 ```php
@@ -162,13 +182,13 @@ $client->addons->providers();      // -> list<AddonProvider> (postgresql-addon, 
 $client->addons->provider($id);    // -> AddonProvider       (with its plans)
 ```
 
-### Roadmap (not in v2.0)
+### Roadmap
 
-- AI, Materia KV / TS, Cellar, Cumulocity, DNS, IPAM, Kubernetes, Function,
-  Container Registry — V4 endpoints unique to the Go SDK
-- WebSocket events stream (parity with `clever-client.js` `EventsStream`)
+- AI, Materia TS, Cellar, Cumulocity, DNS, IPAM, Function, Container Registry:
+  V4 endpoints outside the published spec
+- WebSocket events stream (`/v2/events/event-socket`); the SSE stream is
+  covered by `$client->events`
 - OpenTelemetry bridge
-- Resource-ID resolver / ownerId cache
 
 ## Authentication
 
@@ -180,6 +200,14 @@ an existing OAuth 1.0a client). They go in `Credentials::apiToken()`, are sent a
 to `api-bridge.clever-cloud.com` so the gateway can validate the scopes. Note
 that the `apiTokens` resource **requires OAuth 1.0a authentication** - you cannot
 manage tokens with a Bearer token.
+
+### Service token (biscuit)
+
+Organisation service tokens are minted with `$client->serviceTokens->create()`
+(from an OAuth 1.0a client) and used with `Credentials::serviceToken()`. They
+are sent as `Authorization: Bearer <token>` straight to `api.clever-cloud.com`
+and are accepted on organisation-scoped routes only, never under `/v2/self`.
+See [Authentication](docs/authentication.md).
 
 ### OAuth 1.0a (legacy)
 
