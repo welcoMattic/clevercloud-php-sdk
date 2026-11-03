@@ -74,7 +74,7 @@ is deliberately out of scope at this stage is listed in the "Roadmap" section.
 | `addons`        | `list / get / create / update / delete / providers / provider / plans / linkedApplications / env / sso / tags / addTag / removeTag / migrate / listMigrations / getMigration / cancelMigration / preorderMigration` |
 | `deployments`   | `list / get / cancel / instances`                                                                                                                                                        |
 | `environment`   | `list / get / set / setMany / remove`                                                                                                                                                    |
-| `domains`       | `list / get / add / remove / favourite / setFavourite / unsetFavourite`                                                                                                                  |
+| `domains`       | `list / add / remove / favourite / setFavourite / unsetFavourite`                                                                                                                        |
 | `tcpRedirections` | `list / namespaces / add / remove`                                                                                                                                                     |
 
 ### V4 — platform extensions
@@ -86,13 +86,13 @@ is deliberately out of scope at this stage is listed in the "Roadmap" section.
 | `loadBalancers`   | `list / get / dnsInfo`                                                                                                   |
 | `products`        | `instances / addonProviders / zones / countries`                                                                         |
 | `zones`           | `list / get`                                                                                                             |
-| `pulsarPolicies`  | `get / update / reset`                                                                                                   |
+| `pulsarPolicies`  | `get / update`                                                                                                           |
 | `logs`            | `stream` (SSE → `LogStream<LogEntry>`) / `query` (historical)                                                            |
-| `operators`       | `.keycloak / .matomo / .metabase / .otoroshi` (each: `list / get / create / update / delete / reboot / rebuild`)         |
+| `operators`       | `.keycloak / .matomo / .metabase / .otoroshi` (each: `get / reboot / rebuild`; `.keycloak / .otoroshi`: `linkNetworkGroup / unlinkNetworkGroup`) |
 | `drains`          | `list / get / create / update / delete / enable / disable / restart`                                                     |
 | `notifications`   | `list / create / delete` (email hooks)                                                                                   |
 | `webhooks`        | `list / create / delete`                                                                                                 |
-| `networkGroups`   | `list / get / create / delete / addMember / removeMember / externalPeerConfig`                                           |
+| `networkGroups`   | `list / get / create / delete / addMember / removeMember / wireguardConfiguration`                                       |
 | `orchestration`   | `instances / deployments`                                                                                                |
 | `backups`         | `list / get / restore`                                                                                                   |
 

@@ -62,9 +62,7 @@ know the ID of the group up front. `$members` entries carry the same fields as
 
 `NetworkGroup` carries `label`, `description`, `ownerId`, `networkIp` (the
 CIDR block), `lastAllocatedIp`, `dnsSanitizedLabel`, `ownership`
-(`customer` or `platform`), `tags`, `version`, `members` and `peers`. Its
-`name` and `cidr` properties predate the OpenAPI spec, which defines neither:
-read `label` and `networkIp` instead.
+(`customer` or `platform`), `tags`, `version`, `members` and `peers`.
 
 ### Watching a group
 
@@ -180,17 +178,3 @@ event as `WireGuardConfigurationB64` (the INI text, base64-encoded) without
 publishing its fields, so `EventStream` yields every event as a `StreamEvent`
 whose `data` is the decoded JSON object (`array<string, mixed>`), and leaves
 the base64 decoding to the caller. `HEARTBEAT` events are skipped.
-
-### Deprecated: `externalPeerConfig()`
-
-```php
-/** @deprecated since 2.1, use wireguardConfiguration() */
-public function externalPeerConfig(string $networkGroupId, string $peerId, ?string $organisationId = null): string
-```
-
-The API no longer serves
-`GET /v4/networkgroups/.../networkgroups/{id}/external-peers/{peerId}/config`
-(it answers a "route not found" 404). Since 2.1, `externalPeerConfig()`
-delegates to `wireguardConfiguration()` and reads
-`.../peers/{peerId}/wireguard/configuration` instead. Call
-`wireguardConfiguration()` directly.

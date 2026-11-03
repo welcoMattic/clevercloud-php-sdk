@@ -1,10 +1,17 @@
 # Operators — Keycloak / Matomo / Metabase / Otoroshi
 
-Source: [`src/Resource/V4/OperatorsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/OperatorsResource.php) (facade) and [`src/Resource/V4/AbstractOperatorResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/AbstractOperatorResource.php) (shared CRUD)
+Source: [`src/Resource/V4/OperatorsResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/OperatorsResource.php) (facade) and [`src/Resource/V4/AbstractOperatorResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V4/AbstractOperatorResource.php) (shared base)
 
 Clever Cloud's "operators" are fully-managed add-ons for popular open-source
 services. The SDK exposes them through a facade with four typed sub-clients
-that share the same CRUD surface.
+that share the same read and lifecycle surface.
+
+The operator endpoints only read an existing add-on and act on it: the API
+has no route to list, create, update or delete one there. Create and delete
+operators through [`$client->addons`](addons.md) like any other add-on
+(provider `keycloak`, `addon-matomo`, `metabase` or `otoroshi`), then use the
+`resourceId` of the result (`keycloak_…`, `matomo_…`, …) with these
+sub-clients.
 
 ## Access
 
@@ -28,31 +35,31 @@ method surface, only the path slug differs:
 ## Methods (all four sub-clients)
 
 ```php
-public function list(): list<Operator>
 public function get(string $id): Operator
-public function create(array $data): Operator
-public function update(string $id, array $data): Operator
-public function delete(string $id): void
 public function reboot(string $id): void
 public function rebuild(string $id): void
+```
+
+| Method | HTTP | Path |
+| --- | --- | --- |
+| `get()` | GET | `/v4/addon-providers/addon-{slug}/addons/{id}` |
+| `reboot()` | POST | `/v4/addon-providers/addon-{slug}/addons/{id}/reboot` |
+| `rebuild()` | POST | `/v4/addon-providers/addon-{slug}/addons/{id}/rebuild` |
+
+## Network Group link (Keycloak, Otoroshi)
+
+Matomo and Metabase have no Network Group route, so these methods live on the
+`keycloak` and `otoroshi` sub-clients only.
+
+```php
 public function linkNetworkGroup(string $id): void
 public function unlinkNetworkGroup(string $id): void
 ```
 
 | Method | HTTP | Path |
 | --- | --- | --- |
-| `list()` | GET | `/v4/addon-providers/addon-{slug}/addons` |
-| `get()` | GET | `/v4/addon-providers/addon-{slug}/addons/{id}` |
-| `create()` | POST | `/v4/addon-providers/addon-{slug}/addons` (body: `{"name", "region", "planId", ...}`) |
-| `update()` | PUT | `/v4/addon-providers/addon-{slug}/addons/{id}` |
-| `delete()` | DELETE | `/v4/addon-providers/addon-{slug}/addons/{id}` |
-| `reboot()` | POST | `/v4/addon-providers/addon-{slug}/addons/{id}/reboot` |
-| `rebuild()` | POST | `/v4/addon-providers/addon-{slug}/addons/{id}/rebuild` |
 | `linkNetworkGroup()` | POST | `/v4/addon-providers/addon-{slug}/addons/{id}/networkgroup` |
 | `unlinkNetworkGroup()` | DELETE | `/v4/addon-providers/addon-{slug}/addons/{id}/networkgroup` |
-
-`linkNetworkGroup()` and `unlinkNetworkGroup()` are only meaningful for
-Keycloak and Otoroshi (per the source's docblock).
 
 ## Provider information (all four sub-clients)
 

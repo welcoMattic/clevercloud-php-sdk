@@ -12,7 +12,6 @@ $client->domains
 
 ```php
 public function list(string $applicationId, ?string $organisationId = null): list<Vhost>
-public function get(string $applicationId, string $fqdn, ?string $organisationId = null): Vhost
 public function add(string $applicationId, string $fqdn, ?string $organisationId = null): void
 public function remove(string $applicationId, string $fqdn, ?string $organisationId = null): void
 public function favourite(string $applicationId, ?string $organisationId = null): ?Vhost
@@ -23,7 +22,6 @@ public function unsetFavourite(string $applicationId, ?string $organisationId = 
 | Method | HTTP | Path |
 | --- | --- | --- |
 | `list()` | GET | `/v2/.../applications/{id}/vhosts` |
-| `get()` | GET | `/v2/.../applications/{id}/vhosts/{fqdn}` |
 | `add()` | PUT | `/v2/.../applications/{id}/vhosts/{fqdn}` (no body) |
 | `remove()` | DELETE | `/v2/.../applications/{id}/vhosts/{fqdn}` |
 | `favourite()` | GET | `/v2/.../applications/{id}/vhosts/favourite` (returns `null` if no favourite set) |

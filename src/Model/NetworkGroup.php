@@ -4,9 +4,7 @@ namespace CleverCloud\Sdk\Model;
 
 /**
  * A WireGuard-based private network linking apps, add-ons and external peers.
- *
- * `name` and `cidr` predate the published OpenAPI spec, which defines neither:
- * the API sends the group name as `label` and its CIDR block as `networkIp`.
+ * Its name is `$label`, its CIDR block `$networkIp`.
  */
 final readonly class NetworkGroup
 {
@@ -17,12 +15,10 @@ final readonly class NetworkGroup
      */
     public function __construct(
         public string $id,
-        public ?string $name = null,
         public ?string $description = null,
         public ?string $ownerId = null,
         public ?string $networkIp = null,
         public ?string $lastAllocatedIp = null,
-        public ?string $cidr = null,
         public array $members = [],
         public ?string $label = null,
         public ?string $dnsSanitizedLabel = null,

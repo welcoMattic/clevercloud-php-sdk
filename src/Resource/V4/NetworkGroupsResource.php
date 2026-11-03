@@ -396,23 +396,6 @@ final readonly class NetworkGroupsResource extends AbstractV4Resource
     }
 
     /**
-     * Returns the WireGuard configuration for an external peer to join the
-     * Network Group.
-     *
-     * The API no longer serves `.../external-peers/{peerId}/config`, so this
-     * method now reads `.../peers/{peerId}/wireguard/configuration`.
-     *
-     * @deprecated since 2.1, use wireguardConfiguration()
-     */
-    public function externalPeerConfig(
-        string $networkGroupId,
-        string $peerId,
-        ?string $organisationId = null,
-    ): string {
-        return $this->wireguardConfiguration($networkGroupId, $peerId, $organisationId);
-    }
-
-    /**
      * @param array<int|string, mixed> $payload
      */
     private function createdPeerId(array $payload): string

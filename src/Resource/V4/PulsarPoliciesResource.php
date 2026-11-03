@@ -6,8 +6,8 @@ use CleverCloud\Sdk\Model\PulsarPolicy;
 use CleverCloud\Sdk\Resource\AbstractV4Resource;
 
 /**
- * Reads and manages Pulsar add-on storage policies (retention, offload,
- * message TTL) under
+ * Reads and updates Pulsar add-on storage policies (retention and offload)
+ * under
  * `/v4/addon-providers/addon-pulsar/addons/{addonId}/storage-policies`.
  */
 final readonly class PulsarPoliciesResource extends AbstractV4Resource
@@ -37,14 +37,6 @@ final readonly class PulsarPoliciesResource extends AbstractV4Resource
         );
 
         return $this->mapPolicy($addonId, $payload);
-    }
-
-    /**
-     * Resets the policy to provider defaults.
-     */
-    public function reset(string $addonId): void
-    {
-        $this->httpDelete($this->policyPath($addonId));
     }
 
     /**
