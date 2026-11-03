@@ -68,6 +68,7 @@ nav:
       - Billing: resources/billing.md
       - Load balancers: resources/load-balancers.md
       - Zones: resources/zones.md
+      - Kubernetes: resources/kubernetes.md
       - Logs: resources/logs.md
       - Operators: resources/operators.md
       - Drains: resources/drains.md
