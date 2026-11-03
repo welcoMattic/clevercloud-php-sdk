@@ -162,3 +162,60 @@ try {
     assert($e->errors['name'] === ['must not be blank', 'too short']);
 }
 ```
+
+## Maintainers: OpenAPI drift check
+
+Clever Cloud publishes an OpenAPI document at
+`https://api.clever-cloud.com/openapi.json`. The repository commits a compact
+extract of it, `tests/Fixtures/openapi/extract.json`: every operation (method,
+path, operationId, tags, security) and the property names and types of every
+component schema, pinned by the sha256 of the raw document and its fetch date.
+
+Two unit tests use the extract, offline, as part of `vendor/bin/phpunit --testsuite unit`:
+
+- `SpecDriftTest` runs every public method of every resource under
+  `src/Resource` against a recording `MockHttpClient` (once with required
+  arguments, once with all of them, so both `/self` and `/organisations/{id}`
+  variants are seen) and fails when a call is neither in the spec nor in
+  `tests/OpenApi/Allowlist.php`. New resources and methods are picked up
+  automatically.
+- `ModelContractTest` checks that each model listed in
+  `tests/OpenApi/ModelSchemaMap.php` only reads keys its schema declares.
+  Known gaps sit in the map's `knownDrift`; unmapped models are not checked.
+
+The spec is incomplete: several families the SDK covers (products, users,
+billing, drains, notifications, load balancers, orchestration, backups, TCP
+redirections, API tokens) are not in it. Those are allowlisted, each with a
+reason. Absence from the spec does not mean the endpoint does not exist.
+
+### Refreshing the extract
+
+A weekly workflow (`.github/workflows/openapi.yml`) fails when the live
+document's sha256 differs from the committed one. To refresh:
+
+```bash
+composer openapi:check    # live sha256 vs committed one, exit 1 when it moved
+composer openapi:refresh  # fetch and regenerate the extract
+composer openapi:drift    # full report, then commit the extract
+```
+
+`php tools/openapi.php refresh --from=openapi.json` regenerates from a local
+copy instead of fetching.
+
+### Reading the drift report
+
+`composer openapi:drift` prints, in order:
+
+- **absent and not allowlisted**: the failures. Fix the SDK route, or
+  allowlist it with a reason when the endpoint works but is undocumented.
+- **matched only without the version prefix**: the spec documents a few
+  routes without `/v2` or `/v4`; confirm the base URL the SDK uses.
+- **SDK literals filling a spec parameter**: a fixed segment in the SDK sits
+  where the spec has a `{param}`. Often a legit value (`TOTP`), sometimes a
+  wrong route (`/self/mfa/backupcodes` where the spec wants
+  `/self/mfa/{kind}/backupcodes`).
+- **stale allowlist entries**: entries that match nothing, or only calls the
+  spec now documents. Prune them.
+- **allowlisted calls** and **spec operations not covered by the SDK**:
+  informational, the latter grouped by tag.
+- **model contract** per mapped model, then the schemas without a model.

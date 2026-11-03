@@ -8,5 +8,6 @@ parameters:
     paths:
         - src
         - tests
+        - tools
     tmpDir: .phpstan.cache
     treatPhpDocTypesAsCertain: false

@@ -1,0 +1,35 @@
+name: OpenAPI spec watch
+
+# Fails when the published Clever Cloud OpenAPI document no longer matches the
+# sha256 pinned in tests/Fixtures/openapi/extract.json. A maintainer then runs
+# `composer openapi:refresh` and `composer openapi:drift`, and commits the
+# regenerated extract. The offline drift check itself runs with the unit suite.
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  spec-watch:
+    name: Spec sha256 unchanged
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Compare the live spec with the committed extract
+        run: php tools/openapi.php check
