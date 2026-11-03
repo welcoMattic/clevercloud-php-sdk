@@ -2,7 +2,9 @@
 
 namespace CleverCloud\Sdk\Resource\V4;
 
+use CleverCloud\Sdk\Model\AddonProviderInformation;
 use CleverCloud\Sdk\Model\Operator;
+use CleverCloud\Sdk\Model\OperatorVersionCheck;
 use CleverCloud\Sdk\Resource\AbstractV4Resource;
 
 /**
@@ -14,6 +16,25 @@ use CleverCloud\Sdk\Resource\AbstractV4Resource;
 abstract readonly class AbstractOperatorResource extends AbstractV4Resource
 {
     abstract protected function operator(): string;
+
+    /**
+     * Path of the provider information endpoint, relative to `/v4`. The API
+     * is not consistent across operators (`/addon-providers/keycloak` but
+     * `/addon-providers/addon-matomo`), so each operator declares its own.
+     */
+    abstract protected function providerInformationPath(): string;
+
+    /**
+     * Returns the provider as the console shows it: the clusters add-ons are
+     * created on and the dedicated versions on offer.
+     */
+    public function providerInformation(): AddonProviderInformation
+    {
+        /** @var array<string, mixed> $payload */
+        $payload = $this->httpGet($this->providerInformationPath());
+
+        return $this->mapTo(AddonProviderInformation::class, $payload);
+    }
 
     /**
      * @return list<Operator>
@@ -85,6 +106,40 @@ abstract readonly class AbstractOperatorResource extends AbstractV4Resource
     public function unlinkNetworkGroup(string $id): void
     {
         $this->httpDelete($this->basePath().'/'.rawurlencode($id).'/networkgroup');
+    }
+
+    /**
+     * Shared implementation of `checkVersion()` for the operators whose API
+     * exposes `version/check` (Keycloak, Metabase, Otoroshi).
+     */
+    protected function fetchVersionCheck(string $id): OperatorVersionCheck
+    {
+        /** @var array<string, mixed> $payload */
+        $payload = $this->httpGet($this->addonPath($id).'/version/check');
+
+        return $this->mapTo(OperatorVersionCheck::class, $payload);
+    }
+
+    /**
+     * Shared implementation of `updateVersion()` for the operators whose API
+     * exposes `version/update` (Keycloak, Metabase, Otoroshi).
+     *
+     * @return array<string, mixed>
+     */
+    protected function requestVersionUpdate(string $id, string $targetVersion): array
+    {
+        /** @var array<string, mixed> $payload */
+        $payload = $this->httpPost(
+            $this->addonPath($id).'/version/update',
+            ['json' => ['targetVersion' => $targetVersion]],
+        );
+
+        return $payload;
+    }
+
+    protected function addonPath(string $id): string
+    {
+        return $this->basePath().'/'.rawurlencode($id);
     }
 
     private function basePath(): string

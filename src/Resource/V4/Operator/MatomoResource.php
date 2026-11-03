@@ -10,4 +10,9 @@ final readonly class MatomoResource extends AbstractOperatorResource
     {
         return 'matomo';
     }
+
+    protected function providerInformationPath(): string
+    {
+        return '/addon-providers/addon-matomo';
+    }
 }
