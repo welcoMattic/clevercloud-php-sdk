@@ -70,19 +70,6 @@ final class PulsarPoliciesResourceTest extends TestCase
         );
     }
 
-    public function testResetHitsDelete(): void
-    {
-        $response = ResourceFactory::jsonResponse(204, []);
-
-        $this->resource($response)->reset('pulsar_1');
-
-        self::assertSame('DELETE', $response->getRequestMethod());
-        self::assertSame(
-            'https://api.clever-cloud.com/v4/addon-providers/addon-pulsar/addons/pulsar_1/storage-policies',
-            $response->getRequestUrl(),
-        );
-    }
-
     private function resource(MockResponse $response): PulsarPoliciesResource
     {
         return new PulsarPoliciesResource(

@@ -23,11 +23,7 @@ final readonly class Operator
         #[MapFrom(property: 'resourceId')]
         public string $id,
         public string $name,
-        public ?string $region = null,
         public ?string $resourceId = null,
-        public ?string $status = null,
-        public ?string $kind = null,
-        public ?int $creationDate = null,
         public array $features = [],
         public ?string $addonId = null,
         public ?string $ownerId = null,

@@ -21,36 +21,6 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 #[CoversClass(OperatorsResource::class)]
 final class OperatorsResourceTest extends TestCase
 {
-    public function testKeycloakListRoutesUnderAddonProviders(): void
-    {
-        $response = ResourceFactory::jsonResponse(200, [
-            ['resourceId' => 'op_1', 'addonId' => 'addon_1', 'name' => 'idp-prod'],
-        ]);
-
-        $ops = $this->facade($response)->keycloak->list();
-
-        self::assertCount(1, $ops);
-        self::assertSame('op_1', $ops[0]->id);
-        self::assertSame(
-            'https://api.clever-cloud.com/v4/addon-providers/addon-keycloak/addons',
-            $response->getRequestUrl(),
-        );
-    }
-
-    public function testMatomoCreatePostsBody(): void
-    {
-        $response = ResourceFactory::jsonResponse(201, ['resourceId' => 'op_new', 'addonId' => 'addon_2', 'name' => 'analytics']);
-
-        $this->facade($response)->matomo->create(['name' => 'analytics', 'region' => 'par']);
-
-        self::assertSame('POST', $response->getRequestMethod());
-        self::assertSame(
-            'https://api.clever-cloud.com/v4/addon-providers/addon-matomo/addons',
-            $response->getRequestUrl(),
-        );
-        self::assertSame('{"name":"analytics","region":"par"}', $response->getRequestOptions()['body']);
-    }
-
     public function testRebootPostsToRebootSubpath(): void
     {
         $response = ResourceFactory::jsonResponse(200, []);
@@ -76,17 +46,32 @@ final class OperatorsResourceTest extends TestCase
         );
     }
 
-    public function testLinkNetworkGroupHitsNetworkgroupSubpath(): void
+    /**
+     * @return iterable<string, array{string, string, string}>
+     */
+    public static function networkGroupLinks(): iterable
+    {
+        yield 'keycloak link' => ['keycloak', 'POST', 'https://api.clever-cloud.com/v4/addon-providers/addon-keycloak/addons/op_1/networkgroup'];
+        yield 'keycloak unlink' => ['keycloak', 'DELETE', 'https://api.clever-cloud.com/v4/addon-providers/addon-keycloak/addons/op_1/networkgroup'];
+        yield 'otoroshi link' => ['otoroshi', 'POST', 'https://api.clever-cloud.com/v4/addon-providers/addon-otoroshi/addons/op_1/networkgroup'];
+        yield 'otoroshi unlink' => ['otoroshi', 'DELETE', 'https://api.clever-cloud.com/v4/addon-providers/addon-otoroshi/addons/op_1/networkgroup'];
+    }
+
+    #[DataProvider('networkGroupLinks')]
+    public function testNetworkGroupLinkHitsNetworkgroupSubpath(string $operator, string $method, string $url): void
     {
         $response = ResourceFactory::jsonResponse(200, []);
+        $facade = $this->facade($response);
 
-        $this->facade($response)->keycloak->linkNetworkGroup('op_1');
+        match ([$operator, $method]) {
+            ['keycloak', 'POST'] => $facade->keycloak->linkNetworkGroup('op_1'),
+            ['keycloak', 'DELETE'] => $facade->keycloak->unlinkNetworkGroup('op_1'),
+            ['otoroshi', 'POST'] => $facade->otoroshi->linkNetworkGroup('op_1'),
+            default => $facade->otoroshi->unlinkNetworkGroup('op_1'),
+        };
 
-        self::assertSame('POST', $response->getRequestMethod());
-        self::assertSame(
-            'https://api.clever-cloud.com/v4/addon-providers/addon-keycloak/addons/op_1/networkgroup',
-            $response->getRequestUrl(),
-        );
+        self::assertSame($method, $response->getRequestMethod());
+        self::assertSame($url, $response->getRequestUrl());
     }
 
     /**

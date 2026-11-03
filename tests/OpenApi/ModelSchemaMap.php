@@ -37,15 +37,14 @@ final class ModelSchemaMap
             Model\Member::class => ['schema' => 'MemberView', 'knownDrift' => []],
             // Spec field is `namespace`.
             Model\Namespace_::class => ['schema' => 'NamespaceView', 'knownDrift' => ['name']],
-            // The spec has `label` and `networkIp`, no `name` nor `cidr`.
-            Model\NetworkGroup::class => ['schema' => 'NetworkGroup', 'knownDrift' => ['name', 'cidr']],
+            Model\NetworkGroup::class => ['schema' => 'NetworkGroup', 'knownDrift' => []],
             Model\NetworkGroupMember::class => ['schema' => 'NetworkGroupComponent', 'knownDrift' => []],
             // The secret comes from the separate `/consumers/{key}/secret` route.
             Model\OAuthConsumer::class => ['schema' => 'OAuth1ConsumerView', 'knownDrift' => ['secret']],
-            // Spec fields are `VAT` (upper case) and no creation date.
-            Model\Organisation::class => ['schema' => 'OrganisationView', 'knownDrift' => ['vat', 'creation_date']],
-            // The documented body is `{offloadPolicies, retentionPolicies}`: the model matches none of it.
-            Model\PulsarPolicy::class => ['schema' => 'StoragePolicies', 'knownDrift' => ['addonId', 'namespace', 'retentionTimeInMinutes', 'retentionSizeInMB', 'messageTTLInSeconds', 'rawPolicy']],
+            // Spec field is `VAT` (upper case).
+            Model\Organisation::class => ['schema' => 'OrganisationView', 'knownDrift' => ['vat']],
+            // The API sends no add-on id: the SDK injects the requested one.
+            Model\PulsarPolicy::class => ['schema' => 'StoragePolicies', 'knownDrift' => ['addonId']],
             Model\SshKey::class => ['schema' => 'SshKeyView', 'knownDrift' => []],
             Model\TcpRedirection::class => ['schema' => 'TcpRedirView', 'knownDrift' => []],
             Model\User::class => ['schema' => 'UserView', 'knownDrift' => []],

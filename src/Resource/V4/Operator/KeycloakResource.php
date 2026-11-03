@@ -28,6 +28,22 @@ final readonly class KeycloakResource extends AbstractOperatorResource
         return $this->requestVersionUpdate($id, $targetVersion);
     }
 
+    /**
+     * Links the add-on to a Network Group.
+     */
+    public function linkNetworkGroup(string $id): void
+    {
+        $this->attachNetworkGroup($id);
+    }
+
+    /**
+     * Unlinks the add-on from its Network Group.
+     */
+    public function unlinkNetworkGroup(string $id): void
+    {
+        $this->detachNetworkGroup($id);
+    }
+
     protected function operator(): string
     {
         return 'keycloak';

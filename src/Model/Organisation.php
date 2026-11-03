@@ -32,8 +32,6 @@ final readonly class Organisation
         public ?bool $canSepa = null,
         #[MapFrom(property: 'isTrusted')]
         public ?bool $isTrusted = null,
-        #[MapFrom(property: 'creation_date')]
-        public ?int $creationDate = null,
     ) {
     }
 }

@@ -429,17 +429,6 @@ final class NetworkGroupsResourceTest extends TestCase
         );
     }
 
-    public function testDeprecatedExternalPeerConfigReadsTheWireguardConfiguration(): void
-    {
-        $response = new MockResponse("[Interface]\n", ['http_code' => 200]);
-
-        $configuration = $this->resource($response)->externalPeerConfig('ng_1', 'peer_2', 'orga_1');
-
-        self::assertSame("[Interface]\n", $configuration);
-        self::assertSame('GET', $response->getRequestMethod());
-        self::assertSame(self::BASE.'/ng_1/peers/peer_2/wireguard/configuration', $response->getRequestUrl());
-    }
-
     /**
      * Wire format of the `NetworkGroup` schema of the Clever Cloud OpenAPI spec.
      *

@@ -17,7 +17,7 @@ final class OrganisationsResourceTest extends TestCase
     public function testListReturnsTypedOrganisations(): void
     {
         $response = ResourceFactory::jsonResponse(200, [
-            ['id' => 'orga_1', 'name' => 'Acme', 'canPay' => true, 'creation_date' => 1_700_000_000_000],
+            ['id' => 'orga_1', 'name' => 'Acme', 'canPay' => true],
             ['id' => 'orga_2', 'name' => 'Beta'],
         ]);
 
@@ -27,7 +27,6 @@ final class OrganisationsResourceTest extends TestCase
         self::assertSame('orga_1', $orgs[0]->id);
         self::assertSame('Acme', $orgs[0]->name);
         self::assertTrue($orgs[0]->canPay);
-        self::assertSame(1_700_000_000_000, $orgs[0]->creationDate);
         self::assertSame('orga_2', $orgs[1]->id);
         self::assertSame('GET', $response->getRequestMethod());
         self::assertSame('https://api.clever-cloud.com/v2/organisations', $response->getRequestUrl());
