@@ -84,17 +84,17 @@ is deliberately out of scope at this stage is listed in the "Roadmap" section.
 
 | Family            | Methods on `$client->...`                                                                                                |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `billing`         | `getBalance / listInvoices / getInvoice / downloadInvoicePdf / paymentMethods / addPaymentMethod / removePaymentMethod / consumptions / recurrent` |
+| `billing` | `getBalance / listInvoices / getInvoice / downloadInvoicePdf / paymentMethods / addPaymentMethod / removePaymentMethod` |
 | `instances`       | `list / get / flavors / types`                                                                                           |
-| `loadBalancers`   | `list / get / dnsInfo`                                                                                                   |
+| `loadBalancers` | `list` |
 | `products`        | `instances / addonProviders / zones / countries`                                                                         |
 | `zones`           | `list / get`                                                                                                             |
 | `pulsarPolicies`  | `get / update`                                                                                                           |
 | `logs`            | `stream` (SSE → `LogStream<LogEntry>`) / `query` (historical)                                                            |
 | `operators`       | `.keycloak / .matomo / .metabase / .otoroshi` (each: `get / reboot / rebuild`; `.keycloak / .otoroshi`: `linkNetworkGroup / unlinkNetworkGroup`) |
-| `drains`          | `list / get / create / update / delete / enable / disable / restart`                                                     |
+| `drains` | `list / get / create / delete / enable / disable / restart` |
 | `networkGroups`   | `list / get / create / delete / addMember / removeMember / wireguardConfiguration`                                       |
-| `orchestration`   | `instances / deployments`                                                                                                |
+| `orchestration` | `instances / deployments / getDeployment` |
 
 ### Bridge — `api-bridge.clever-cloud.com`
 
@@ -117,7 +117,8 @@ form selects without hardcoding string literals.
 | `MemberRole`               | `Admin Manager Developer Accounting`                                                       | Organisation membership                 |
 | `DeploymentAction`         | (see source)                                                                               | Deployment lifecycle                    |
 | `DeploymentState`          | (see source)                                                                               | Deployment outcome                      |
-| `DrainType`                | Datadog / ElasticSearch / NewRelic / OVH-TCP / Raw-HTTP / Syslog-TCP / Syslog-UDP          | Log drain configuration                 |
+| `DrainType` | BetterStack / Datadog / ElasticSearch / NewRelic / OvhTcp / RawHttp / Splunk / SyslogTcp / SyslogUdp | Log drain recipient protocol |
+| `DrainKind` | Log / AccessLog | Log stream a drain ships |
 | `WebhookFormat`            | Raw / Slack / Gitter / Flowdock                                                            | Webhook payload format                  |
 
 ```php

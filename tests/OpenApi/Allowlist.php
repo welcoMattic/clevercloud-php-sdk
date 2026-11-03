@@ -27,7 +27,7 @@ final class Allowlist
             ['method' => '*', 'pattern' => '/v2/products*', 'reason' => 'v2 products catalog not in the spec'],
             // Other users' public profile, apps and add-ons.
             ['method' => '*', 'pattern' => '/v2/users/*', 'reason' => 'v2 users not in the spec'],
-            // Invoices, payment methods, consumptions, credits.
+            // Invoices, payment methods, credits.
             ['method' => '*', 'pattern' => '/v4/billing/*', 'reason' => 'v4 billing not in the spec'],
             // Log drains.
             ['method' => '*', 'pattern' => '/v4/drains/*', 'reason' => 'v4 drains not in the spec'],
@@ -39,8 +39,6 @@ final class Allowlist
             ['method' => '*', 'pattern' => '/v4/orchestration/*', 'reason' => 'v4 orchestration not in the spec'],
             // Add-on backups (any provider), listed by owner and real add-on id.
             ['method' => 'GET', 'pattern' => '/v2/backups/{}/{}', 'reason' => 'v2 add-on backups live-verified, absent from the spec'],
-            // Network groups owned by the current user: the spec only documents the organisation owner.
-            ['method' => '*', 'pattern' => '/v4/networkgroups/self/*', 'reason' => 'networkgroups /self owner variant not in the spec'],
             // API tokens live on the api-bridge host, outside the spec.
             ['method' => '*', 'pattern' => 'api-bridge.clever-cloud.com/api-tokens*', 'reason' => 'api-bridge api-tokens not in the spec'],
         ];

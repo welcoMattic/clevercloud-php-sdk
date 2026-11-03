@@ -2,7 +2,8 @@
 
 namespace CleverCloud\Sdk\Resource\V4;
 
-use CleverCloud\Sdk\Model\Deployment;
+use CleverCloud\Sdk\Exception\ApiException;
+use CleverCloud\Sdk\Model\OrchestrationDeployment;
 use CleverCloud\Sdk\Resource\AbstractV4Resource;
 
 /**
@@ -11,12 +12,15 @@ use CleverCloud\Sdk\Resource\AbstractV4Resource;
  *
  * The v2 equivalents (`ApplicationsResource::instances`, `DeploymentsResource`)
  * still work; v4 returns richer payloads (orchestration metadata, more accurate
- * timing).
+ * timing). A null `$organisationId` targets the personal space, resolved
+ * through `GET /v2/self`.
  */
 final readonly class OrchestrationResource extends AbstractV4Resource
 {
     /**
      * @return list<array<string, mixed>>
+     *
+     * @throws ApiException when `$organisationId` is null and the personal organisation id cannot be resolved
      */
     public function instances(string $applicationId, ?string $organisationId = null): array
     {
@@ -27,7 +31,11 @@ final readonly class OrchestrationResource extends AbstractV4Resource
     }
 
     /**
-     * @return list<Deployment>
+     * Lists the deployments of an application, most recent first.
+     *
+     * @return list<OrchestrationDeployment>
+     *
+     * @throws ApiException when `$organisationId` is null and the personal organisation id cannot be resolved
      */
     public function deployments(string $applicationId, ?string $organisationId = null, ?int $limit = null, ?int $offset = null): array
     {
@@ -45,17 +53,20 @@ final readonly class OrchestrationResource extends AbstractV4Resource
             ['query' => $query],
         );
 
-        return $this->mapCollection(Deployment::class, $payload);
+        return $this->mapCollection(OrchestrationDeployment::class, $payload);
     }
 
-    public function getDeployment(string $applicationId, string $deploymentId, ?string $organisationId = null): Deployment
+    /**
+     * @throws ApiException when `$organisationId` is null and the personal organisation id cannot be resolved
+     */
+    public function getDeployment(string $applicationId, string $deploymentId, ?string $organisationId = null): OrchestrationDeployment
     {
         /** @var array<string, mixed> $payload */
         $payload = $this->httpGet(
             $this->basePath($applicationId, $organisationId).'/deployments/'.rawurlencode($deploymentId),
         );
 
-        return $this->mapTo(Deployment::class, $payload);
+        return $this->mapTo(OrchestrationDeployment::class, $payload);
     }
 
     private function basePath(string $applicationId, ?string $organisationId): string

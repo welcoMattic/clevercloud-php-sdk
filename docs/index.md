@@ -65,6 +65,7 @@ All under `CleverCloud\Sdk\Model\Enum\`:
 - `DeploymentAction`
 - `DeploymentState`
 - `DrainType`
+- `DrainKind`
 - `WebhookFormat`
 
 ## Catalogues fetched live from Clever Cloud

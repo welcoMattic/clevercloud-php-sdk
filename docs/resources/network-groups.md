@@ -11,8 +11,10 @@ balancers and external peers together.
 $client->networkGroups
 ```
 
-`?string $organisationId = null` scopes to `/self`; pass an organisation ID
-to scope to `/organisations/{id}`. Paths below write that prefix as `...`.
+Paths are scoped to `/organisations/{id}`. V4 has no `/self` variant, so a
+null `?string $organisationId` targets your personal space: its `user_...` id
+is read from `GET /v2/self` first, costing one extra request. Paths below
+write that prefix as `...`.
 
 ## Platform configuration
 

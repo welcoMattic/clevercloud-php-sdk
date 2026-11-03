@@ -84,15 +84,18 @@ final class NetworkGroupsResourceTest extends TestCase
         self::assertSame(51821, $external->endpoint->publicTerm->port);
     }
 
-    public function testListScopesToSelfAndRepeatsTags(): void
+    public function testListResolvesThePersonalOrganisationAndRepeatsTags(): void
     {
+        $self = ResourceFactory::jsonResponse(200, ['id' => 'user_1']);
         $response = ResourceFactory::jsonResponse(200, []);
 
-        $groups = $this->resource($response)->list(tags: ['prod', 'eu']);
+        $groups = $this->resource($self, $response)->list(tags: ['prod', 'eu']);
 
         self::assertSame([], $groups);
+        self::assertSame('GET', $self->getRequestMethod());
+        self::assertSame('https://api.clever-cloud.com/v2/self', $self->getRequestUrl());
         self::assertSame(
-            'https://api.clever-cloud.com/v4/networkgroups/self/networkgroups?tags=prod&tags=eu',
+            'https://api.clever-cloud.com/v4/networkgroups/organisations/user_1/networkgroups?tags=prod&tags=eu',
             $response->getRequestUrl(),
         );
     }
@@ -478,10 +481,10 @@ final class NetworkGroupsResourceTest extends TestCase
         ];
     }
 
-    private function resource(MockResponse $response): NetworkGroupsResource
+    private function resource(MockResponse ...$responses): NetworkGroupsResource
     {
         return new NetworkGroupsResource(
-            ResourceFactory::http(new MockHttpClient([$response])),
+            ResourceFactory::http(new MockHttpClient($responses)),
             ResourceFactory::mapper(),
         );
     }

@@ -4,6 +4,7 @@ namespace CleverCloud\Sdk\Resource;
 
 use AutoMapper\AutoMapperInterface;
 use CleverCloud\Sdk\ApiVersion;
+use CleverCloud\Sdk\Exception\ApiException;
 use CleverCloud\Sdk\Exception\JsonException;
 use CleverCloud\Sdk\Http\HttpClient;
 use CleverCloud\Sdk\Streaming\SseStreamHandle;
@@ -23,6 +24,29 @@ abstract readonly class AbstractResource
     }
 
     abstract protected function version(): ApiVersion;
+
+    /**
+     * Returns `$organisationId` unchanged, or the current user's personal
+     * organisation id (`user_<uuid>`) read from `GET /v2/self` when it is
+     * null. For the endpoints that have no `/self` variant and only accept an
+     * explicit owner id.
+     *
+     * @throws ApiException when the personal organisation id cannot be resolved
+     */
+    final protected function resolveOwnerId(?string $organisationId): string
+    {
+        if (null !== $organisationId) {
+            return $organisationId;
+        }
+
+        $payload = $this->http->request('GET', ApiVersion::V2, '/self');
+
+        if (!isset($payload['id']) || !\is_string($payload['id']) || '' === $payload['id']) {
+            throw new ApiException('Could not resolve personal organisation id from /v2/self response', 0);
+        }
+
+        return $payload['id'];
+    }
 
     /**
      * @template T of object
