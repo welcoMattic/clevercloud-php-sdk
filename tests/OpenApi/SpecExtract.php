@@ -36,6 +36,8 @@ final readonly class SpecExtract
         public string $fetchedAt,
         public array $operations,
         public array $schemas,
+        /** `x-build-ref` response header of the published document: the commit it was built from. */
+        public ?string $buildRef = null,
     ) {
     }
 
@@ -52,17 +54,28 @@ final readonly class SpecExtract
             throw new RuntimeException(\sprintf('Cannot read the OpenAPI extract at %s.', $path));
         }
 
-        /** @var array{source: string, sha256: string, fetchedAt: string, operations: list<Operation>, schemas: array<string, Schema>} $data */
+        /** @var array{source: string, sha256: string, fetchedAt: string, buildRef?: string, operations: list<Operation>, schemas: array<string, Schema>} $data */
         $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
-        return new self($data['source'], $data['sha256'], $data['fetchedAt'], $data['operations'], $data['schemas']);
+        return new self(
+            $data['source'],
+            $data['sha256'],
+            $data['fetchedAt'],
+            $data['operations'],
+            $data['schemas'],
+            $data['buildRef'] ?? null,
+        );
     }
 
     /**
      * Builds the extract from the raw bytes of the published document.
      */
-    public static function fromRawSpec(string $raw, string $fetchedAt, string $source = self::SOURCE_URL): self
-    {
+    public static function fromRawSpec(
+        string $raw,
+        string $fetchedAt,
+        string $source = self::SOURCE_URL,
+        ?string $buildRef = null,
+    ): self {
         /** @var array<string, mixed> $spec */
         $spec = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
 
@@ -76,7 +89,7 @@ final readonly class SpecExtract
         }
         ksort($schemas);
 
-        return new self($source, hash('sha256', $raw), $fetchedAt, self::operationsOf($spec), $schemas);
+        return new self($source, hash('sha256', $raw), $fetchedAt, self::operationsOf($spec), $schemas, $buildRef);
     }
 
     /**
@@ -96,6 +109,7 @@ final readonly class SpecExtract
             .'    "source": '.json_encode($this->source, $flags).",\n"
             .'    "sha256": '.json_encode($this->sha256, $flags).",\n"
             .'    "fetchedAt": '.json_encode($this->fetchedAt, $flags).",\n"
+            .(null !== $this->buildRef ? '    "buildRef": '.json_encode($this->buildRef, $flags).",\n" : '')
             ."    \"operations\": [\n".implode(",\n", $operations)."\n    ],\n"
             .'    "schemas": '.$schemas."\n"
             ."}\n";

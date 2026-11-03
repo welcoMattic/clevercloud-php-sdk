@@ -169,7 +169,9 @@ Clever Cloud publishes an OpenAPI document at
 `https://api.clever-cloud.com/openapi.json`. The repository commits a compact
 extract of it, `tests/Fixtures/openapi/extract.json`: every operation (method,
 path, operationId, tags, security) and the property names and types of every
-component schema, pinned by the sha256 of the raw document and its fetch date.
+component schema, pinned by the sha256 of the raw document, its fetch date and
+the `x-build-ref` response header (the commit the document was built from;
+`info.version` stays at `0.1.0` and cannot tell versions apart).
 
 Two unit tests use the extract, offline, as part of `vendor/bin/phpunit --testsuite unit`:
 
