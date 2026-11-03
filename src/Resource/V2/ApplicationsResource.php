@@ -196,17 +196,18 @@ final readonly class ApplicationsResource extends AbstractV2Resource
     // ------------------------------------------------------------------
 
     /**
+     * The API answers a `name => value` object.
+     *
      * @return array<string, string>
      */
     public function exposedEnv(string $applicationId, ?string $organisationId = null): array
     {
-        /** @var list<array{name: string, value: string}> $payload */
         $payload = $this->httpGet($this->appPath($applicationId, $organisationId).'/exposed_env');
 
         $map = [];
-        foreach ($payload as $entry) {
-            if (isset($entry['name'], $entry['value']) && \is_string($entry['name']) && \is_string($entry['value'])) {
-                $map[$entry['name']] = $entry['value'];
+        foreach ($payload as $name => $value) {
+            if (\is_string($name) && \is_string($value)) {
+                $map[$name] = $value;
             }
         }
 
@@ -214,20 +215,16 @@ final readonly class ApplicationsResource extends AbstractV2Resource
     }
 
     /**
-     * Replaces the application's exposed env block.
+     * Replaces the application's exposed env block. The body is the
+     * `name => value` object itself (`{}` when `$variables` is empty).
      *
      * @param array<string, string> $variables
      */
     public function setExposedEnv(string $applicationId, array $variables, ?string $organisationId = null): void
     {
-        $body = [];
-        foreach ($variables as $name => $value) {
-            $body[] = ['name' => $name, 'value' => $value];
-        }
-
         $this->httpPut(
             $this->appPath($applicationId, $organisationId).'/exposed_env',
-            ['json' => $body],
+            ['json' => (object) $variables],
         );
     }
 
@@ -248,11 +245,16 @@ final readonly class ApplicationsResource extends AbstractV2Resource
         return $payload;
     }
 
+    /**
+     * The body is the add-on id as a bare JSON string (`"addon_..."`). The
+     * spec declares `text/plain`; this sends `application/json` with the same
+     * body, which is what clever-tools sends in production.
+     */
     public function linkAddon(string $applicationId, string $addonId, ?string $organisationId = null): void
     {
         $this->httpPost(
             $this->appPath($applicationId, $organisationId).'/addons',
-            ['json' => ['addon_id' => $addonId]],
+            ['json' => $addonId],
         );
     }
 

@@ -20,6 +20,7 @@ final readonly class Organisation
         public ?string $zipcode = null,
         public ?string $country = null,
         public ?string $company = null,
+        #[MapFrom(property: 'VAT')]
         public ?string $vat = null,
         public ?string $avatar = null,
         #[MapFrom(property: 'vatState')]

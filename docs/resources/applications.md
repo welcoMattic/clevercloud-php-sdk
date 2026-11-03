@@ -139,10 +139,9 @@ public function setExposedEnv(string $applicationId, array $variables, ?string $
 | Method | HTTP | Path |
 | --- | --- | --- |
 | `exposedEnv()` | GET | `/v2/.../applications/{id}/exposed_env` (returns `name => value` map) |
-| `setExposedEnv()` | PUT | `/v2/.../applications/{id}/exposed_env` (body: `[{name, value}, ...]`) |
+| `setExposedEnv()` | PUT | `/v2/.../applications/{id}/exposed_env` (body: `{"NAME": "value", ...}`, `{}` for an empty map) |
 
-The SDK collapses the API's `[{name, value}]` list into a `name => value`
-map on read, and expands it back on write.
+Both directions use the API's `name => value` object as is.
 
 ## Linked add-ons
 
@@ -155,7 +154,7 @@ public function unlinkAddon(string $applicationId, string $addonId, ?string $org
 | Method | HTTP | Path |
 | --- | --- | --- |
 | `addons()` | GET | `/v2/.../applications/{id}/addons` |
-| `linkAddon()` | POST | `/v2/.../applications/{id}/addons` (body: `{"addon_id": "..."}`) |
+| `linkAddon()` | POST | `/v2/.../applications/{id}/addons` (body: the add-on id as a JSON string, `"addon_..."`, sent as JSON (the spec declares `text/plain`; clever-tools sends `application/json`)) |
 | `unlinkAddon()` | DELETE | `/v2/.../applications/{id}/addons/{addonId}` |
 
 ## Build flavor
@@ -212,7 +211,7 @@ public ?bool   $cancelOnPush;
 public ?bool   $separateBuild;
 public ?bool   $stickySessions;
 public ?int    $creationDate;   // ms since epoch
-public ?int    $lastDeploy;     // ms since epoch
+public ?int    $lastDeploy;     // id of the latest deployment (`Deployment::$id`)
 public array   $vhosts;         // list<Vhost>
 public array   $instance;       // raw array — instance/scaling config
 public array   $deployment;     // raw array — deployment config

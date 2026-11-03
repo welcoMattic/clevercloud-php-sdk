@@ -49,6 +49,7 @@ final class ApplicationsResourceTest extends TestCase
             'archived' => false,
             'favourite' => true,
             'creationDate' => 1_700_000_000_000,
+            'last_deploy' => 42,
             'vhosts' => [['fqdn' => 'demo.example.com']],
             'instance' => ['type' => 'node', 'version' => '20'],
         ]);
@@ -61,6 +62,7 @@ final class ApplicationsResourceTest extends TestCase
         self::assertFalse($app->archived);
         self::assertTrue($app->favourite);
         self::assertSame(1_700_000_000_000, $app->creationDate);
+        self::assertSame(42, $app->lastDeploy);
         self::assertCount(1, $app->vhosts);
         self::assertSame('demo.example.com', $app->vhosts[0]->fqdn);
         self::assertSame(['type' => 'node', 'version' => '20'], $app->instance);
@@ -186,7 +188,7 @@ final class ApplicationsResourceTest extends TestCase
         );
     }
 
-    public function testSetExposedEnvEncodesAsList(): void
+    public function testSetExposedEnvEncodesAsNameToValueObject(): void
     {
         $response = ResourceFactory::jsonResponse(204, []);
 
@@ -197,10 +199,45 @@ final class ApplicationsResourceTest extends TestCase
             'https://api.clever-cloud.com/v2/self/applications/app_1/exposed_env',
             $response->getRequestUrl(),
         );
+        self::assertSame('{"SECRET_TOKEN":"abc"}', $response->getRequestOptions()['body']);
+        self::assertContains('Content-Type: application/json', ResourceFactory::headers($response));
+    }
+
+    public function testSetExposedEnvWithEmptyMapSendsEmptyObject(): void
+    {
+        $response = ResourceFactory::jsonResponse(204, []);
+
+        $this->resource($response)->setExposedEnv('app_1', []);
+
+        self::assertSame('{}', $response->getRequestOptions()['body']);
+    }
+
+    public function testExposedEnvReadsNameToValueObject(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['SECRET_TOKEN' => 'abc', 'REGION' => 'par']);
+
+        $env = $this->resource($response)->exposedEnv('app_1', 'orga_1');
+
+        self::assertSame(['SECRET_TOKEN' => 'abc', 'REGION' => 'par'], $env);
         self::assertSame(
-            '[{"name":"SECRET_TOKEN","value":"abc"}]',
-            $response->getRequestOptions()['body'],
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/exposed_env',
+            $response->getRequestUrl(),
         );
+    }
+
+    public function testLinkAddonPostsAddonIdAsBareJsonString(): void
+    {
+        $response = ResourceFactory::emptyResponse(204);
+
+        $this->resource($response)->linkAddon('app_1', 'addon_1', 'orga_1');
+
+        self::assertSame('POST', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/addons',
+            $response->getRequestUrl(),
+        );
+        self::assertSame('"addon_1"', $response->getRequestOptions()['body']);
+        self::assertContains('Content-Type: application/json', ResourceFactory::headers($response));
     }
 
     public function testTagsListReturnsStringList(): void

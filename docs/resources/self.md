@@ -36,7 +36,7 @@ public function removeSshKey(string $name): void
 | Method | HTTP | Path | Body |
 | --- | --- | --- | --- |
 | `sshKeys()` | GET | `/v2/self/keys` | — |
-| `addSshKey()` | PUT | `/v2/self/keys/{name}` | `{"key": "<publicKey>"}` |
+| `addSshKey()` | PUT | `/v2/self/keys/{name}` | The public key as a JSON string (`"ssh-ed25519 AAAA... comment"`), sent as JSON (the spec declares `text/plain`; clever-tools sends `application/json`) |
 | `removeSshKey()` | DELETE | `/v2/self/keys/{name}` | — |
 
 ## Secondary email addresses
@@ -67,14 +67,19 @@ public function deleteConsumer(string $consumerKey): void
 
 ```php
 [
-    'name' => 'My OAuth consumer',     // required
-    'url'  => 'https://example.org',   // required
-    'baseUrl'     => '...',            // optional
-    'description' => '...',            // optional
-    'picture'     => '...',            // optional URL
-    'rights'      => ['...'],          // optional list of scope strings
+    'name' => 'My OAuth consumer', // required, non-empty
+    'description' => '...', // required, non-empty
+    'rights' => ['access_organisations' => true, 'manage_ssh_keys' => false], // required: right name => bool
+    'url' => 'https://example.org', // optional absolute URL
+    'baseUrl' => '...', // optional
+    'picture' => '...', // optional absolute URL
 ]
 ```
+
+`OAuthConsumer` exposes `key`, `name`, `description`, `url`, `baseUrl`,
+`picture` and `rights`, the map of right name (`almighty`,
+`access_organisations`, `manage_ssh_keys`, ...) to boolean. The consumer
+secret is not part of that payload: read it with `consumerSecret()`.
 
 ## MFA (2FA)
 

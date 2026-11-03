@@ -52,9 +52,15 @@ final readonly class SelfResource extends AbstractV2Resource
         return $this->mapCollection(SshKey::class, $payload);
     }
 
+    /**
+     * The body is the public key as a bare JSON string
+     * (`"ssh-ed25519 AAAA... comment"`). The spec declares `text/plain`; this
+     * sends `application/json` with the same body, which is what clever-tools
+     * sends in production.
+     */
     public function addSshKey(string $name, string $publicKey): void
     {
-        $this->httpPut('/self/keys/'.rawurlencode($name), ['json' => ['key' => $publicKey]]);
+        $this->httpPut('/self/keys/'.rawurlencode($name), ['json' => $publicKey]);
     }
 
     public function removeSshKey(string $name): void
@@ -114,7 +120,7 @@ final readonly class SelfResource extends AbstractV2Resource
     }
 
     /**
-     * @param array{name: string, url: string, baseUrl?: string, description?: string, picture?: string, rights?: list<string>} $data
+     * @param array{name: string, description: string, rights: array<string, bool>, url?: string, baseUrl?: string, picture?: string} $data
      */
     public function createConsumer(array $data): OAuthConsumer
     {

@@ -17,7 +17,7 @@ final class OrganisationsResourceTest extends TestCase
     public function testListReturnsTypedOrganisations(): void
     {
         $response = ResourceFactory::jsonResponse(200, [
-            ['id' => 'orga_1', 'name' => 'Acme', 'canPay' => true],
+            ['id' => 'orga_1', 'name' => 'Acme', 'canPay' => true, 'VAT' => 'FR00123456789'],
             ['id' => 'orga_2', 'name' => 'Beta'],
         ]);
 
@@ -27,6 +27,7 @@ final class OrganisationsResourceTest extends TestCase
         self::assertSame('orga_1', $orgs[0]->id);
         self::assertSame('Acme', $orgs[0]->name);
         self::assertTrue($orgs[0]->canPay);
+        self::assertSame('FR00123456789', $orgs[0]->vat);
         self::assertSame('orga_2', $orgs[1]->id);
         self::assertSame('GET', $response->getRequestMethod());
         self::assertSame('https://api.clever-cloud.com/v2/organisations', $response->getRequestUrl());
@@ -250,6 +251,28 @@ final class OrganisationsResourceTest extends TestCase
         self::assertSame('inst_1', $instances['app_1'][0]['id']);
         self::assertSame('GET', $response->getRequestMethod());
         self::assertSame('https://api.clever-cloud.com/v2/organisations/orga_1/instances', $response->getRequestUrl());
+    }
+
+    public function testNamespacesMapsNamespaceKeyToName(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, [['namespace' => 'default'], ['namespace' => 'cleverapps']]);
+
+        $namespaces = $this->resource($response)->namespaces('orga_1');
+
+        self::assertSame(['default', 'cleverapps'], array_map(static fn ($ns) => $ns->name, $namespaces));
+        self::assertSame('https://api.clever-cloud.com/v2/organisations/orga_1/namespaces', $response->getRequestUrl());
+    }
+
+    public function testConsumersMapRightsAsNameToBoolean(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, [
+            ['key' => 'ck_1', 'name' => 'CI', 'rights' => ['almighty' => false, 'access_organisations' => true]],
+        ]);
+
+        $consumers = $this->resource($response)->consumers('orga_1');
+
+        self::assertSame('ck_1', $consumers[0]->key);
+        self::assertSame(['almighty' => false, 'access_organisations' => true], $consumers[0]->rights);
     }
 
     public function testConsumerSecretReturnsSecret(): void

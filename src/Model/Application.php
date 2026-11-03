@@ -2,6 +2,8 @@
 
 namespace CleverCloud\Sdk\Model;
 
+use AutoMapper\Attribute\MapFrom;
+
 /**
  * A Clever Cloud application, as returned by `/v2/{owner}/applications[/{id}]`.
  *
@@ -16,6 +18,7 @@ final readonly class Application
      * @param array<string, mixed> $instance
      * @param array<string, mixed> $deployment
      * @param array<string, mixed> $buildFlavor
+     * @param int|null             $lastDeploy  Id of the latest deployment (the `id` of a {@see Deployment}), not a date
      */
     public function __construct(
         public string $id,
@@ -34,6 +37,7 @@ final readonly class Application
         public ?bool $separateBuild = null,
         public ?bool $stickySessions = null,
         public ?int $creationDate = null,
+        #[MapFrom(property: 'last_deploy')]
         public ?int $lastDeploy = null,
         public array $vhosts = [],
         public array $instance = [],
