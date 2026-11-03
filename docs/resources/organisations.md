@@ -61,3 +61,59 @@ public function namespaces(string $organisationId): list<Namespace_>
 `GET /v2/organisations/{id}/namespaces`. Returns the namespaces the
 organisation is authorised to bind TCP ports on (see
 [TCP redirections](tcp-redirections.md)).
+
+## Invitations
+
+```php
+public function invitations(string $organisationId): list<Invitation>
+public function cancelInvitation(string $organisationId, string $invitationId): void
+```
+
+| Method | HTTP | Path |
+| --- | --- | --- |
+| `invitations()` | GET | `/v2/organisations/{id}/members/invitations` |
+| `cancelInvitation()` | DELETE | `/v2/organisations/{id}/members/invitations/{invitationId}` |
+
+`Invitation` exposes `id`, `organisationId`, `inviteeEmail`,
+`inviterUserId`, `role` (`MemberRole`), `status`, and the `createdAt`,
+`expiresAt` and `acceptedAt` dates as RFC 3339 strings.
+
+## Avatar, billing details, drain policy
+
+```php
+public function setAvatar(string $organisationId, AvatarSource $source): string
+public function paymentInfo(string $organisationId): PaymentInfo
+public function drainPolicy(string $organisationId): array<string, mixed>
+```
+
+| Method | HTTP | Path | Notes |
+| --- | --- | --- | --- |
+| `setAvatar()` | PUT | `/v2/organisations/{id}/avatar` | Body `{"source": "gravatar"\|"github"}`, returns the avatar URL |
+| `paymentInfo()` | GET | `/v2/organisations/{id}/payment-info` | Same `PaymentInfo` model as [Self](self.md#account) |
+| `drainPolicy()` | GET | `/v2/organisations/{id}/drain-policy` | Raw `{enforcement, drainTemplates}` |
+
+In the drain policy, `enforcement` maps each drain kind (`LOG`,
+`ACCESSLOG`, `AUDITLOG`) to `NONE` or `REQUIRED`.
+
+## Organisation-wide deployments and instances
+
+```php
+public function deployments(string $organisationId, ?int $limit = null): array<string, list<Deployment>>
+public function instances(string $organisationId): array<string, list<array<string, mixed>>>
+```
+
+| Method | HTTP | Path |
+| --- | --- | --- |
+| `deployments()` | GET | `/v2/organisations/{id}/deployments` (`?limit=` when set) |
+| `instances()` | GET | `/v2/organisations/{id}/instances` |
+
+Both return a map keyed by application id (`app_...`). The map is empty when
+the caller's role cannot see the organisation's applications.
+
+## OAuth consumer secret
+
+```php
+public function consumerSecret(string $organisationId, string $consumerKey): string
+```
+
+`GET /v2/organisations/{id}/consumers/{key}/secret`.

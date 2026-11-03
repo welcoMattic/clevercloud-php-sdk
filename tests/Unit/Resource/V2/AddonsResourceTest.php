@@ -314,6 +314,104 @@ final class AddonsResourceTest extends TestCase
         );
     }
 
+    public function testPreorderPostsProvisionPayload(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['status' => 'PENDING', 'totalTTC' => 0]);
+
+        $data = ['name' => 'db', 'region' => 'par', 'providerId' => 'postgresql-addon', 'plan' => 'plan_dev'];
+        $preorder = $this->resource($response)->preorder($data, 'orga_1');
+
+        self::assertSame('PENDING', $preorder['status']);
+        self::assertSame('POST', $response->getRequestMethod());
+        self::assertSame('https://api.clever-cloud.com/v2/organisations/orga_1/addons/preorders', $response->getRequestUrl());
+        self::assertSame(
+            '{"name":"db","region":"par","providerId":"postgresql-addon","plan":"plan_dev"}',
+            $response->getRequestOptions()['body'],
+        );
+    }
+
+    public function testPreorderForSelf(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['status' => 'PENDING']);
+
+        $this->resource($response)->preorder(['name' => 'db', 'region' => 'par', 'providerId' => 'redis-addon', 'plan' => 'plan_s']);
+
+        self::assertSame('https://api.clever-cloud.com/v2/self/addons/preorders', $response->getRequestUrl());
+    }
+
+    public function testGenerateSsoHitsPost(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['id' => 'addon_1', 'token' => 't', 'nav-data' => 'n']);
+
+        $sso = $this->resource($response)->generateSso('addon_1', 'orga_1');
+
+        self::assertSame('n', $sso['nav-data']);
+        self::assertSame('POST', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1/sso',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testReplaceTagsPutsTagList(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['prod', 'tier:gold']);
+
+        $tags = $this->resource($response)->replaceTags('addon_1', ['prod', 'tier:gold'], 'orga_1');
+
+        self::assertSame(['prod', 'tier:gold'], $tags);
+        self::assertSame('PUT', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1/tags',
+            $response->getRequestUrl(),
+        );
+        self::assertSame('["prod","tier:gold"]', $response->getRequestOptions()['body']);
+    }
+
+    public function testInstancesReturnsTypedInstances(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, [
+            [
+                'id' => 'inst_1',
+                'appId' => 'app_1',
+                'state' => 'UP',
+                'ip' => '10.0.0.1',
+                'appPort' => 8080,
+                'deployNumber' => 3,
+                'flavor' => ['name' => 'XS', 'mem' => 1024, 'cpus' => 1, 'price' => 0.1],
+            ],
+        ]);
+
+        $instances = $this->resource($response)->instances('addon_1', 'orga_1');
+
+        self::assertCount(1, $instances);
+        self::assertSame('inst_1', $instances[0]->id);
+        self::assertSame('app_1', $instances[0]->appId);
+        self::assertSame('UP', $instances[0]->state);
+        self::assertSame(8080, $instances[0]->appPort);
+        self::assertNotNull($instances[0]->flavor);
+        self::assertSame('XS', $instances[0]->flavor['name']);
+        self::assertSame('GET', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1/instances',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testInstanceReturnsTypedInstance(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['id' => 'inst_1', 'appId' => 'app_1', 'state' => 'UP']);
+
+        $instance = $this->resource($response)->instance('addon_1', 'inst_1', 'orga_1');
+
+        self::assertSame('inst_1', $instance->id);
+        self::assertSame('GET', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1/instances/inst_1',
+            $response->getRequestUrl(),
+        );
+    }
+
     private function resource(MockResponse $response): AddonsResource
     {
         return new AddonsResource(

@@ -263,6 +263,83 @@ final readonly class ApplicationsResource extends AbstractV2Resource
         );
     }
 
+    // ------------------------------------------------------------------
+    //  Build flavor, dependents, aggregated env, tag replacement
+    // ------------------------------------------------------------------
+
+    /**
+     * Sets the flavor the application's builds run on (for instance `'M'`).
+     * Pass `null` to clear it.
+     */
+    public function setBuildFlavor(string $applicationId, ?string $flavorName, ?string $organisationId = null): void
+    {
+        $this->httpPut(
+            $this->appPath($applicationId, $organisationId).'/buildflavor',
+            ['json' => ['flavorName' => $flavorName]],
+        );
+    }
+
+    /**
+     * Lists the applications that depend on this one.
+     *
+     * @return list<Application>
+     */
+    public function dependents(string $applicationId, ?string $organisationId = null): array
+    {
+        /** @var list<array<string, mixed>> $payload */
+        $payload = $this->httpGet($this->appPath($applicationId, $organisationId).'/dependents');
+
+        return $this->mapCollection(Application::class, $payload);
+    }
+
+    /**
+     * Lists the environment variables exposed by each of the application's
+     * dependencies, as `{app_id, app_name, env: [{name, value}]}` entries.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function dependenciesEnv(string $applicationId, ?string $organisationId = null): array
+    {
+        /** @var list<array<string, mixed>> $payload */
+        $payload = $this->httpGet($this->appPath($applicationId, $organisationId).'/dependencies/env');
+
+        return $payload;
+    }
+
+    /**
+     * Lists the environment variables provided by each add-on linked to the
+     * application, as `{addon_id, addon_name, provider_id, env: [{name, value}]}`
+     * entries.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function addonsEnv(string $applicationId, ?string $organisationId = null): array
+    {
+        /** @var list<array<string, mixed>> $payload */
+        $payload = $this->httpGet($this->appPath($applicationId, $organisationId).'/addons/env');
+
+        return $payload;
+    }
+
+    /**
+     * Replaces all the tags of an organisation's application and returns the
+     * resulting tags. Tags are plain (`tag`) or key-value (`key:value`).
+     *
+     * @param list<string> $tags
+     *
+     * @return list<string>
+     */
+    public function replaceTags(string $applicationId, array $tags, string $organisationId): array
+    {
+        /** @var list<string> $payload */
+        $payload = $this->httpPut(
+            $this->appPath($applicationId, $organisationId).'/tags',
+            ['json' => $tags],
+        );
+
+        return $payload;
+    }
+
     private function appPath(string $applicationId, ?string $organisationId): string
     {
         return $this->ownerPath($organisationId).'/applications/'.rawurlencode($applicationId);

@@ -107,3 +107,77 @@ public function changePassword(string $oldPassword, string $newPassword): void
 ```
 
 `PUT /v2/self/change_password`, body `{"oldPassword": "...", "newPassword": "..."}`.
+
+## Account
+
+```php
+public function id(): string
+public function setAvatar(AvatarSource $source): string
+public function resendConfirmationEmail(): void
+public function validateEmail(string $validationKey): void
+public function organisations(): list<Organisation>
+public function instances(): array<string, list<array<string, mixed>>>
+public function paymentInfo(): PaymentInfo
+```
+
+| Method | HTTP | Path | Notes |
+| --- | --- | --- | --- |
+| `id()` | GET | `/v2/self/id` | Returns the `ownerId` (`user_...`) |
+| `setAvatar()` | PUT | `/v2/self/avatar` | Body `{"source": "gravatar"\|"github"}`, returns the avatar URL |
+| `resendConfirmationEmail()` | GET | `/v2/self/confirmation_email` | |
+| `validateEmail()` | GET | `/v2/self/validate_email?validationKey={key}` | |
+| `organisations()` | GET | `/v2/self/organisations` | |
+| `instances()` | GET | `/v2/self/instances` | Raw instances keyed by application id |
+| `paymentInfo()` | GET | `/v2/self/payment-info` | `PaymentInfo` model: billing details plus `errors` keyed by field |
+
+`AvatarSource` is the enum at `CleverCloud\Sdk\Model\Enum\AvatarSource`
+(`Gravatar`, `Github`). The API derives the avatar URL from the source; a
+URL cannot be supplied.
+
+## OAuth access tokens
+
+```php
+public function tokens(): list<OAuthAccessToken>
+public function currentToken(): OAuthAccessToken
+public function revokeToken(string $token): void
+public function revokeAllTokens(): void
+public function cliTokens(string $cliToken): string|array<string, mixed>
+public function consumerSecret(string $consumerKey): string
+public function consumerTokens(string $consumerKey): list<OAuthAccessToken>
+```
+
+| Method | HTTP | Path |
+| --- | --- | --- |
+| `tokens()` | GET | `/v2/self/tokens` |
+| `currentToken()` | GET | `/v2/self/tokens/current` |
+| `revokeToken()` | DELETE | `/v2/self/tokens/{token}` |
+| `revokeAllTokens()` | DELETE | `/v2/self/tokens` |
+| `cliTokens()` | GET | `/v2/self/cli_tokens?cli_token={cliToken}` |
+| `consumerSecret()` | GET | `/v2/self/consumers/{key}/secret` |
+| `consumerTokens()` | GET | `/v2/self/consumers/{key}/tokens` |
+
+`OAuthAccessToken` exposes `token`, `consumer` (raw array), `rights` (map of
+right name to boolean) and the `creationDate`, `expirationDate` and
+`lastUtilisation` timestamps (ms since epoch).
+
+`revokeAllTokens()` also revokes the token that signs the request.
+
+`cliTokens()` collects the tokens of a pending command-line login and does
+not require authentication. The spec declares a JSON string response while
+the Clever Cloud CLI reads a `{token, secret}` object, so the decoded body
+is returned as is.
+
+## MFA status and preference
+
+```php
+public function mfaStatus(string $kind = 'TOTP'): MfaStatus
+public function setFavouriteMfa(string $kind): void
+```
+
+| Method | HTTP | Path |
+| --- | --- | --- |
+| `mfaStatus()` | GET | `/v2/self/mfa/{kind}` |
+| `setFavouriteMfa()` | PUT | `/v2/self/mfa/{kind}` |
+
+`MfaStatus` exposes `kind`, `configured` and `backupCodesState` (raw
+`{remaining, total, generatedAt}` array, null when not configured).

@@ -213,6 +213,100 @@ final class ApplicationsResourceTest extends TestCase
         self::assertSame('https://api.clever-cloud.com/v2/self/applications/app_1/tags', $response->getRequestUrl());
     }
 
+    public function testSetBuildFlavorPutsFlavorName(): void
+    {
+        $response = ResourceFactory::emptyResponse(204);
+
+        $this->resource($response)->setBuildFlavor('app_1', 'M', 'orga_1');
+
+        self::assertSame('PUT', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/buildflavor',
+            $response->getRequestUrl(),
+        );
+        self::assertSame('{"flavorName":"M"}', $response->getRequestOptions()['body']);
+    }
+
+    public function testSetBuildFlavorAcceptsNullToClear(): void
+    {
+        $response = ResourceFactory::emptyResponse(204);
+
+        $this->resource($response)->setBuildFlavor('app_1', null);
+
+        self::assertSame('https://api.clever-cloud.com/v2/self/applications/app_1/buildflavor', $response->getRequestUrl());
+        self::assertSame('{"flavorName":null}', $response->getRequestOptions()['body']);
+    }
+
+    public function testDependentsReturnsTypedApplications(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, [
+            ['id' => 'app_2', 'name' => 'front'],
+        ]);
+
+        $dependents = $this->resource($response)->dependents('app_1', 'orga_1');
+
+        self::assertCount(1, $dependents);
+        self::assertSame('app_2', $dependents[0]->id);
+        self::assertSame('front', $dependents[0]->name);
+        self::assertSame('GET', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/dependents',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testDependenciesEnvReturnsRawEntries(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, [
+            ['app_id' => 'app_2', 'app_name' => 'api', 'env' => [['name' => 'API_URL', 'value' => 'https://api']]],
+        ]);
+
+        $env = $this->resource($response)->dependenciesEnv('app_1');
+
+        self::assertSame('app_2', $env[0]['app_id']);
+        self::assertSame('GET', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/self/applications/app_1/dependencies/env',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testAddonsEnvReturnsRawEntries(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, [
+            [
+                'addon_id' => 'addon_1',
+                'addon_name' => 'db',
+                'provider_id' => 'postgresql-addon',
+                'env' => [['name' => 'POSTGRESQL_ADDON_URI', 'value' => 'postgres://x']],
+            ],
+        ]);
+
+        $env = $this->resource($response)->addonsEnv('app_1', 'orga_1');
+
+        self::assertSame('addon_1', $env[0]['addon_id']);
+        self::assertSame('GET', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/addons/env',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testReplaceTagsPutsTagList(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['prod', 'team:core']);
+
+        $tags = $this->resource($response)->replaceTags('app_1', ['prod', 'team:core'], 'orga_1');
+
+        self::assertSame(['prod', 'team:core'], $tags);
+        self::assertSame('PUT', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/tags',
+            $response->getRequestUrl(),
+        );
+        self::assertSame('["prod","team:core"]', $response->getRequestOptions()['body']);
+    }
+
     private function resource(MockResponse $response): ApplicationsResource
     {
         return new ApplicationsResource(

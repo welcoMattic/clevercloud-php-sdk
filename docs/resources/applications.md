@@ -158,6 +158,39 @@ public function unlinkAddon(string $applicationId, string $addonId, ?string $org
 | `linkAddon()` | POST | `/v2/.../applications/{id}/addons` (body: `{"addon_id": "..."}`) |
 | `unlinkAddon()` | DELETE | `/v2/.../applications/{id}/addons/{addonId}` |
 
+## Build flavor
+
+```php
+public function setBuildFlavor(string $applicationId, ?string $flavorName, ?string $organisationId = null): void
+```
+
+`PUT /v2/.../applications/{id}/buildflavor`, body `{"flavorName": "M"}`.
+Pass `null` to clear it.
+
+## Dependents and aggregated environment
+
+```php
+public function dependents(string $applicationId, ?string $organisationId = null): list<Application>
+public function dependenciesEnv(string $applicationId, ?string $organisationId = null): list<array<string, mixed>>
+public function addonsEnv(string $applicationId, ?string $organisationId = null): list<array<string, mixed>>
+```
+
+| Method | HTTP | Path | Returns |
+| --- | --- | --- | --- |
+| `dependents()` | GET | `/v2/.../applications/{id}/dependents` | Applications that depend on this one |
+| `dependenciesEnv()` | GET | `/v2/.../applications/{id}/dependencies/env` | Raw `[{app_id, app_name, env: [{name, value}]}]` |
+| `addonsEnv()` | GET | `/v2/.../applications/{id}/addons/env` | Raw `[{addon_id, addon_name, provider_id, env: [{name, value}]}]` |
+
+## Replacing all tags (organisations only)
+
+```php
+public function replaceTags(string $applicationId, array $tags, string $organisationId): list<string>
+```
+
+`PUT /v2/organisations/{ownerId}/applications/{id}/tags`, body
+`["tag", "key:value"]`, returns the resulting tags. The API only documents
+this route for organisations, so `$organisationId` is required.
+
 ## `Application` DTO
 
 Source: [`src/Model/Application.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Application.php).
