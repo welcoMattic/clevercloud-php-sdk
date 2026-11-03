@@ -191,6 +191,41 @@ final class SelfResourceTest extends TestCase
         self::assertSame('opaque', $this->resource($response)->cliTokens('cli_abc'));
     }
 
+    public function testAddSshKeyPutsKeyAsBareJsonString(): void
+    {
+        $response = ResourceFactory::emptyResponse(200);
+
+        $this->resource($response)->addSshKey('laptop', 'ssh-ed25519 AAAAC3+x/y me@host');
+
+        self::assertSame('PUT', $response->getRequestMethod());
+        self::assertSame('https://api.clever-cloud.com/v2/self/keys/laptop', $response->getRequestUrl());
+        self::assertSame('"ssh-ed25519 AAAAC3+x/y me@host"', $response->getRequestOptions()['body']);
+        self::assertContains('Content-Type: application/json', ResourceFactory::headers($response));
+    }
+
+    public function testCreateConsumerSendsRightsAsNameToBoolean(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, [
+            'key' => 'ck_1',
+            'name' => 'CI',
+            'rights' => ['almighty' => false, 'manage_ssh_keys' => true],
+        ]);
+
+        $consumer = $this->resource($response)->createConsumer([
+            'name' => 'CI',
+            'description' => 'pipelines',
+            'rights' => ['manage_ssh_keys' => true],
+        ]);
+
+        self::assertSame('POST', $response->getRequestMethod());
+        self::assertSame('https://api.clever-cloud.com/v2/self/consumers', $response->getRequestUrl());
+        self::assertSame(
+            '{"name":"CI","description":"pipelines","rights":{"manage_ssh_keys":true}}',
+            $response->getRequestOptions()['body'],
+        );
+        self::assertSame(['almighty' => false, 'manage_ssh_keys' => true], $consumer->rights);
+    }
+
     public function testConsumerSecretReturnsSecret(): void
     {
         $response = ResourceFactory::jsonResponse(200, ['secret' => 'cs_1']);

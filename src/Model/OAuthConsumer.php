@@ -4,16 +4,16 @@ namespace CleverCloud\Sdk\Model;
 
 /**
  * An OAuth 1.0a consumer registered on the platform (an app that can drive the
- * 3-legged flow on behalf of users).
+ * 3-legged flow on behalf of users). The secret is not part of this payload:
+ * read it with `consumerSecret()`.
  */
 final readonly class OAuthConsumer
 {
     /**
-     * @param list<string> $rights
+     * @param array<string, bool> $rights right name (`access_organisations`, `manage_ssh_keys`, ...) to whether it is granted
      */
     public function __construct(
         public string $key,
-        public ?string $secret = null,
         public ?string $name = null,
         public ?string $description = null,
         public ?string $url = null,

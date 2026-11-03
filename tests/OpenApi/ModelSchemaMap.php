@@ -27,22 +27,16 @@ final class ModelSchemaMap
             Model\Addon::class => ['schema' => 'AddonView', 'knownDrift' => []],
             Model\AddonPlan::class => ['schema' => 'AddonPlanView', 'knownDrift' => []],
             Model\AddonProvider::class => ['schema' => 'AddonProviderInfoFullView', 'knownDrift' => []],
-            // Spec field is `last_deploy`: the camelCase property never gets populated.
-            Model\Application::class => ['schema' => 'ApplicationView', 'knownDrift' => ['lastDeploy']],
-            // `instanceId` is not part of the documented deployment payload.
-            Model\Deployment::class => ['schema' => 'DeploymentView', 'knownDrift' => ['instanceId']],
+            Model\Application::class => ['schema' => 'ApplicationView', 'knownDrift' => []],
+            Model\Deployment::class => ['schema' => 'DeploymentView', 'knownDrift' => []],
             Model\DeploymentAuthor::class => ['schema' => 'Author', 'knownDrift' => []],
-            // Spec field is `machine_learning`.
-            Model\Flavor::class => ['schema' => 'Flavor', 'knownDrift' => ['machineLearning']],
+            Model\Flavor::class => ['schema' => 'Flavor', 'knownDrift' => []],
             Model\Member::class => ['schema' => 'MemberView', 'knownDrift' => []],
-            // Spec field is `namespace`.
-            Model\Namespace_::class => ['schema' => 'NamespaceView', 'knownDrift' => ['name']],
+            Model\Namespace_::class => ['schema' => 'NamespaceView', 'knownDrift' => []],
             Model\NetworkGroup::class => ['schema' => 'NetworkGroup', 'knownDrift' => []],
             Model\NetworkGroupMember::class => ['schema' => 'NetworkGroupComponent', 'knownDrift' => []],
-            // The secret comes from the separate `/consumers/{key}/secret` route.
-            Model\OAuthConsumer::class => ['schema' => 'OAuth1ConsumerView', 'knownDrift' => ['secret']],
-            // Spec field is `VAT` (upper case).
-            Model\Organisation::class => ['schema' => 'OrganisationView', 'knownDrift' => ['vat']],
+            Model\OAuthConsumer::class => ['schema' => 'OAuth1ConsumerView', 'knownDrift' => []],
+            Model\Organisation::class => ['schema' => 'OrganisationView', 'knownDrift' => []],
             // The API sends no add-on id: the SDK injects the requested one.
             Model\PulsarPolicy::class => ['schema' => 'StoragePolicies', 'knownDrift' => ['addonId']],
             Model\SshKey::class => ['schema' => 'SshKeyView', 'knownDrift' => []],

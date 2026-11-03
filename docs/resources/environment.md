@@ -2,9 +2,10 @@
 
 Source: [`src/Resource/V2/EnvironmentResource.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Resource/V2/EnvironmentResource.php)
 
-The Clever Cloud API exchanges env vars as a list of `{name, value}` pairs.
-The SDK collapses that into a `name => value` map on read and expands it
-back on write.
+The Clever Cloud API returns env vars as a list of `{name, value}` pairs;
+the SDK collapses that into a `name => value` map on read. On write,
+`setMany()` sends the `name => value` object itself and `set()` sends
+`{"value": "..."}`, the name travelling in the path.
 
 ## Access
 
@@ -26,8 +27,8 @@ public function remove(string $applicationId, string $name, ?string $organisatio
 | --- | --- | --- | --- |
 | `list()` | GET | `/v2/.../applications/{id}/env` | — (returns `name => value` map) |
 | `get()` | — | (resolved by `list()` then map lookup; no dedicated endpoint) | — |
-| `set()` | PUT | `/v2/.../applications/{id}/env/{name}` | `{"name": "...", "value": "..."}` |
-| `setMany()` | PUT | `/v2/.../applications/{id}/env` | `[{"name": "...", "value": "..."}, ...]` (replaces the entire env) |
+| `set()` | PUT | `/v2/.../applications/{id}/env/{name}` | `{"value": "..."}` |
+| `setMany()` | PUT | `/v2/.../applications/{id}/env` | `{"NAME": "value", ...}` (replaces the entire env; `{}` for an empty map) |
 | `remove()` | DELETE | `/v2/.../applications/{id}/env/{name}` | — |
 
 > `setMany()` **replaces** the application's environment entirely — any

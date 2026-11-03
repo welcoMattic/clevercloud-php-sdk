@@ -16,7 +16,6 @@ final readonly class Deployment
         public ?string $cause = null,
         public ?int $date = null,
         public ?DeploymentAuthor $author = null,
-        public ?string $instanceId = null,
         public ?int $instances = null,
     ) {
     }

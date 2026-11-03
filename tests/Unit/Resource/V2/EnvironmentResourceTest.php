@@ -43,7 +43,7 @@ final class EnvironmentResourceTest extends TestCase
         self::assertNull($this->resource($response)->get('app_1', 'MISSING'));
     }
 
-    public function testSetPutsJsonWithName(): void
+    public function testSetPutsValueOnly(): void
     {
         $response = ResourceFactory::jsonResponse(204, []);
 
@@ -54,10 +54,11 @@ final class EnvironmentResourceTest extends TestCase
             'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/env/API_KEY',
             $response->getRequestUrl(),
         );
-        self::assertSame('{"name":"API_KEY","value":"secret"}', $response->getRequestOptions()['body']);
+        self::assertSame('{"value":"secret"}', $response->getRequestOptions()['body']);
+        self::assertContains('Content-Type: application/json', ResourceFactory::headers($response));
     }
 
-    public function testSetManyEncodesAsList(): void
+    public function testSetManyEncodesAsNameToValueObject(): void
     {
         $response = ResourceFactory::jsonResponse(204, []);
 
@@ -65,10 +66,17 @@ final class EnvironmentResourceTest extends TestCase
 
         self::assertSame('PUT', $response->getRequestMethod());
         self::assertSame('https://api.clever-cloud.com/v2/self/applications/app_1/env', $response->getRequestUrl());
-        self::assertSame(
-            '[{"name":"NODE_ENV","value":"production"},{"name":"DEBUG","value":"0"}]',
-            $response->getRequestOptions()['body'],
-        );
+        self::assertSame('{"NODE_ENV":"production","DEBUG":"0"}', $response->getRequestOptions()['body']);
+        self::assertContains('Content-Type: application/json', ResourceFactory::headers($response));
+    }
+
+    public function testSetManyWithEmptyMapSendsEmptyObject(): void
+    {
+        $response = ResourceFactory::jsonResponse(204, []);
+
+        $this->resource($response)->setMany('app_1', []);
+
+        self::assertSame('{}', $response->getRequestOptions()['body']);
     }
 
     public function testRemoveHitsDelete(): void

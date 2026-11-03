@@ -128,7 +128,7 @@ final readonly class OrganisationsResource extends AbstractV2Resource
     }
 
     /**
-     * @param array{name: string, url: string, baseUrl?: string, description?: string, picture?: string, rights?: list<string>} $data
+     * @param array{name: string, description: string, rights: array<string, bool>, url?: string, baseUrl?: string, picture?: string} $data
      */
     public function createConsumer(string $organisationId, array $data): OAuthConsumer
     {

@@ -7,7 +7,8 @@ use CleverCloud\Sdk\Resource\AbstractV2Resource;
 /**
  * Manages an application's environment variables. Each variable is exposed as
  * a `name => value` pair; the Clever Cloud API returns them as a list of
- * `{name, value}` objects which we flatten on read.
+ * `{name, value}` objects which we flatten on read, and takes a `name => value`
+ * object when replacing them all.
  */
 final readonly class EnvironmentResource extends AbstractV2Resource
 {
@@ -36,29 +37,29 @@ final readonly class EnvironmentResource extends AbstractV2Resource
         return $variables[$name] ?? null;
     }
 
+    /**
+     * Creates or updates one variable. The body is `{"value": "..."}`: the
+     * name travels in the path only.
+     */
     public function set(string $applicationId, string $name, string $value, ?string $organisationId = null): void
     {
         $this->httpPut(
             $this->envPath($applicationId, $organisationId).'/'.rawurlencode($name),
-            ['json' => ['name' => $name, 'value' => $value]],
+            ['json' => ['value' => $value]],
         );
     }
 
     /**
-     * Replaces the application's environment with the given map.
+     * Replaces the application's environment with the given map. The body is
+     * the `name => value` object itself (`{}` when `$variables` is empty).
      *
      * @param array<string, string> $variables
      */
     public function setMany(string $applicationId, array $variables, ?string $organisationId = null): void
     {
-        $body = [];
-        foreach ($variables as $name => $value) {
-            $body[] = ['name' => $name, 'value' => $value];
-        }
-
         $this->httpPut(
             $this->envPath($applicationId, $organisationId),
-            ['json' => $body],
+            ['json' => (object) $variables],
         );
     }
 

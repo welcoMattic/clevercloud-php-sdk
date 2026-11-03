@@ -20,7 +20,7 @@ final class ProductsResourceTest extends TestCase
                 'version' => '20',
                 'enabled' => true,
                 'flavors' => [
-                    ['name' => 'S', 'mem' => 1024, 'cpus' => 1, 'price' => 0.34],
+                    ['name' => 'S', 'mem' => 1024, 'cpus' => 1, 'price' => 0.34, 'nice' => 5, 'machine_learning' => true],
                     ['name' => 'M', 'mem' => 2048, 'cpus' => 2, 'price' => 0.68],
                 ],
             ],
@@ -35,6 +35,8 @@ final class ProductsResourceTest extends TestCase
         self::assertSame('S', $types[0]->flavors[0]->name);
         self::assertSame(1024, $types[0]->flavors[0]->mem);
         self::assertSame(0.34, $types[0]->flavors[0]->price);
+        self::assertSame(5, $types[0]->flavors[0]->nice);
+        self::assertTrue($types[0]->flavors[0]->machineLearning);
         self::assertSame('https://api.clever-cloud.com/v2/products/instances', $response->getRequestUrl());
     }
 
