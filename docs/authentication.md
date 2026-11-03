@@ -1,6 +1,6 @@
 # Authentication
 
-The SDK supports two credential types. Both are built through named constructors
+The SDK supports three credential types. All are built through named constructors
 on the abstract `CleverCloud\Sdk\Auth\Credentials` class.
 
 ## API token (Bearer) — recommended
@@ -40,6 +40,74 @@ see [`src/Configuration.php`](https://github.com/welcoMattic/clevercloud-php-sdk
 The Console lets you pick scopes when creating a token (`application:read`,
 `application:write`, `addon:read`, etc.). The SDK does not enforce scopes —
 the gateway returns 403 / 404 if a call exceeds them.
+
+## Service token (biscuit)
+
+Service tokens are [biscuit](https://www.biscuitsec.org/) tokens minted for an
+organisation (see the [Service tokens resource](resources/service-tokens.md)).
+They act on the organisation's behalf with a role (`ADMIN`, `MANAGER`,
+`DEVELOPER`, `ACCOUNTING`), optionally restricted to some applications and
+add-ons, and expire (90 days by default, one year at most):
+
+```php
+use CleverCloud\Sdk\Auth\Credentials;
+use CleverCloud\Sdk\ClientBuilder;
+
+$client = (new ClientBuilder())
+    ->withCredentials(Credentials::serviceToken(getenv('CC_SERVICE_TOKEN')))
+    ->build();
+
+$apps = $client->applications->list('orga_xxx');
+```
+
+### What the SDK does
+
+`Credentials::serviceToken()` returns a
+[`ServiceTokenCredentials`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Auth/ServiceTokenCredentials.php) which:
+
+1. Attaches `Authorization: Bearer <token>` to every outgoing request.
+2. Keeps the URI untouched: calls go to `api.clever-cloud.com` (V2 / V4),
+   **not** to the api-bridge gateway.
+
+### Service tokens vs API tokens
+
+Both are sent as `Authorization: Bearer <token>`, but they are different
+credentials:
+
+| | API token | Service token |
+| --- | --- | --- |
+| Factory | `Credentials::apiToken()` | `Credentials::serviceToken()` |
+| Acts as | a user | an organisation, with a role |
+| Host | `api-bridge.clever-cloud.com` (the SDK reroutes V2 / V4 calls) | `api.clever-cloud.com` (no reroute) |
+| Minted via | the Console or [`$client->apiTokens`](resources/api-tokens.md) | [`$client->serviceTokens`](resources/service-tokens.md) |
+| Scope | scopes picked at creation | role + optional application / add-on list, carried by the token |
+| Refresh | - | none, mint a new one before expiry |
+
+Both management resources require an OAuth 1.0a client: a Bearer token
+cannot mint Bearer tokens.
+
+### Where service tokens are accepted
+
+The API only accepts a service token on the routes whose OpenAPI security
+declares the `biscuit` scheme. These are all organisation-scoped, and none
+lives under `/v2/self`. In the current spec:
+
+- `/v2/organisations/{id}/applications/**`: applications and their add-on
+  links, dependencies, deployments, environment variables, instances, tags,
+  TCP / UDP redirections, vhosts, GitHub webhook secret (45 operations).
+- `PUT /v2/organisations/{id}/avatar`.
+- `/v4/networkgroups/organisations/{ownerId}/networkgroups/**`: network
+  groups, members, peers, external peers, WireGuard configuration and the
+  event streams (19 operations).
+- `/v4/kubernetes/organisations/{ownerId}/clusters/{kubernetesId}/node-groups/**`
+  (6 operations).
+- `GET /v4/addon-providers/addon-pulsar/clusters/{clusterId}`.
+
+Every other route (`/v2/self`, organisation members and add-ons, service
+token management, billing, ...) only declares OAuth 1.0a: the API refuses a
+service token there. Pass the organisation ID explicitly (e.g. `$client->applications->list('orga_xxx')`,
+not `list()` which targets `/v2/self`). The SDK does not check upfront: a
+request outside the token's scope is refused by the API.
 
 ## OAuth 1.0a — legacy
 
@@ -164,6 +232,7 @@ The clock implements `Psr\Clock\ClockInterface`; the SDK reads it via
 | Scenario | Mode |
 | --- | --- |
 | CI scripts, server-to-server automation | API token |
+| Organisation automation on applications, network groups, Kubernetes node groups | Service token |
 | Interactive web app (your users grant access) | OAuth 1.0a 3-legged |
 | Mobile / CLI client | Either, API token is simpler |
 | Calls to `api-bridge.clever-cloud.com` endpoints (e.g. token management) | **API token only** |
