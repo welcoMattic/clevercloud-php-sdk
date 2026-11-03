@@ -15,6 +15,7 @@ new Configuration(
     bridgeBaseUrl: 'https://api-bridge.clever-cloud.com',
     userAgent: 'clevercloud-sdk-php',
     timeoutSeconds: 30,
+    rootBaseUrl: 'https://api.clever-cloud.com',
 );
 
 // All arguments are optional and default to the values shown above.
@@ -23,8 +24,10 @@ new Configuration(
 Fields are public readonly. Defaults live as `const` on the class — see
 [`src/Configuration.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Configuration.php).
 
-`baseUrlFor(ApiVersion $version): string` returns the right base for the
-three known versions (V2, V4, Bridge).
+`baseUrlFor(ApiVersion $version): string` returns the right base for each
+`ApiVersion` case: V2, V4, Bridge, and Root for the unversioned paths served at
+the API root (`/organisations/{id}/logs/exports`, `/networkgroup/configuration`).
+API-token credentials reroute Root calls to the api-bridge host, like V2 and V4.
 
 ```php
 $client = (new ClientBuilder())
