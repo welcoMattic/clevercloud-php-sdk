@@ -22,7 +22,7 @@ public function cancel(string $applicationId, string $deploymentId, ?string $org
 | --- | --- | --- |
 | `list()` | GET | `/v2/.../applications/{appId}/deployments` (query: `?limit&offset`) |
 | `get()` | GET | `/v2/.../applications/{appId}/deployments/{deploymentId}` |
-| `cancel()` | DELETE | `/v2/.../applications/{appId}/deployments/{deploymentId}` |
+| `cancel()` | DELETE | `/v2/.../applications/{appId}/deployments/{deploymentId}/instances` |
 
 ## `Deployment` DTO
 

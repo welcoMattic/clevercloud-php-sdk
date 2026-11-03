@@ -2,6 +2,7 @@
 
 namespace CleverCloud\Sdk\Resource\V2;
 
+use CleverCloud\Sdk\Exception\ApiException;
 use CleverCloud\Sdk\Model\Addon;
 use CleverCloud\Sdk\Model\AddonProvider;
 use CleverCloud\Sdk\Resource\AbstractV2Resource;
@@ -171,14 +172,36 @@ final readonly class AddonsResource extends AbstractV2Resource
      * updated `Addon` resource. See {@see listMigrations()} / {@see getMigration()}
      * to track in-flight migrations and {@see preorderMigration()} for a price
      * estimate.
+     *
+     * The API requires the target region: when `$region` is null, the add-on's
+     * current region is read first, costing one extra request. `$version`
+     * selects the target engine version (e.g. a PostgreSQL major version).
+     *
+     * Organisation add-ons go through `POST /organisations/{id}/addons/{addonId}/migrations`,
+     * personal ones through `POST /self/addons/{addonId}/migration`: the API
+     * does not serve the plural form under `/self`.
      */
-    public function migrate(string $addonId, string $targetPlanId, ?string $organisationId = null): Addon
-    {
+    public function migrate(
+        string $addonId,
+        string $targetPlanId,
+        ?string $organisationId = null,
+        ?string $region = null,
+        ?string $version = null,
+    ): Addon {
+        $body = [
+            'planId' => $targetPlanId,
+            'region' => $region ?? $this->currentRegion($addonId, $organisationId),
+        ];
+        if (null !== $version) {
+            $body['version'] = $version;
+        }
+
+        $path = null === $organisationId
+            ? $this->addonPath($addonId, null).'/migration'
+            : $this->addonPath($addonId, $organisationId).'/migrations';
+
         /** @var array<string, mixed> $payload */
-        $payload = $this->httpPost(
-            $this->addonPath($addonId, $organisationId).'/migrations',
-            ['json' => ['plan' => $targetPlanId]],
-        );
+        $payload = $this->httpPost($path, ['json' => $body]);
 
         return $this->mapTo(Addon::class, $payload);
     }
@@ -186,18 +209,24 @@ final readonly class AddonsResource extends AbstractV2Resource
     /**
      * Lists past and in-progress migrations for an add-on.
      *
+     * The API serves migrations under `/organisations/{id}` only. A null
+     * `$organisationId` targets the personal organisation, whose `user_<uuid>`
+     * id is resolved through `GET /v2/self` (one extra request).
+     *
      * @return list<array<string, mixed>>
      */
     public function listMigrations(string $addonId, ?string $organisationId = null): array
     {
         /** @var list<array<string, mixed>> $payload */
-        $payload = $this->httpGet($this->addonPath($addonId, $organisationId).'/migrations');
+        $payload = $this->httpGet($this->migrationsPath($addonId, $organisationId));
 
         return $payload;
     }
 
     /**
-     * Fetches the current status of a single migration.
+     * Fetches the current status of a single migration. A null
+     * `$organisationId` resolves the personal organisation like
+     * {@see listMigrations()}.
      *
      * @return array<string, mixed>
      */
@@ -205,34 +234,36 @@ final readonly class AddonsResource extends AbstractV2Resource
     {
         /** @var array<string, mixed> $payload */
         $payload = $this->httpGet(
-            $this->addonPath($addonId, $organisationId).'/migrations/'.rawurlencode($migrationId),
+            $this->migrationsPath($addonId, $organisationId).'/'.rawurlencode($migrationId),
         );
 
         return $payload;
     }
 
     /**
-     * Cancels an in-flight migration.
+     * Cancels an in-flight migration. A null `$organisationId` resolves the
+     * personal organisation like {@see listMigrations()}.
      */
     public function cancelMigration(string $addonId, string $migrationId, ?string $organisationId = null): void
     {
         $this->httpDelete(
-            $this->addonPath($addonId, $organisationId).'/migrations/'.rawurlencode($migrationId),
+            $this->migrationsPath($addonId, $organisationId).'/'.rawurlencode($migrationId),
         );
     }
 
     /**
-     * Pre-orders a migration to get a price estimate without committing to
-     * the change.
+     * Previews the cost of a plan change without committing to it. Returns
+     * the invoice preview as a raw array. A null `$organisationId` resolves
+     * the personal organisation like {@see listMigrations()}.
      *
      * @return array<string, mixed>
      */
     public function preorderMigration(string $addonId, string $targetPlanId, ?string $organisationId = null): array
     {
         /** @var array<string, mixed> $payload */
-        $payload = $this->httpPost(
-            $this->addonPath($addonId, $organisationId).'/migrations/preorder',
-            ['json' => ['plan' => $targetPlanId]],
+        $payload = $this->httpGet(
+            $this->migrationsPath($addonId, $organisationId).'/preorders',
+            ['query' => ['planId' => $targetPlanId]],
         );
 
         return $payload;
@@ -241,5 +272,45 @@ final readonly class AddonsResource extends AbstractV2Resource
     private function addonPath(string $addonId, ?string $organisationId): string
     {
         return $this->ownerPath($organisationId).'/addons/'.rawurlencode($addonId);
+    }
+
+    private function migrationsPath(string $addonId, ?string $organisationId): string
+    {
+        return $this->addonPath($addonId, $this->resolveOwnerId($organisationId)).'/migrations';
+    }
+
+    /**
+     * Returns `$organisationId` unchanged, or the personal organisation id
+     * (`user_<uuid>`) read from `GET /v2/self` when it is null.
+     *
+     * @throws ApiException when the personal organisation id cannot be resolved
+     */
+    private function resolveOwnerId(?string $organisationId): string
+    {
+        if (null !== $organisationId) {
+            return $organisationId;
+        }
+
+        $payload = $this->httpGet('/self');
+
+        if (!isset($payload['id']) || !\is_string($payload['id']) || '' === $payload['id']) {
+            throw new ApiException('Could not resolve personal organisation id from /v2/self response', 0);
+        }
+
+        return $payload['id'];
+    }
+
+    /**
+     * @throws ApiException when the add-on payload carries no region
+     */
+    private function currentRegion(string $addonId, ?string $organisationId): string
+    {
+        $payload = $this->httpGet($this->addonPath($addonId, $organisationId));
+
+        if (!isset($payload['region']) || !\is_string($payload['region']) || '' === $payload['region']) {
+            throw new ApiException(\sprintf('Could not resolve the region of add-on %s', $addonId), 0);
+        }
+
+        return $payload['region'];
     }
 }

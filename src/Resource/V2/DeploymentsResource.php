@@ -39,10 +39,14 @@ final readonly class DeploymentsResource extends AbstractV2Resource
         return $this->mapTo(Deployment::class, $payload);
     }
 
+    /**
+     * Cancels a deployment that is still in progress (the API answers 400 when
+     * it is not).
+     */
     public function cancel(string $applicationId, string $deploymentId, ?string $organisationId = null): void
     {
         $this->httpDelete(
-            $this->deploymentsPath($applicationId, $organisationId).'/'.rawurlencode($deploymentId),
+            $this->deploymentsPath($applicationId, $organisationId).'/'.rawurlencode($deploymentId).'/instances',
         );
     }
 

@@ -39,13 +39,13 @@ final class DomainsResourceTest extends TestCase
         );
     }
 
-    public function testAddPostsToVhostsByFqdn(): void
+    public function testAddPutsToVhostsByFqdn(): void
     {
         $response = ResourceFactory::jsonResponse(204, []);
 
         $this->resource($response)->add('app_1', 'demo.example.com', 'orga_1');
 
-        self::assertSame('POST', $response->getRequestMethod());
+        self::assertSame('PUT', $response->getRequestMethod());
         self::assertSame(
             'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/vhosts/demo.example.com',
             $response->getRequestUrl(),
