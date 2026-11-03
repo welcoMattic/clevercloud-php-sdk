@@ -72,6 +72,40 @@ public function sso(string $addonId, ?string $organisationId = null): array<stri
 | `linkedApplications()` | GET | `/v2/.../addons/{id}/applications` | Raw list of linked app payloads |
 | `sso()` | GET | `/v2/.../addons/{id}/sso` | Raw SSO payload (signed URL + params) for Pulsar / Cellar / Matomo etc. |
 
+```php
+public function generateSso(string $addonId, ?string $organisationId = null): array<string, mixed>
+```
+
+`POST /v2/.../addons/{id}/sso` issues fresh single-sign-on data, where
+`sso()` reads it. The raw payload holds `id`, `token`, `signature`,
+`timestamp`, `email`, `user_id`, `nav-data` and an optional `url`.
+
+## Order preview
+
+```php
+public function preorder(array $data, ?string $organisationId = null): array<string, mixed>
+```
+
+`POST /v2/.../addons/preorders` takes the same payload as `create()` and
+returns the raw invoice preview without creating the add-on.
+
+## Instances (organisations only)
+
+```php
+public function instances(string $addonId, string $organisationId): list<Instance>
+public function instance(string $addonId, string $instanceId, string $organisationId): Instance
+```
+
+| Method | HTTP | Path |
+| --- | --- | --- |
+| `instances()` | GET | `/v2/organisations/{ownerId}/addons/{id}/instances` |
+| `instance()` | GET | `/v2/organisations/{ownerId}/addons/{id}/instances/{instanceId}` |
+
+`Instance` exposes `id`, `appId`, `state`, `displayName`, `ip`, `appPort`,
+`commit`, `deployId`, `deployNumber`, `instanceNumber`, `creationDate` and
+`flavor` (raw array). The API only documents these routes for
+organisations, so `$organisationId` is required.
+
 ## Tags
 
 ```php
@@ -85,6 +119,14 @@ public function removeTag(string $addonId, string $tag, ?string $organisationId 
 | `tags()` | GET | `/v2/.../addons/{id}/tags` |
 | `addTag()` | PUT | `/v2/.../addons/{id}/tags/{tag}` |
 | `removeTag()` | DELETE | `/v2/.../addons/{id}/tags/{tag}` |
+
+```php
+public function replaceTags(string $addonId, array $tags, string $organisationId): list<string>
+```
+
+`PUT /v2/organisations/{ownerId}/addons/{id}/tags`, body
+`["tag", "key:value"]`, replaces all the tags and returns the resulting
+ones. Organisations only, like the API documents it.
 
 ## Plan migrations
 

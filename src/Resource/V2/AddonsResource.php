@@ -5,6 +5,7 @@ namespace CleverCloud\Sdk\Resource\V2;
 use CleverCloud\Sdk\Exception\ApiException;
 use CleverCloud\Sdk\Model\Addon;
 use CleverCloud\Sdk\Model\AddonProvider;
+use CleverCloud\Sdk\Model\Instance;
 use CleverCloud\Sdk\Resource\AbstractV2Resource;
 
 final readonly class AddonsResource extends AbstractV2Resource
@@ -267,6 +268,84 @@ final readonly class AddonsResource extends AbstractV2Resource
         );
 
         return $payload;
+    }
+
+    /**
+     * Previews the order of a new add-on without creating it. Takes the same
+     * payload as {@see create()} and returns the invoice preview.
+     *
+     * @param array<string, mixed> $data minimal shape: {name, region, providerId, plan}
+     *
+     * @return array<string, mixed>
+     */
+    public function preorder(array $data, ?string $organisationId = null): array
+    {
+        /** @var array<string, mixed> $payload */
+        $payload = $this->httpPost(
+            $this->ownerPath($organisationId).'/addons/preorders',
+            ['json' => $data],
+        );
+
+        return $payload;
+    }
+
+    /**
+     * Generates fresh single-sign-on data for the add-on's dashboard. Unlike
+     * {@see sso()}, which reads it, this endpoint issues new data.
+     *
+     * @return array<string, mixed>
+     */
+    public function generateSso(string $addonId, ?string $organisationId = null): array
+    {
+        /** @var array<string, mixed> $payload */
+        $payload = $this->httpPost($this->addonPath($addonId, $organisationId).'/sso');
+
+        return $payload;
+    }
+
+    /**
+     * Replaces all the tags of an organisation's add-on and returns the
+     * resulting tags. Tags are plain (`tag`) or key-value (`key:value`).
+     *
+     * @param list<string> $tags
+     *
+     * @return list<string>
+     */
+    public function replaceTags(string $addonId, array $tags, string $organisationId): array
+    {
+        /** @var list<string> $payload */
+        $payload = $this->httpPut(
+            $this->addonPath($addonId, $organisationId).'/tags',
+            ['json' => $tags],
+        );
+
+        return $payload;
+    }
+
+    /**
+     * Lists the running instances of an organisation's add-on.
+     *
+     * @return list<Instance>
+     */
+    public function instances(string $addonId, string $organisationId): array
+    {
+        /** @var list<array<string, mixed>> $payload */
+        $payload = $this->httpGet($this->addonPath($addonId, $organisationId).'/instances');
+
+        return $this->mapCollection(Instance::class, $payload);
+    }
+
+    /**
+     * Returns one running instance of an organisation's add-on.
+     */
+    public function instance(string $addonId, string $instanceId, string $organisationId): Instance
+    {
+        /** @var array<string, mixed> $payload */
+        $payload = $this->httpGet(
+            $this->addonPath($addonId, $organisationId).'/instances/'.rawurlencode($instanceId),
+        );
+
+        return $this->mapTo(Instance::class, $payload);
     }
 
     private function addonPath(string $addonId, ?string $organisationId): string
