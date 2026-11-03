@@ -89,7 +89,7 @@ public function removeTag(string $addonId, string $tag, ?string $organisationId 
 ## Plan migrations
 
 ```php
-public function migrate(string $addonId, string $targetPlanId, ?string $organisationId = null): Addon
+public function migrate(string $addonId, string $targetPlanId, ?string $organisationId = null, ?string $region = null, ?string $version = null): Addon
 public function listMigrations(string $addonId, ?string $organisationId = null): list<array<string, mixed>>
 public function getMigration(string $addonId, string $migrationId, ?string $organisationId = null): array<string, mixed>
 public function cancelMigration(string $addonId, string $migrationId, ?string $organisationId = null): void
@@ -98,13 +98,28 @@ public function preorderMigration(string $addonId, string $targetPlanId, ?string
 
 | Method | HTTP | Path | Body |
 | --- | --- | --- | --- |
-| `migrate()` | POST | `/v2/.../addons/{id}/migrations` | `{"plan": "{targetPlanId}"}` |
-| `listMigrations()` | GET | `/v2/.../addons/{id}/migrations` | — |
-| `getMigration()` | GET | `/v2/.../addons/{id}/migrations/{migrationId}` | — |
-| `cancelMigration()` | DELETE | `/v2/.../addons/{id}/migrations/{migrationId}` | — |
-| `preorderMigration()` | POST | `/v2/.../addons/{id}/migrations/preorder` | `{"plan": "{targetPlanId}"}` |
+| `migrate()` (organisation) | POST | `/v2/organisations/{orgId}/addons/{id}/migrations` | `{"planId": "...", "region": "...", "version"?: "..."}` |
+| `migrate()` (`/self`) | POST | `/v2/self/addons/{id}/migration` | `{"planId": "...", "region": "...", "version"?: "..."}` |
+| `listMigrations()` | GET | `/v2/organisations/{ownerId}/addons/{id}/migrations` | - |
+| `getMigration()` | GET | `/v2/organisations/{ownerId}/addons/{id}/migrations/{migrationId}` | - |
+| `cancelMigration()` | DELETE | `/v2/organisations/{ownerId}/addons/{id}/migrations/{migrationId}` | - |
+| `preorderMigration()` | GET | `/v2/organisations/{ownerId}/addons/{id}/migrations/preorders?planId={targetPlanId}` | - |
 
-`migrate()` returns the updated `Addon` immediately; track progress via
+The API requires the target `region` on a plan change. When `$region` is null,
+`migrate()` reads the add-on's current region first (one extra `GET`).
+
+The API serves migration tracking and cost previews under
+`/v2/organisations/{ownerId}` only: `/v2/self/addons/{id}/migrations` answers
+404. With a `null` `$organisationId`, `listMigrations()`, `getMigration()`,
+`cancelMigration()` and `preorderMigration()` resolve the personal
+organisation id (`user_<uuid>`) through `GET /v2/self`, costing one extra
+request. Pass that id yourself to skip the lookup.
+
+`preorderMigration()` returns the invoice preview of the plan change (price
+difference with the current plan) as a raw array.
+
+`migrate()` maps the response to an `Addon`. The API forwards the add-on
+provider's answer, whose format is provider-defined. Track progress via
 `listMigrations()` / `getMigration()`. Use `MigrationStatus` enum to branch
 on the `status` field:
 

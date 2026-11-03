@@ -30,7 +30,7 @@ final readonly class DomainsResource extends AbstractV2Resource
 
     public function add(string $applicationId, string $fqdn, ?string $organisationId = null): void
     {
-        $this->httpPost(
+        $this->httpPut(
             $this->vhostsPath($applicationId, $organisationId).'/'.rawurlencode($fqdn),
         );
     }

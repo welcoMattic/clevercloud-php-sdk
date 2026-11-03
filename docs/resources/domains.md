@@ -24,7 +24,7 @@ public function unsetFavourite(string $applicationId, ?string $organisationId = 
 | --- | --- | --- |
 | `list()` | GET | `/v2/.../applications/{id}/vhosts` |
 | `get()` | GET | `/v2/.../applications/{id}/vhosts/{fqdn}` |
-| `add()` | POST | `/v2/.../applications/{id}/vhosts/{fqdn}` (no body) |
+| `add()` | PUT | `/v2/.../applications/{id}/vhosts/{fqdn}` (no body) |
 | `remove()` | DELETE | `/v2/.../applications/{id}/vhosts/{fqdn}` |
 | `favourite()` | GET | `/v2/.../applications/{id}/vhosts/favourite` (returns `null` if no favourite set) |
 | `setFavourite()` | PUT | `/v2/.../applications/{id}/vhosts/favourite` (body: `{"fqdn": "..."}`) |

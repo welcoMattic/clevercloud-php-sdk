@@ -135,18 +135,63 @@ final class AddonsResourceTest extends TestCase
         self::assertSame('https://api.clever-cloud.com/v2/self/addons/addon_1/sso', $response->getRequestUrl());
     }
 
-    public function testMigratePostsPlan(): void
+    public function testMigratePostsPlanIdAndRegionForOrganisation(): void
     {
         $response = ResourceFactory::jsonResponse(200, ['id' => 'addon_1', 'name' => 'pg']);
 
-        $this->resource($response)->migrate('addon_1', 'plan_prod', 'orga_1');
+        $this->resource($response)->migrate('addon_1', 'plan_prod', 'orga_1', 'par');
 
         self::assertSame('POST', $response->getRequestMethod());
         self::assertSame(
             'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1/migrations',
             $response->getRequestUrl(),
         );
-        self::assertSame('{"plan":"plan_prod"}', $response->getRequestOptions()['body']);
+        self::assertSame('{"planId":"plan_prod","region":"par"}', $response->getRequestOptions()['body']);
+    }
+
+    public function testMigrateSendsVersionWhenGiven(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['id' => 'addon_1', 'name' => 'pg']);
+
+        $this->resource($response)->migrate('addon_1', 'plan_prod', 'orga_1', 'par', '17');
+
+        self::assertSame(
+            '{"planId":"plan_prod","region":"par","version":"17"}',
+            $response->getRequestOptions()['body'],
+        );
+    }
+
+    public function testMigrateUsesSingularRouteForSelf(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['id' => 'addon_1', 'name' => 'pg']);
+
+        $this->resource($response)->migrate('addon_1', 'plan_prod', null, 'par');
+
+        self::assertSame('POST', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/self/addons/addon_1/migration',
+            $response->getRequestUrl(),
+        );
+        self::assertSame('{"planId":"plan_prod","region":"par"}', $response->getRequestOptions()['body']);
+    }
+
+    public function testMigrateReadsCurrentRegionWhenNotGiven(): void
+    {
+        $addon = ResourceFactory::jsonResponse(200, ['id' => 'addon_1', 'name' => 'pg', 'region' => 'rbx']);
+        $migration = ResourceFactory::jsonResponse(200, ['id' => 'addon_1', 'name' => 'pg']);
+
+        $this->resources($addon, $migration)->migrate('addon_1', 'plan_prod', 'orga_1');
+
+        self::assertSame('GET', $addon->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1',
+            $addon->getRequestUrl(),
+        );
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1/migrations',
+            $migration->getRequestUrl(),
+        );
+        self::assertSame('{"planId":"plan_prod","region":"rbx"}', $migration->getRequestOptions()['body']);
     }
 
     public function testListMigrationsReturnsRawList(): void
@@ -166,6 +211,20 @@ final class AddonsResourceTest extends TestCase
         );
     }
 
+    public function testListMigrationsResolvesPersonalOrganisationForSelf(): void
+    {
+        $self = ResourceFactory::jsonResponse(200, ['id' => 'user_1']);
+        $response = ResourceFactory::jsonResponse(200, []);
+
+        $this->resources($self, $response)->listMigrations('addon_1');
+
+        self::assertSame('https://api.clever-cloud.com/v2/self', $self->getRequestUrl());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/user_1/addons/addon_1/migrations',
+            $response->getRequestUrl(),
+        );
+    }
+
     public function testGetMigrationFetchesSingleId(): void
     {
         $response = ResourceFactory::jsonResponse(200, ['id' => 'mig_1', 'status' => 'success']);
@@ -175,6 +234,19 @@ final class AddonsResourceTest extends TestCase
         self::assertSame('mig_1', $migration['id']);
         self::assertSame(
             'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1/migrations/mig_1',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testGetMigrationResolvesPersonalOrganisationForSelf(): void
+    {
+        $self = ResourceFactory::jsonResponse(200, ['id' => 'user_1']);
+        $response = ResourceFactory::jsonResponse(200, ['id' => 'mig_1']);
+
+        $this->resources($self, $response)->getMigration('addon_1', 'mig_1');
+
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/user_1/addons/addon_1/migrations/mig_1',
             $response->getRequestUrl(),
         );
     }
@@ -192,19 +264,54 @@ final class AddonsResourceTest extends TestCase
         );
     }
 
-    public function testPreorderMigrationPostsPlan(): void
+    public function testCancelMigrationResolvesPersonalOrganisationForSelf(): void
     {
-        $response = ResourceFactory::jsonResponse(200, ['totalPrice' => 12.5]);
+        $self = ResourceFactory::jsonResponse(200, ['id' => 'user_1']);
+        $response = ResourceFactory::emptyResponse(204);
+
+        $this->resources($self, $response)->cancelMigration('addon_1', 'mig_1');
+
+        self::assertSame('DELETE', $response->getRequestMethod());
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/user_1/addons/addon_1/migrations/mig_1',
+            $response->getRequestUrl(),
+        );
+    }
+
+    public function testPreorderMigrationGetsPreordersWithPlanIdQuery(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, ['totalTTC' => 12.5]);
 
         $preorder = $this->resource($response)->preorderMigration('addon_1', 'plan_prod', 'orga_1');
 
-        self::assertSame(12.5, $preorder['totalPrice']);
-        self::assertSame('POST', $response->getRequestMethod());
+        self::assertSame(12.5, $preorder['totalTTC']);
+        self::assertSame('GET', $response->getRequestMethod());
         self::assertSame(
-            'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1/migrations/preorder',
+            'https://api.clever-cloud.com/v2/organisations/orga_1/addons/addon_1/migrations/preorders?planId=plan_prod',
             $response->getRequestUrl(),
         );
-        self::assertSame('{"plan":"plan_prod"}', $response->getRequestOptions()['body']);
+        self::assertSame('', $response->getRequestOptions()['body'] ?? '');
+    }
+
+    public function testPreorderMigrationResolvesPersonalOrganisationForSelf(): void
+    {
+        $self = ResourceFactory::jsonResponse(200, ['id' => 'user_1']);
+        $response = ResourceFactory::jsonResponse(200, ['totalTTC' => 0]);
+
+        $this->resources($self, $response)->preorderMigration('addon_1', 'plan_prod');
+
+        self::assertSame(
+            'https://api.clever-cloud.com/v2/organisations/user_1/addons/addon_1/migrations/preorders?planId=plan_prod',
+            $response->getRequestUrl(),
+        );
+    }
+
+    private function resources(MockResponse ...$responses): AddonsResource
+    {
+        return new AddonsResource(
+            ResourceFactory::http(new MockHttpClient($responses)),
+            ResourceFactory::mapper(),
+        );
     }
 
     private function resource(MockResponse $response): AddonsResource

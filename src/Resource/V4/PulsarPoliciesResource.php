@@ -17,11 +17,14 @@ final readonly class PulsarPoliciesResource extends AbstractV4Resource
         /** @var array<string, mixed> $payload */
         $payload = $this->httpGet($this->policyPath($addonId));
 
-        return $this->mapTo(PulsarPolicy::class, $payload);
+        return $this->mapPolicy($addonId, $payload);
     }
 
     /**
-     * Partial update — only the fields you pass are touched.
+     * Sets the namespace retention policy and, when `offloadPolicies` is
+     * sent, its offload thresholds. Sizes are in bytes, durations in minutes:
+     * `{"retentionPolicies": {"durationInMinutes": 1440, "sizeInBytes": 1073741824}}`.
+     * Returns the policies the cluster then applies.
      *
      * @param array<string, mixed> $policy
      */
@@ -33,7 +36,7 @@ final readonly class PulsarPoliciesResource extends AbstractV4Resource
             ['json' => $policy],
         );
 
-        return $this->mapTo(PulsarPolicy::class, $payload);
+        return $this->mapPolicy($addonId, $payload);
     }
 
     /**
@@ -42,6 +45,17 @@ final readonly class PulsarPoliciesResource extends AbstractV4Resource
     public function reset(string $addonId): void
     {
         $this->httpDelete($this->policyPath($addonId));
+    }
+
+    /**
+     * The API answers `{retentionPolicies, offloadPolicies}` without the
+     * add-on id, so the requested one is injected before mapping.
+     *
+     * @param array<string, mixed> $payload
+     */
+    private function mapPolicy(string $addonId, array $payload): PulsarPolicy
+    {
+        return $this->mapTo(PulsarPolicy::class, $payload + ['addonId' => $addonId]);
     }
 
     private function policyPath(string $addonId): string

@@ -12,31 +12,52 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 #[CoversClass(PulsarPoliciesResource::class)]
 final class PulsarPoliciesResourceTest extends TestCase
 {
-    public function testGetReturnsTypedPolicy(): void
+    public function testGetMapsTheSpecShape(): void
     {
         $response = ResourceFactory::jsonResponse(200, [
-            'addonId' => 'pulsar_1',
-            'namespace' => 'cc/default',
-            'retentionTimeInMinutes' => 1440,
-            'retentionSizeInMB' => 1024,
+            'retentionPolicies' => ['durationInMinutes' => 1440, 'sizeInBytes' => 1073741824],
+            'offloadPolicies' => null,
         ]);
 
         $policy = $this->resource($response)->get('pulsar_1');
 
         self::assertSame('pulsar_1', $policy->addonId);
-        self::assertSame('cc/default', $policy->namespace);
-        self::assertSame(1440, $policy->retentionTimeInMinutes);
+        self::assertNotNull($policy->retentionPolicies);
+        self::assertSame(1440, $policy->retentionPolicies->durationInMinutes);
+        self::assertSame(1073741824, $policy->retentionPolicies->sizeInBytes);
+        self::assertNull($policy->offloadPolicies);
+        self::assertSame('GET', $response->getRequestMethod());
         self::assertSame(
             'https://api.clever-cloud.com/v4/addon-providers/addon-pulsar/addons/pulsar_1/storage-policies',
             $response->getRequestUrl(),
         );
     }
 
+    public function testGetMapsAnEmptyPolicy(): void
+    {
+        $response = ResourceFactory::jsonResponse(200, []);
+
+        $policy = $this->resource($response)->get('pulsar_1');
+
+        self::assertSame('pulsar_1', $policy->addonId);
+        self::assertNull($policy->retentionPolicies);
+        self::assertNull($policy->offloadPolicies);
+    }
+
     public function testUpdatePatchesJson(): void
     {
-        $response = ResourceFactory::jsonResponse(200, ['addonId' => 'pulsar_1']);
+        $response = ResourceFactory::jsonResponse(200, [
+            'retentionPolicies' => ['durationInMinutes' => 60, 'sizeInBytes' => null],
+        ]);
 
-        $this->resource($response)->update('pulsar_1', ['retentionTimeInMinutes' => 60]);
+        $policy = $this->resource($response)->update('pulsar_1', [
+            'retentionPolicies' => ['durationInMinutes' => 60],
+        ]);
+
+        self::assertSame('pulsar_1', $policy->addonId);
+        self::assertNotNull($policy->retentionPolicies);
+        self::assertSame(60, $policy->retentionPolicies->durationInMinutes);
+        self::assertNull($policy->retentionPolicies->sizeInBytes);
 
         self::assertSame('PATCH', $response->getRequestMethod());
         self::assertSame(
@@ -44,7 +65,7 @@ final class PulsarPoliciesResourceTest extends TestCase
             $response->getRequestUrl(),
         );
         self::assertSame(
-            '{"retentionTimeInMinutes":60}',
+            '{"retentionPolicies":{"durationInMinutes":60}}',
             $response->getRequestOptions()['body'],
         );
     }

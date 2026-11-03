@@ -82,7 +82,7 @@ public function deleteConsumer(string $consumerKey): void
 public function startMfa(string $kind = 'TOTP'): array<string, mixed>
 public function confirmMfa(string $kind, string $code): void
 public function disableMfa(string $kind): void
-public function regenerateMfaBackupCodes(): list<string>
+public function regenerateMfaBackupCodes(string $kind = 'TOTP'): list<string>
 ```
 
 | Method | HTTP | Path | Body |
@@ -90,9 +90,15 @@ public function regenerateMfaBackupCodes(): list<string>
 | `startMfa()` | POST | `/v2/self/mfa/{kind}` | `{"kind": "<kind>"}` |
 | `confirmMfa()` | POST | `/v2/self/mfa/{kind}/confirmation` | `{"code": "<code>"}` |
 | `disableMfa()` | DELETE | `/v2/self/mfa/{kind}` | — |
-| `regenerateMfaBackupCodes()` | POST | `/v2/self/mfa/backupcodes` | — |
+| `regenerateMfaBackupCodes()` | POST | `/v2/self/mfa/{kind}/backupcodes` | - |
 
 `startMfa()` returns a raw array typically containing `{kind, otpUrl?, qrCodeUrl?, backupCodes?}`.
+
+`regenerateMfaBackupCodes()` unwraps the `backupCodes` list of the response.
+The previous codes stop working, and this response is the only one that shows
+the new ones. The API requires an almighty token and the account password
+(base64) in an `X-Clever-Password` header, which this method does not send
+yet.
 
 ## Password
 

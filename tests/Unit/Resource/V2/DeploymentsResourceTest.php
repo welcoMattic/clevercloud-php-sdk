@@ -74,7 +74,7 @@ final class DeploymentsResourceTest extends TestCase
         self::assertSame('Console - Clever Cloud', $deps[0]->cause);
     }
 
-    public function testCancelHitsDelete(): void
+    public function testCancelDeletesDeploymentInstances(): void
     {
         $response = ResourceFactory::jsonResponse(204, []);
 
@@ -82,7 +82,7 @@ final class DeploymentsResourceTest extends TestCase
 
         self::assertSame('DELETE', $response->getRequestMethod());
         self::assertSame(
-            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/deployments/dep_1',
+            'https://api.clever-cloud.com/v2/organisations/orga_1/applications/app_1/deployments/dep_1/instances',
             $response->getRequestUrl(),
         );
     }

@@ -19,7 +19,7 @@ final class OperatorsResourceTest extends TestCase
     public function testKeycloakListRoutesUnderAddonProviders(): void
     {
         $response = ResourceFactory::jsonResponse(200, [
-            ['id' => 'op_1', 'name' => 'idp-prod', 'region' => 'par'],
+            ['resourceId' => 'op_1', 'addonId' => 'addon_1', 'name' => 'idp-prod'],
         ]);
 
         $ops = $this->facade($response)->keycloak->list();
@@ -34,7 +34,7 @@ final class OperatorsResourceTest extends TestCase
 
     public function testMatomoCreatePostsBody(): void
     {
-        $response = ResourceFactory::jsonResponse(201, ['id' => 'op_new', 'name' => 'analytics']);
+        $response = ResourceFactory::jsonResponse(201, ['resourceId' => 'op_new', 'addonId' => 'addon_2', 'name' => 'analytics']);
 
         $this->facade($response)->matomo->create(['name' => 'analytics', 'region' => 'par']);
 

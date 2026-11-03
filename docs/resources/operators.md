@@ -59,6 +59,11 @@ Keycloak and Otoroshi (per the source's docblock).
 Shared payload type across the four operators. See
 [`src/Model/Operator.php`](https://github.com/welcoMattic/clevercloud-php-sdk/blob/main/src/Model/Operator.php).
 
+The API sends no `id` field. `$id` is read from `resourceId`, the operator id
+(`keycloak_…`, `matomo_…`, …) that `get()`, `reboot()` and the other
+per-operator methods take. `$addonId` is the matching `addon_…` id used by
+`$client->addons`. `$ownerId`, `$version` and `$accessUrl` are mapped too.
+
 ## Note on ownership
 
 The API resolves ownership from your credentials — you don't pass an

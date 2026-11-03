@@ -167,16 +167,18 @@ final readonly class SelfResource extends AbstractV2Resource
     }
 
     /**
-     * Returns the regenerated MFA backup codes.
+     * Replaces the recovery codes of the validated MFA of the given kind and
+     * returns the new set: the previous codes stop working, and this response
+     * is the only one that shows the new ones.
      *
      * @return list<string>
      */
-    public function regenerateMfaBackupCodes(): array
+    public function regenerateMfaBackupCodes(string $kind = 'TOTP'): array
     {
-        /** @var list<string> $payload */
-        $payload = $this->httpPost('/self/mfa/backupcodes');
+        /** @var array{backupCodes?: list<string>} $payload */
+        $payload = $this->httpPost('/self/mfa/'.rawurlencode($kind).'/backupcodes');
 
-        return $payload;
+        return array_values($payload['backupCodes'] ?? []);
     }
 
     // ------------------------------------------------------------------
