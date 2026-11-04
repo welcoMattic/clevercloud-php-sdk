@@ -7,11 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-11-04
+
 Aligns the SDK with the unified OpenAPI spec Clever Cloud now publishes at
 <https://api.clever-cloud.com/openapi.json>, and with the live API. Every
 route below was checked with read-only probes on a real account; the spec is
 a deliberate subset of the API, so routes absent from it were kept when they
 answer live.
+
+The major bump is deliberate. The README promises one whenever source
+compatibility breaks, and this release removes, moves and retypes public
+symbols. Almost all of them could not work against the live API, so code using
+them was already failing at runtime; but a few compile today and will not
+after upgrading (moved `Resource\V4\NotificationsResource`,
+`WebhooksResource` and `BackupsResource`, retyped `OAuthConsumer::$rights` and
+`Flavor::$nice`, new signatures of `BackupsResource::list()` and
+`DrainsResource::create()`). Read the breaking changes before bumping.
 
 ### Breaking changes
 
@@ -396,7 +407,8 @@ typed DTOs via `jolicode/automapper`, no middleware in the HTTP pipeline.
 - **Pagination skeleton** — `PageIterator` for cursor-based v4 endpoints.
 - **Smoke examples** — `examples/smoke-self.php` and `examples/stream-logs.php`.
 
-[Unreleased]: https://github.com/welcoMattic/clevercloud-php-sdk/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/welcoMattic/clevercloud-php-sdk/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/welcoMattic/clevercloud-php-sdk/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/welcoMattic/clevercloud-php-sdk/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/welcoMattic/clevercloud-php-sdk/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/welcoMattic/clevercloud-php-sdk/releases/tag/v0.1.0

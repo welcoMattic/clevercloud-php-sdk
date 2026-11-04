@@ -13,7 +13,7 @@ A modern PHP SDK for the [Clever Cloud](https://www.clever-cloud.com) REST API
 publishes ([JSON](https://api.clever-cloud.com/openapi.json)) and checked
 against the live API.
 
-> Status: **v2.0**. Public API surface is stable; changes that break
+> Status: **v3.0**. Public API surface is stable; changes that break
 > source compatibility will trigger a major bump per
 > [semver](https://semver.org).
 
@@ -63,7 +63,7 @@ The SDK also supports OAuth 1.0a for legacy consumers and 3-legged authorisation
 ## Coverage matrix
 
 The SDK covers most of Clever Cloud's v2 + v4 surface, plus the api-bridge
-gateway used for API tokens. Below is the actual coverage shipped in v2.0; what
+gateway used for API tokens. Below is the actual coverage shipped in v3.0; what
 is deliberately out of scope at this stage is listed in the "Roadmap" section.
 
 ### V2 — application platform
